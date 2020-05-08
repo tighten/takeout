@@ -12,7 +12,7 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'install {packageName}';
+    protected $signature = 'install {packageName?}';
 
     /**
      * The description of the command.
@@ -30,17 +30,21 @@ class InstallCommand extends Command
     {
         $package = $this->argument('packageName');
 
-        $this->info('Purportedly installing ' . $package);
+        if ($package) {
+            return $this->install($package);
+        }
+
+        // @todo build this from available packages
+        $option = $this->menu('Packages for install', [
+            'mysql' => 'MySQL',
+            'meilisearch' => 'MeiliSearch',
+        ])->open();
+
+        return $this->install($option);
     }
 
-    /**
-     * Define the command's schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
-     * @return void
-     */
-    public function schedule(Schedule $schedule): void
+    public function install(string $package)
     {
-        // $schedule->command(static::class)->everyMinute();
+        $this->info('Purportedly installing ' . $package);
     }
 }
