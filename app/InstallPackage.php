@@ -2,15 +2,11 @@
 
 namespace App;
 
+use App\Packages;
 use App\Packages\BasePackage;
 
 class InstallPackage
 {
-    public function __construct()
-    {
-
-    }
-
     public function __invoke(string $packageName)
     {
         $package = $this->packageForName($packageName);
@@ -23,7 +19,13 @@ class InstallPackage
 
     public function packageForName(string $packageName): BasePackage
     {
-        // Loop over all packages; convert the class name to lowercase; compare against package name and make sure it's not basepackage
-        return new \App\Packages\MeiliSearch; // @todo
+        foreach ((new Packages)->all() as $shortname => $fqcn) {
+            if ($shortname === $packageName) {
+                return new $fqcn;
+            }
+        }
+
+        // @todo handle this better
+        dd('Fail! No match for ' . $packageName);
     }
 }

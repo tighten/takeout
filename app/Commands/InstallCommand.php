@@ -2,22 +2,18 @@
 
 namespace App\Commands;
 
-use Illuminate\Console\Scheduling\Schedule;
+use App\InstallPackage;
 use LaravelZero\Framework\Commands\Command;
 
 class InstallCommand extends Command
 {
     /**
      * The signature of the command.
-     *
-     * @var string
      */
     protected $signature = 'install {packageName?}';
 
     /**
      * The description of the command.
-     *
-     * @var string
      */
     protected $description = 'Install a package.';
 
@@ -28,13 +24,18 @@ class InstallCommand extends Command
      */
     public function handle()
     {
+        app()->bind('console', function () {
+            return $this;
+        });
+
         $package = $this->argument('packageName');
 
         if ($package) {
+            // @todo validate it exists in Packages::all
             return $this->install($package);
         }
 
-        // @todo build this from available packages
+        // @todo build this from available packages--maybe just use Packages:all but trim the FQCN?
         $option = $this->menu('Packages for install', [
             'mysql' => 'MySQL',
             'meilisearch' => 'MeiliSearch',
@@ -45,6 +46,6 @@ class InstallCommand extends Command
 
     public function install(string $package)
     {
-        $this->info('Purportedly installing ' . $package);
+        (new InstallPackage)($package);
     }
 }
