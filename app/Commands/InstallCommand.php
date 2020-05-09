@@ -2,6 +2,8 @@
 
 namespace App\Commands;
 
+use App\Services;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 class InstallCommand extends Command
@@ -37,18 +39,22 @@ class InstallCommand extends Command
             return $this->install($service);
         }
 
-        // @todo build this from available services--maybe just use Services:all but trim the FQCN?
-        $option = $this->menu('Services for install', [
-            'mysql' => 'MySQL',
-            'meilisearch' => 'MeiliSearch',
-        ])->open();
+        $option = $this->menu('Services for install', $this->installableServices())->open();
 
         return $this->install($option);
     }
 
+    public function installableServices()
+    {
+        return collect((new Services)->all())->mapWithKeys(function ($fqcn, $shortName) {
+            return [$shortName => Str::afterLast($fqcn, '\\')];
+        })->toArray();
+    }
+
     public function install(string $service)
     {
-        $service = new (new Services)->get($service);
+        $fqcn = (new Services)->get($service);
+        $service = new $fqcn;
         $service->install();
     }
 }
