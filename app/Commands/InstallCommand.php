@@ -30,7 +30,12 @@ class InstallCommand extends Command
             return $this;
         });
 
-        // @todo check if docker is installed
+        exec('docker --version 2>&1', $output, $exitCode);
+
+        if($exitCode !== 0) {
+            $this->error('Docker is not installed. Please visit https://docs.docker.com/docker-for-mac/install/ for information on how to install Docker for your machine.');
+            exit;
+        }
         /** end extraction area */
 
         $service = $this->argument('serviceName');
