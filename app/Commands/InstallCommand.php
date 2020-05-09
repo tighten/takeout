@@ -54,7 +54,6 @@ class InstallCommand extends Command
     public function install(string $service)
     {
         $fqcn = (new Services)->get($service);
-        $service = new $fqcn;
-        $service->install();
+        (new $fqcn)->install();
     }
 }
