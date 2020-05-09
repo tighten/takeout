@@ -2,7 +2,6 @@
 
 namespace App\Commands;
 
-use App\InstallService;
 use LaravelZero\Framework\Commands\Command;
 
 class InstallCommand extends Command
@@ -49,7 +48,7 @@ class InstallCommand extends Command
 
     public function install(string $service)
     {
-        // @todo validate it exists in Services::all
-        (new InstallService)($service);
+        $service = new (new Services)->get($service);
+        $service->install();
     }
 }
