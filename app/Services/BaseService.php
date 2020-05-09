@@ -8,7 +8,6 @@ abstract class BaseService
 {
     use WritesToConsole;
 
-    protected $shortName;
     protected $install;
     protected $defaultPort;
     protected $defaultPrompts = [
@@ -58,6 +57,11 @@ abstract class BaseService
     public function containerName(): string
     {
         // @todo handle what if they have two MySQLs running
-        return 'TO-' . $this->shortname;
+        return 'TO-' . $this->shortName();
+    }
+
+    public function shortName(): string
+    {
+        return strtolower(class_basename(static::class));
     }
 }
