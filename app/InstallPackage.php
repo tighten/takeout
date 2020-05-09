@@ -2,30 +2,30 @@
 
 namespace App;
 
-use App\Packages;
-use App\Packages\BasePackage;
+use App\Services;
+use App\Services\BaseService;
 
-class InstallPackage
+class InstallService
 {
-    public function __invoke(string $packageName)
+    public function __invoke(string $serviceName)
     {
-        $package = $this->packageForName($packageName);
-        $package->install();
+        $service = $this->serviceForName($serviceName);
+        $service->install();
 
         // @todo is this class even necessary any more since we're
-        // letting packages install() themselves? I guess it's really
+        // letting services install() themselves? I guess it's really
         // a mapper from short string to class ¯\(°_o)/¯
     }
 
-    public function packageForName(string $packageName): BasePackage
+    public function serviceForName(string $serviceName): BaseService
     {
-        foreach ((new Packages)->all() as $shortname => $fqcn) {
-            if ($shortname === $packageName) {
+        foreach ((new Services)->all() as $shortname => $fqcn) {
+            if ($shortname === $serviceName) {
                 return new $fqcn;
             }
         }
 
         // @todo handle this better
-        dd('Fail! No match for ' . $packageName);
+        dd('Fail! No match for ' . $serviceName);
     }
 }

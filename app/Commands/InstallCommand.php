@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\InstallPackage;
+use App\InstallService;
 use LaravelZero\Framework\Commands\Command;
 
 class InstallCommand extends Command
@@ -10,12 +10,12 @@ class InstallCommand extends Command
     /**
      * The signature of the command.
      */
-    protected $signature = 'install {packageName?}';
+    protected $signature = 'install {serviceName?}';
 
     /**
      * The description of the command.
      */
-    protected $description = 'Install a package.';
+    protected $description = 'Install a service.';
 
     /**
      * Execute the console command.
@@ -24,19 +24,22 @@ class InstallCommand extends Command
      */
     public function handle()
     {
+        /** This section probably should be extracted so every command can use it */
         app()->bind('console', function () {
             return $this;
         });
 
-        $package = $this->argument('packageName');
+        // @todo check if docker is installed
+        /** end extraction area */
 
-        if ($package) {
-            // @todo validate it exists in Packages::all
-            return $this->install($package);
+        $service = $this->argument('serviceName');
+
+        if ($service) {
+            return $this->install($service);
         }
 
-        // @todo build this from available packages--maybe just use Packages:all but trim the FQCN?
-        $option = $this->menu('Packages for install', [
+        // @todo build this from available services--maybe just use Services:all but trim the FQCN?
+        $option = $this->menu('Services for install', [
             'mysql' => 'MySQL',
             'meilisearch' => 'MeiliSearch',
         ])->open();
@@ -44,8 +47,9 @@ class InstallCommand extends Command
         return $this->install($option);
     }
 
-    public function install(string $package)
+    public function install(string $service)
     {
-        (new InstallPackage)($package);
+        // @todo validate it exists in Services::all
+        (new InstallService)($service);
     }
 }
