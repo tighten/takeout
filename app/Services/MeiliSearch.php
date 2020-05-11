@@ -10,7 +10,7 @@ class MeiliSearch extends BaseService
             'shortname' => 'volume',
             'prompt' => 'What is the Docker volume name?',
             'default' => 'meili_data',
-        ]
+        ],
     ];
 
     protected $install = '-p {port}:7700 \
