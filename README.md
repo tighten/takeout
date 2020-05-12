@@ -34,7 +34,7 @@ Presents you with a menu of potential services to install.
 
 ### Install passing service name
 
-```
+```bash
 takeout install mysql
 ```
 
@@ -60,7 +60,7 @@ Uninstalls this service if possible.
 
 How to get all running containers' names (so we can grep and filter out those not starting with our prefix):
 
-```
+```bash
 docker ps --format "{{.Names}}" | grep 'to-*'
 ```
 
