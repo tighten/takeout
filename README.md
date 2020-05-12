@@ -76,10 +76,9 @@ docker ps --format "{{.Names}}" | grep 'to-*'
 
 ## Future plans
 
-If this takes off, re-write it in non-PHP so non-PHP people can use it more easily.
-
-Or, maybe, package it in PHP and distribute it via Homebrew? If that's possible?
-
+- Deliver package in a way that's friendly to non-PHP developers
+- Add 'upgrade' command, which saves the config settings for the old one, brings up a new one with the same tag and parameters, and allows you to re-specify the version constraint
+- Allow for more than one of each service (e.g. mysql 5.7, mysql 8, another mysql 8, etc.)
 
 ## Existential question:
 

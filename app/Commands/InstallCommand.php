@@ -2,12 +2,15 @@
 
 namespace App\Commands;
 
+use App\InitializesCommands;
 use App\Services;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 class InstallCommand extends Command
 {
+    use InitializesCommands;
+
     /**
      * The signature of the command.
      */
@@ -25,18 +28,7 @@ class InstallCommand extends Command
      */
     public function handle()
     {
-        /** This section probably should be extracted so every command can use it */
-        app()->bind('console', function () {
-            return $this;
-        });
-
-        exec('docker --version 2>&1', $output, $exitCode);
-
-        if($exitCode !== 0) {
-            $this->error('Docker is not installed. Please visit https://docs.docker.com/docker-for-mac/install/ for information on how to install Docker for your machine.');
-            exit;
-        }
-        /** end extraction area */
+        $this->initializeCommand();
 
         $service = $this->argument('serviceName');
 
