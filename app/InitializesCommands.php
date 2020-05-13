@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Exceptions\DockerMissingException;
+use App\Shell\Shell;
+
 trait InitializesCommands
 {
     public function initializeCommand()
@@ -15,11 +18,11 @@ trait InitializesCommands
 
     protected function validateDockerInstalled()
     {
-        exec('docker --version 2>&1', $output, $exitCode);
+        $shell = $this->shell ?? app(Shell::class);
+        $process = $shell->exec('docker --version 2>&1');
 
-        if ($exitCode !== 0) {
-            $this->error('Docker is not installed. Please visit https://docs.docker.com/docker-for-mac/install/ for information on how to install Docker for your machine.');
-            exit;
+        if ($process->getExitCode() !== 0) {
+            throw new DockerMissingException;
         }
     }
 }

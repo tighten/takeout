@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Shell\Shell;
 use App\WritesToConsole;
 
 abstract class BaseService
@@ -24,17 +25,19 @@ abstract class BaseService
     ];
     protected $prompts;
     protected $promptResponses;
+    protected $shell;
+
+    public function __construct(Shell $shell)
+    {
+        $this->shell = $shell;
+    }
 
     public function install(): void
     {
         $this->prompts();
-
-        // basically shell script running "docker run" and then this->install?
-        // @todo Copy the Shell object from Lambo, probably, then inject it
-        // in the constructor here?
-
+        $this->info('Installing ' . $this->shortName());
+        $this->info('RUN: ' . $this->buildInstallString());
         // $this->shell->exec($this->buildInstallString());
-        $this->info('Purportedly installing ' . static::class);
     }
 
     public function prompts()
@@ -49,9 +52,11 @@ abstract class BaseService
 
     public function buildInstallString(): string
     {
+        $install = $this->install; // @Todo replace all variables
         // @todo replace all {variable} things with prompt data
         // @todo also, set the default on the port prompt to be $this->defaultPort
-        return 'docker run ' . $this->install;
+        // @todo also use containerName() to set containername
+        return 'docker run ' . $install;
     }
 
     public function containerName(): string
