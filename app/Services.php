@@ -12,7 +12,7 @@ class Services
     public function __construct()
     {
         $this->services = collect($this->classesInServicesNamespace())->mapWithKeys(function ($fqcn, $a) {
-            $instance = new $fqcn;
+            $instance = app($fqcn);
             return [$instance->shortName() => $fqcn];
         })->toArray();
     }

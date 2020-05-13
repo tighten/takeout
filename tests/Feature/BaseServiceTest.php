@@ -10,7 +10,7 @@ class BaseServiceTest extends TestCase
     /** @test */
     function it_generates_shortname()
     {
-        $meilisearch = new MeiliSearch;
+        $meilisearch = app(MeiliSearch::class);
         $this->assertEquals('meilisearch', $meilisearch->shortName());
     }
 }

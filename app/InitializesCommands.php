@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Exceptions\DockerMissingException;
-use App\Shell\Shell;
+use App\Shell\Docker;
 
 trait InitializesCommands
 {
@@ -13,15 +13,7 @@ trait InitializesCommands
             return $this;
         });
 
-        $this->validateDockerInstalled();
-    }
-
-    protected function validateDockerInstalled()
-    {
-        $shell = $this->shell ?? app(Shell::class);
-        $process = $shell->exec('docker --version 2>&1');
-
-        if ($process->getExitCode() !== 0) {
+        if (! app(Docker::class)->isInstalled()) {
             throw new DockerMissingException;
         }
     }

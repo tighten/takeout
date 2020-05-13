@@ -17,7 +17,7 @@ class Shell
     public function exec($command, $description = null): Process
     {
         if ($description) {
-            $this->output->writeln($outputFormatter->start($description));
+            $this->output->writeln($this->formatStartMessage($description));
         }
 
         $process = $this->buildProcess($command);
@@ -34,6 +34,11 @@ class Shell
         });
 
         return $process;
+    }
+
+    public function formatStartMessage(string $buffer)
+    {
+        return rtrim(sprintf("<bg=blue;fg=white> RUN </> <fg=blue>%s</>", $buffer));
     }
 
     public function formatErrorMessage(string $buffer)
