@@ -13,13 +13,11 @@ class DockerCheckTest extends TestCase
     /** @test */
     function the_check_returns_true_if_docker_is_installed()
     {
-        $process = M::mock(Process::class);
-        $process->shouldReceive('getExitCode')->andReturn(0);
-
-        $shell = $this->mock(Shell::class);
-        $shell->shouldReceive('exec')->andReturn($process);
-
-        app()->instance(Shell::class, $shell);
+        $this->mock(Shell::class, function ($mock) {
+            $process = M::mock(Process::class);
+            $process->shouldReceive('getExitCode')->andReturn(0);
+            $mock->shouldReceive('exec')->andReturn($process);
+        });
 
         $this->assertTrue(app(Docker::class)->isInstalled());
     }
@@ -27,13 +25,11 @@ class DockerCheckTest extends TestCase
     /** @test */
     function the_check_returns_false_if_docker_is_not_installed()
     {
-        $process = M::mock(Process::class);
-        $process->shouldReceive('getExitCode')->andReturn(127);
-
-        $shell = $this->mock(Shell::class);
-        $shell->shouldReceive('exec')->andReturn($process);
-
-        app()->instance(Shell::class, $shell);
+        $this->mock(Shell::class, function ($mock) {
+            $process = M::mock(Process::class);
+            $process->shouldReceive('getExitCode')->andReturn(127);
+            $mock->shouldReceive('exec')->andReturn($process);
+        });
 
         $this->assertFalse(app(Docker::class)->isInstalled());
     }
