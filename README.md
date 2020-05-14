@@ -1,10 +1,18 @@
 # Takeout
 
-**The goal:**
+Takeout is a Mac-based CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
 
-Inspired and co-written by Jose Soto (@josecanhelp), for someone using a tool like Laravel Valet, which handles serving Laravel sites using PHP & Nginx, make managing the installation and upgrading and deletion (and potentially running of multiple instances of the same service with different versions, just on different ports) of supporting services that would traditionally be, painfully, managed by Homebrew.
+With `takeout install mysql` you're running MySQL, and never have to worry about Homebrew MySQL again.
 
-**For example:**
+But you can also easily install ElasticSearch, Postgres, MSSQL, Redis, and more, with a simple command.
+
+## History
+
+Tighten programmer [Jose Soto](https://twitter.com/josecanhelp) has long been advocating ([podcast](https://twentypercenttime.simplecast.com/episodes/jose-soto-docker-for-local-development), [Laracasts](https://laracasts.com/series/guest-spotlight/episodes/2)) the usage of simple, small Docker containers for local development dependencies. Instead of building your entire local dev stack using something like Vessel, you use your existing web server (likely Laravel Valet) but rely on Docker for managing your services like MySQL and Redis.
+
+Tighten programmer [Matt Stauffer](https://twitter.com/stauffermatt) thought of the idea of packaging Jose's way of working with Docker up into a simple command-line tool, and Takeout was born.
+
+**Example services:**
 
 - MySQL
 - Postgres
@@ -91,3 +99,8 @@ two other apps
 - PECL manager
 - Wrapper around Valet, Lambo, Laravel Installer, PECL manager, and Takeout
     + Basically the entire local dev stack
+
+
+## Todo
+
+See our [Project Board](https://github.com/tightenco/takeout/projects/1) for tasks.
