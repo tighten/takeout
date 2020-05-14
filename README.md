@@ -1,3 +1,4 @@
+<img src="https://raw.githubusercontent.com/tightenco/takeout/master/takeout-container.png" alt="Takeout container" style="float: right; margin-left: 1em; margin-bottom: 1em; max-width: 250px">
 # Takeout
 
 Takeout is a Mac-based CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
