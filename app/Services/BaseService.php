@@ -38,12 +38,20 @@ abstract class BaseService
         }, $this->defaultPrompts);
     }
 
-    public function install(): void
+    public function install()
     {
         $this->prompts();
-        $this->info('Installing ' . $this->shortName());
-        //$this->info('RUN: ' . $this->buildInstallString());
-        $this->shell->exec($this->buildInstallString());
+        $this->info('Installing ' . $this->shortName() . "...\n");
+        // $this->info('RUN: ' . $this->buildInstallString());
+
+        $output = $this->shell->exec($this->buildInstallString());
+
+        if ($output->getExitCode() === 0) {
+            return $this->info("\nInstallation complete!");
+        }
+
+        $this->line("\n");
+        $this->error('Installation failed!');
     }
 
     public function prompts()

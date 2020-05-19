@@ -27,10 +27,10 @@ class Shell
             }
 
             if ($type === Process::ERR) {
-                return $this->formatErrorMessage($buffer);
+                return $this->output->writeLn($this->formatErrorMessage($buffer));
             }
 
-            return $this->formatMessage($buffer);
+            $this->output->writeLn($this->formatMessage($buffer));
         });
 
         return $process;

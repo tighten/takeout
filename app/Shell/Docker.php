@@ -17,4 +17,20 @@ class Docker
 
         return $process->getExitCode() === 0;
     }
+
+    public function containers()
+    {
+        // @todo format or group or whatever
+        return $this->shell->exec('docker ps -a --format "{{.Names}}" | grep "TO-*"');
+    }
+
+    public function runningContainers()
+    {
+        // @todo may not need?
+    }
+
+    public function stoppedContainers()
+    {
+        // @todo may not need?
+    }
 }
