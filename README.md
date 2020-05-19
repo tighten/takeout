@@ -75,31 +75,25 @@ docker ps --format "{{.Names}}" | grep 'TO-*'
 ### Potential commands:
 
 - install: pass service name or pick from menu
-- list / installed: show all installed-by-takeout services, for each also show status (running/not running)
+- list: show all installed-by-takeout services, for each also show status (running/not running)
 - uninstall: pass service name or pick from menu
-- ???: Deletes all installed services and then maybe self-uninstalls?
-
-- upgrade: v2: destroys old container, brings up a new one with a newly-specified tag (prompt user for it) and keeps all other parameters (e.g. port, volume) exactly the same as the old one
-- pt/passthrough: proxy commands through to docker (`./takeout pt mysql stop`)
+- self-remove: Deletes all installed services and then maybe self-uninstalls?
 
 ## Future plans
 
+- upgrade: v2: destroys old container, brings up a new one with a newly-specified tag (prompt user for it) and keeps all other parameters (e.g. port, volume) exactly the same as the old one
+- pt/passthrough: proxy commands through to docker (`./takeout pt mysql stop`)
 - Deliver package in a way that's friendly to non-PHP developers
 - Add 'upgrade' command, which saves the config settings for the old one, brings up a new one with the same tag and parameters, and allows you to re-specify the version constraint
 - Allow for more than one of each service (e.g. mysql 5.7, mysql 8, another mysql 8, etc.)
 
-## Existential question:
+## FAQs
 
-- Does this app manage your PHP PECL stuff? No.
+<details>
+    <summary><strong>Will this install the PHP drivers for me via PECL?</strong></summary>
 
-Matt idea:
-
-two other apps
-
-- PECL manager
-- Wrapper around Valet, Lambo, Laravel Installer, PECL manager, and Takeout
-    + Basically the entire local dev stack
-
+    Sadly, no.
+</details>
 
 ## Todo
 

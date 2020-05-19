@@ -38,6 +38,10 @@ class InstallCommand extends Command
 
         $option = $this->menu('Services for install', $this->installableServices())->open();
 
+        if (! $option) {
+            return;
+        }
+
         return $this->install($option);
     }
 
