@@ -16,7 +16,7 @@ class ListCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'list';
+    protected $signature = 'list:containers';
 
     /**
      * The description of the command.
@@ -33,10 +33,13 @@ class ListCommand extends Command
     public function handle()
     {
         $this->initializeCommand();
-
-        // @todo run Jose's command and format it in a nice Symfony table
-        dd((new Docker())->containers());
-
+        $containers = app(Docker::class)->containers()->getOutput();
+        $lines =  explode("\n", $containers);
+        $all = array_map(function ($line) {
+            return array_filter(explode("        ", $line));
+        }, $lines);
+        $headers = array_shift($all);
+        $this->table($headers, $all);
         // @todo test this call
     }
 
