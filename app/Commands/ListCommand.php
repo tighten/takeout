@@ -16,7 +16,7 @@ class ListCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'list:containers';
+    protected $signature = 'list:services';
 
     /**
      * The description of the command.
