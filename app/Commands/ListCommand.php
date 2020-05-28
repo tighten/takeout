@@ -33,13 +33,13 @@ class ListCommand extends Command
     public function handle()
     {
         $this->initializeCommand();
-        $containers = app(Docker::class)->containers()->getOutput();
-        $lines =  explode("\n", $containers);
-        $all = array_map(function ($line) {
+        $output = app(Docker::class)->containers()->getOutput();
+        $lines =  explode("\n", $output);
+        $containers = array_map(function ($line) {
             return array_filter(explode("        ", $line));
         }, $lines);
-        $headers = array_shift($all);
-        $this->table($headers, $all);
+        $headers = array_shift($containers);
+        $this->table($headers, $containers);
         // @todo test this call
     }
 
