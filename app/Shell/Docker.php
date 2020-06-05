@@ -2,6 +2,8 @@
 
 namespace App\Shell;
 
+use Symfony\Component\Process\Process;
+
 class Docker
 {
     protected $shell;
@@ -18,10 +20,10 @@ class Docker
         return $process->getExitCode() === 0;
     }
 
-    public function containers()
+    public function containers(): Process
     {
         // @todo format or group or whatever
-        return $this->shell->exec('docker ps -a --format "{{.Names}}" | grep "TO-*"');
+        return $this->shell->exec('docker ps -a --filter "name=TO-" --format "table {{.ID}}\t{{.Names}}"');
     }
 
     public function runningContainers()
