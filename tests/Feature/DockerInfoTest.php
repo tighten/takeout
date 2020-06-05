@@ -8,10 +8,10 @@ use Mockery as M;
 use Symfony\Component\Process\Process;
 use Tests\TestCase;
 
-class DockerCheckTest extends TestCase
+class DockerInfoTest extends TestCase
 {
     /** @test */
-    function the_check_returns_true_if_docker_is_installed()
+    function the_installed_check_returns_true_if_docker_is_installed()
     {
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
@@ -23,7 +23,7 @@ class DockerCheckTest extends TestCase
     }
 
     /** @test */
-    function the_check_returns_false_if_docker_is_not_installed()
+    function the_installed_check_returns_false_if_docker_is_not_installed()
     {
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
