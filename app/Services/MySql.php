@@ -20,6 +20,6 @@ class MySql extends BaseService
 
     protected $install = '-p {port}:3306 \
         -e MYSQL_ROOT_PASSWORD={root_password} \
-        -v {volume}:/data.ms \
+        -v {volume}:/var/lib/mysql \
         mysql:{tag}';
 }
