@@ -43,23 +43,24 @@ class Shell
 
     public function formatStartMessage(string $buffer)
     {
-        return rtrim(sprintf("<bg=blue;fg=white> RUN </> <fg=blue>%s</>", $buffer));
+        return rtrim(sprintf('<bg=blue;fg=white> RUN </> <fg=blue>%s</>', $buffer));
     }
 
     public function formatErrorMessage(string $buffer)
     {
-        return rtrim(sprintf("<bg=red;fg=white> ERR </> %s", $buffer));
+        return rtrim(sprintf('<bg=red;fg=white> ERR </> %s', $buffer));
     }
 
     public function formatMessage(string $buffer)
     {
-        return rtrim(sprintf("<bg=green;fg=white> OUT </> %s", $buffer));
+        return rtrim(sprintf('<bg=green;fg=white> OUT </> %s', $buffer));
     }
 
     public function buildProcess($command): Process
     {
         $process = Process::fromShellCommandline($command);
         $process->setTimeout(null);
+
         return $process;
     }
 }

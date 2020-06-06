@@ -4,6 +4,7 @@ namespace App\Services;
 
 class MySql extends BaseService
 {
+    protected $imageName = 'mysql';
     protected $defaultPort = 3306;
     protected $prompts = [
         [
@@ -21,5 +22,5 @@ class MySql extends BaseService
     protected $install = '-p {port}:3306 \
         -e MYSQL_ROOT_PASSWORD={root_password} \
         -v {volume}:/data.ms \
-        mysql:{tag}';
+        {organization}/{imageName}:{tag}';
 }
