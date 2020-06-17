@@ -12,8 +12,8 @@ jobs:
         strategy:
             matrix:
                 php-version: [7.2, 7.3, 7.4]
-                dependency-version: [prefer-lowest, prefer-stable]
                 os: [macos-latest, ubuntu-latest, windows-latest]
+                dependency-version: [prefer-lowest, prefer-stable]
 
                 include:
                   - os: macos-latest
@@ -25,7 +25,7 @@ jobs:
                   - os: windows-latest
                     experimental: true
 
-        name: PHP ${{ matrix.php }} - DEP ${{ matrix.dependency-version }} - OS ${{ matrix.os }}
+        name: PHP${{ matrix.php-version }} - ${{ matrix.os }} - --${{ matrix.dependency-version }}
 
         continue-on-error: ${{ matrix.experimental }}
 
