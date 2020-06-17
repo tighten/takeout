@@ -7,27 +7,30 @@ on:
 
 jobs:
     tests:
-        runs-on: ${{ matrix.os }}
-
         strategy:
             matrix:
                 php-version: [7.2, 7.3, 7.4]
-                os: [macos-latest, ubuntu-latest, windows-latest]
+                os: [macOS, Ubuntu, Windows]
                 dependency-version: [prefer-lowest, prefer-stable]
 
                 include:
-                  - os: macos-latest
+                  - os: macOS
                     experimental: false
+                    os-version: macos-latest
 
-                  - os: ubuntu-latest
+                  - os: Ubuntu
                     experimental: true
+                    os-version: ubuntu-latest
 
-                  - os: windows-latest
+                  - os: Windows
                     experimental: true
+                    os-version: windows-latest
 
-        name: PHP${{ matrix.php-version }} - ${{ matrix.os }} - --${{ matrix.dependency-version }}
+        name: PHP ${{ matrix.php-version }} - ${{ matrix.os }} --${{ matrix.dependency-version }}
 
         continue-on-error: ${{ matrix.experimental }}
+
+        runs-on: ${{ matrix.os-version }}
 
         steps:
             - name: Checkout code
