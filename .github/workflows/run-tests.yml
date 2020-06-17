@@ -9,8 +9,8 @@ jobs:
     tests:
         strategy:
             matrix:
-                php-version: [7.2, 7.3, 7.4]
                 os: [macOS, Ubuntu, Windows]
+                php-version: [7.2, 7.3, 7.4]
                 dependency-version: [prefer-lowest, prefer-stable]
 
                 include:
@@ -26,7 +26,7 @@ jobs:
                     experimental: true
                     os-version: windows-latest
 
-        name: PHP ${{ matrix.php-version }} - ${{ matrix.os }} --${{ matrix.dependency-version }}
+        name: ${{ matrix.os }} - PHP ${{ matrix.php-version }} --${{ matrix.dependency-version }}
 
         continue-on-error: ${{ matrix.experimental }}
 
