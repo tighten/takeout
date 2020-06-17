@@ -1,0 +1,64 @@
+name: Run tests
+
+on:
+    push:
+    schedule:
+        - cron: '0 0 * * *'
+
+jobs:
+    tests:
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            matrix:
+                php-version: [7.2, 7.3, 7.4]
+                dependency-version: [prefer-lowest, prefer-stable]
+                os: [macos-latest, ubuntu-latest, windows-latest]
+
+                include:
+                  - os: macos-latest
+                    experimental: false
+
+                  - os: ubuntu-latest
+                    experimental: true
+
+                  - os: windows-latest
+                    experimental: true
+
+        name: PHP ${{ matrix.php }} - DEP ${{ matrix.dependency-version }} - OS ${{ matrix.os }}
+
+        continue-on-error: ${{ matrix.experimental }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v1
+
+            # - name: Cache dependencies
+            #   uses: actions/cache@v1
+            #   with:
+            #       path: ~/.composer/cache/files
+            #       key: dependencies-os-${{ matrix.os }}-php-${{ matrix.php-version }}-laravel-${{ matrix.laravel-version }}-composer-${{ hashFiles('**/composer.lock') }}
+            #       restore-keys: dependencies-os-${{ matrix.os }}-php-${{ matrix.php-version }}-laravel-${{ matrix.laravel-version }}
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
+
+            - name: Install dependencies
+              run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+
+            - name: Run tests
+              run: vendor/bin/phpunit
+
+            # - name: Send Slack notification
+            #   uses: 8398a7/action-slack@v2
+            #   if: failure()
+            #   with:
+            #       status: ${{ job.status }}
+            #       author_name: ${{ github.actor }}
+            #   env:
+            #       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
