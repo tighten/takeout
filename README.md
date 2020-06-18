@@ -1,4 +1,3 @@
-![GitHub Tests Status](https://img.shields.io/github/workflow/status/tightenco/takeout/run-tests?label=tests)
 # <img src="takeout-container.png" alt="Takeout container" align="right"> Takeout
 
 Takeout is a Mac-based CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
