@@ -1,15 +1,17 @@
 name: Run tests
 
 on:
-    push:
-    schedule:
-        - cron: '0 0 * * *'
+  #    push:
+    pull_request:
+      #  schedule:
+      #  - cron: '0 0 * * *'
 
 jobs:
     tests:
         strategy:
             matrix:
-                os: [macOS, Ubuntu, Windows]
+                os: [macOS]
+                #os: [macOS, Ubuntu, Windows]
                 php-version: [7.2, 7.3, 7.4]
                 dependency-version: [prefer-lowest, prefer-stable]
 
