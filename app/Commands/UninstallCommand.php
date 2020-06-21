@@ -34,7 +34,7 @@ class UninstallCommand extends Command
 
         if ($service) {
             // @todo allow for this with the tag removed
-            return $this->uninstall($service);
+            return $this->uninstallByServiceName($service);
         }
 
         $option = $this->menu('Services for uninstall', $this->uninstallableServices())->open();
@@ -43,19 +43,29 @@ class UninstallCommand extends Command
             return;
         }
 
-        return $this->uninstall($this->uninstallableServices()[$option]);
+        $this->uninstallByContainerId($option);
     }
 
-    public function uninstall(string $service)
+    public function uninstallByServiceName(string $service)
     {
-        $containers = $this->uninstallableServices();
-        $containerId = array_search($service, $containers);
+        $serviceMatches = collect($this->uninstallableServices())->filter(function ($containerName, $containerId) use ($service) {
+            return substr($containerName, 0, strlen($service)) === $service;
+        });
 
-        if (! $containerId) {
+        if ($serviceMatches->count() > 1) {
+            dd('We cannot handle multiple instances yet. @todo');
+        }
+
+        if ($serviceMatches->count() === 0) {
             $this->error("\nCannot find a Takeout-managed instance of {$service}.");
             return;
         }
 
+        $this->uninstallByContainerId($serviceMatches->flip()->first());
+    }
+
+    public function uninstallByContainerId(string $containerId)
+    {
         try {
             app(Docker::class)->removeContainer($containerId);
         } catch (Throwable $e) {
@@ -65,7 +75,7 @@ class UninstallCommand extends Command
         $this->info("\nService uninstalled.");
     }
 
-    public function uninstallableServices()
+    public function uninstallableServices(): array
     {
         $services = app(Docker::class)->containers();
         array_shift($services);
