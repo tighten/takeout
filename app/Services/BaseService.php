@@ -85,7 +85,6 @@ abstract class BaseService
 
     public function containerName(): string
     {
-        // @todo handle what if they have two MySQLs running
         $tag = $this->promptResponses['tag'];
 
         if ($tag === 'latest') {
