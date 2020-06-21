@@ -71,7 +71,7 @@ class UninstallCommand extends Command
 
         // @todo look up the fancy names maybe?
         return collect($services)->mapWithKeys(function ($line) {
-            return [$line[0] => str_replace('TO-', '', $line[1])];
+            return [$line[0] => str_replace('TO--', '', $line[1])];
         })->toArray();
     }
 }

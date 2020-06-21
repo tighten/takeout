@@ -42,7 +42,6 @@ abstract class BaseService
     {
         $this->prompts();
         $this->info('Installing ' . $this->shortName() . "...\n");
-        // $this->info('RUN: ' . $this->buildInstallString());
 
         $output = $this->shell->exec($this->buildInstallString());
 
@@ -79,7 +78,9 @@ abstract class BaseService
     public function containerName(): string
     {
         // @todo handle what if they have two MySQLs running
-        return 'TO-' . $this->shortName();
+        $tag = $this->promptResponses['tag'];
+        // @todo resolve latest if they have latest
+        return 'TO--' . $this->shortName() . '--' . $tag;
     }
 
     public function shortName(): string
