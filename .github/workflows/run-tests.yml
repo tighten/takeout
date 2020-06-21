@@ -12,8 +12,8 @@ jobs:
             matrix:
                 os: [macOS]
                 #os: [macOS, Ubuntu, Windows]
-                php-version: [7.2, 7.3, 7.4]
-                dependency-version: [prefer-lowest, prefer-stable]
+                php: [7.2, 7.3, 7.4]
+                dependency: [prefer-lowest, prefer-stable]
 
                 include:
                   - os: macOS
@@ -28,7 +28,7 @@ jobs:
                     experimental: true
                     os-version: windows-latest
 
-        name: ${{ matrix.os }} - PHP ${{ matrix.php-version }} --${{ matrix.dependency-version }}
+        name: ${{ matrix.os }} - PHP ${{ matrix.php }} --${{ matrix.dependency }}
 
         continue-on-error: ${{ matrix.experimental }}
 
@@ -42,18 +42,18 @@ jobs:
             #   uses: actions/cache@v1
             #   with:
             #       path: ~/.composer/cache/files
-            #       key: dependencies-os-${{ matrix.os }}-php-${{ matrix.php-version }}-laravel-${{ matrix.laravel-version }}-composer-${{ hashFiles('**/composer.lock') }}
-            #       restore-keys: dependencies-os-${{ matrix.os }}-php-${{ matrix.php-version }}-laravel-${{ matrix.laravel-version }}
+            #       key: dependencies-os-${{ matrix.os }}-php-${{ matrix.php }}-laravel-${{ matrix.laravel-version }}-composer-${{ hashFiles('**/composer.lock') }}
+            #       restore-keys: dependencies-os-${{ matrix.os }}-php-${{ matrix.php }}-laravel-${{ matrix.laravel-version }}
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: ${{ matrix.php-version }}
+                  php-version: ${{ matrix.php }}
                   extensions: posix, dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
 
             - name: Install dependencies
-              run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+              run: composer update --${{ matrix.dependency }} --prefer-dist --no-interaction --no-suggest
 
             - name: Run tests
               run: vendor/bin/phpunit
