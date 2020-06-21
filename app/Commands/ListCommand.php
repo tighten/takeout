@@ -34,29 +34,8 @@ class ListCommand extends Command
     {
         $this->initializeCommand();
 
-        $containers = $this->containersTable();
+        $containers = app(Docker::class)->containers();
 
         $this->table(array_shift($containers), $containers);
-        // @todo test this call
-    }
-
-    public function containersTable(): array
-    {
-        $output = app(Docker::class)->containers()->getOutput();
-
-        return array_map(function ($line) {
-           return array_filter(explode("        ", $line));
-        }, explode("\n", $output));
-    }
-
-    /**
-     * Define the command's schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
-     * @return void
-     */
-    public function schedule(Schedule $schedule): void
-    {
-        // $schedule->command(static::class)->everyMinute();
     }
 }
