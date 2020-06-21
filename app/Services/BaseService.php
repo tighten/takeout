@@ -6,7 +6,6 @@ use App\Shell\Shell;
 use App\WritesToConsole;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Stream;
-use Illuminate\Support\Facades\Http;
 
 abstract class BaseService
 {
@@ -88,7 +87,11 @@ abstract class BaseService
     {
         // @todo handle what if they have two MySQLs running
         $tag = $this->promptResponses['tag'];
-        // @todo resolve latest if they have latest
+
+        if ($tag === 'latest') {
+            $tag = $this->getLatestTag();
+        }
+
         return 'TO--' . $this->shortName() . '--' . $tag;
     }
 
@@ -102,31 +105,32 @@ abstract class BaseService
         $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
     }
 
+    public function getLatestTag(): string
+    {
+        return collect($this->getTags())->first(function ($tag) {
+            return $tag !== 'latest';
+        });
+    }
+
     public function getTags(): array
     {
-        $response = $this->getTagsResponse();
-        $tags = $this->filterResponseForTags($response);
-        return $tags;
+        return $this->filterResponseForTags($this->getTagsResponse());
+    }
+
+    public function filterResponseForTags(Stream $stream): array
+    {
+        return collect(json_decode($stream->getContents(), true)['results'])->map(function ($result) {
+            return $result['name'];
+        })->filter()->toArray();
+    }
+
+    public function getTagsResponse(): Stream
+    {
+        return $this->client->get($this->buildTagsUrl())->getBody();
     }
 
     public function buildTagsUrl(): string
     {
         return "https://registry.hub.docker.com/v2/repositories/{$this->organization}/{$this->imageName}/tags";
-    }
-
-    public function getTagsResponse(): Stream
-    {
-        $response = $this->client->get($this->buildTagsUrl());
-        return $response->getBody();
-    }
-
-    public function filterResponseForTags(Stream $stream): array
-    {
-        $hubImages = json_decode($stream->getContents(), true);
-        $tags = [];
-        foreach ($hubImages['results'] as $tag) {
-            $tags[] = $tag['name'];
-        }
-        return array_filter($tags);
     }
 }

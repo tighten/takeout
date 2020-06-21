@@ -33,6 +33,7 @@ class UninstallCommand extends Command
         $service = $this->argument('serviceName');
 
         if ($service) {
+            // @todo allow for this with the tag removed
             return $this->uninstall($service);
         }
 
