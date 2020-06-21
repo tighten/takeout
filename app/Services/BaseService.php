@@ -4,11 +4,16 @@ namespace App\Services;
 
 use App\Shell\Shell;
 use App\WritesToConsole;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Stream;
+use Illuminate\Support\Facades\Http;
 
 abstract class BaseService
 {
     use WritesToConsole;
 
+    protected $organization = 'library';
+    protected $imageName;
     protected $install;
     protected $defaultPort;
     protected $defaultPrompts = [
@@ -27,14 +32,15 @@ abstract class BaseService
     protected $promptResponses;
     protected $shell;
 
-    public function __construct(Shell $shell)
+    public function __construct(Shell $shell, Client $client)
     {
         $this->shell = $shell;
+        $this->client = $client;
         $this->defaultPrompts = array_map(function ($prompt) {
-           if ($prompt['shortname'] === 'port') {
-               $prompt['default'] = $this->defaultPort;
-           }
-           return $prompt;
+            if ($prompt['shortname'] === 'port') {
+                $prompt['default'] = $this->defaultPort;
+            }
+            return $prompt;
         }, $this->defaultPrompts);
     }
 
@@ -67,6 +73,9 @@ abstract class BaseService
 
     public function buildInstallString(): string
     {
+        $this->promptResponses['organization'] = $this->organization;
+        $this->promptResponses['imageName'] = $this->imageName;
+
         $placeholders = array_map(function ($key) {
             return "{{$key}}";
         }, array_keys($this->promptResponses));
@@ -89,6 +98,34 @@ abstract class BaseService
 
     public function askQuestion($prompt): void
     {
-        $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null );
+        $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
+    }
+
+    public function getTags(): array
+    {
+        $response = $this->getTagsResponse();
+        $tags = $this->filterResponseForTags($response);
+        return $tags;
+    }
+
+    public function buildTagsUrl(): string
+    {
+        return "https://registry.hub.docker.com/v2/repositories/{$this->organization}/{$this->imageName}/tags";
+    }
+
+    public function getTagsResponse(): Stream
+    {
+        $response = $this->client->get($this->buildTagsUrl());
+        return $response->getBody();
+    }
+
+    public function filterResponseForTags(Stream $stream): array
+    {
+        $hubImages = json_decode($stream->getContents(), true);
+        $tags = [];
+        foreach ($hubImages['results'] as $tag) {
+            $tags[] = $tag['name'];
+        }
+        return array_filter($tags);
     }
 }
