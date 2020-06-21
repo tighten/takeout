@@ -4,6 +4,8 @@ namespace App\Services;
 
 class MeiliSearch extends BaseService
 {
+    protected $organization = 'getmeili';
+    protected $imageName = 'meilisearch';
     protected $defaultPort = 7700;
     protected $prompts = [
         [
@@ -15,5 +17,5 @@ class MeiliSearch extends BaseService
 
     protected $install = '-p {port}:7700 \
         -v {volume}:/data.ms \
-        getmeili/meilisearch:{tag}';
+        {organization}/{imageName}:{tag}';
 }

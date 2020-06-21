@@ -9,10 +9,15 @@
         {
             "name": "Matt Stauffer",
             "email": "matt@tighten.co"
+        },
+        {
+            "name": "Jose Soto",
+            "email": "jose@tighten.co"
         }
     ],
     "require": {
         "php": "^7.2.5",
+        "guzzlehttp/guzzle": "^6.5",
         "laravel-zero/framework": "^7.0",
         "nunomaduro/laravel-console-menu": "^3.0"
     },
