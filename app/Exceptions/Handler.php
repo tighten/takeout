@@ -27,7 +27,7 @@ class Handler extends ExceptionHandler
     public function report(Throwable $exception)
     {
         // Looks like maybe Laravel Zero ignores the render method
-        if ($exception instanceof DockerMissingException) {
+        if (method_exists($exception, 'render')) {
             $exception->render();
             exit;
         }
