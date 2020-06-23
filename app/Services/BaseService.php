@@ -6,7 +6,6 @@ use App\Shell\Shell;
 use App\WritesToConsole;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Stream;
-use Illuminate\Support\Facades\Http;
 
 abstract class BaseService
 {
@@ -31,11 +30,12 @@ abstract class BaseService
     protected $prompts;
     protected $promptResponses;
     protected $shell;
+    protected $guzzle;
 
-    public function __construct(Shell $shell, Client $client)
+    public function __construct(Shell $shell, Client $guzzle)
     {
         $this->shell = $shell;
-        $this->client = $client;
+        $this->guzzle = $guzzle;
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'port') {
                 $prompt['default'] = $this->defaultPort;
@@ -48,7 +48,6 @@ abstract class BaseService
     {
         $this->prompts();
         $this->info('Installing ' . $this->shortName() . "...\n");
-        // $this->info('RUN: ' . $this->buildInstallString());
 
         $output = $this->shell->exec($this->buildInstallString());
 
@@ -87,8 +86,13 @@ abstract class BaseService
 
     public function containerName(): string
     {
-        // @todo handle what if they have two MySQLs running
-        return 'TO-' . $this->shortName();
+        $tag = $this->promptResponses['tag'];
+
+        if ($tag === 'latest') {
+            $tag = $this->getLatestTag();
+        }
+
+        return 'TO--' . $this->shortName() . '--' . $tag;
     }
 
     public function shortName(): string
@@ -101,31 +105,32 @@ abstract class BaseService
         $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
     }
 
+    public function getLatestTag(): string
+    {
+        return collect($this->getTags())->first(function ($tag) {
+            return $tag !== 'latest';
+        });
+    }
+
     public function getTags(): array
     {
-        $response = $this->getTagsResponse();
-        $tags = $this->filterResponseForTags($response);
-        return $tags;
+        return $this->filterResponseForTags($this->getTagsResponse());
+    }
+
+    public function filterResponseForTags(Stream $stream): array
+    {
+        return collect(json_decode($stream->getContents(), true)['results'])->map(function ($result) {
+            return $result['name'];
+        })->filter()->toArray();
+    }
+
+    public function getTagsResponse(): Stream
+    {
+        return $this->guzzle->get($this->buildTagsUrl())->getBody();
     }
 
     public function buildTagsUrl(): string
     {
         return "https://registry.hub.docker.com/v2/repositories/{$this->organization}/{$this->imageName}/tags";
-    }
-
-    public function getTagsResponse(): Stream
-    {
-        $response = $this->client->get($this->buildTagsUrl());
-        return $response->getBody();
-    }
-
-    public function filterResponseForTags(Stream $stream): array
-    {
-        $hubImages = json_decode($stream->getContents(), true);
-        $tags = [];
-        foreach ($hubImages['results'] as $tag) {
-            $tags[] = $tag['name'];
-        }
-        return array_filter($tags);
     }
 }

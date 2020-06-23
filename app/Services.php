@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Exception;
+use App\Exceptions\InvalidServiceShortnameException;
 use Illuminate\Support\Arr;
 
 class Services
@@ -34,7 +34,7 @@ class Services
     public function get(string $serviceName): string
     {
         if (! $this->exists($serviceName)) {
-            throw new Exception('Service ' . $serviceName . ' is invalid.');
+            throw new InvalidServiceShortnameException('Service ' . $serviceName . ' is invalid.');
         }
 
         return Arr::get($this->services, $serviceName);

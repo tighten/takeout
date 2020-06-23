@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 
-class InstallerTest extends TestCase
+class InstallerUiTest extends TestCase
 {
     /** @test */
     function it_can_be_exited_without_errors()
