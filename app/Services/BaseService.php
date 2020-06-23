@@ -30,11 +30,12 @@ abstract class BaseService
     protected $prompts;
     protected $promptResponses;
     protected $shell;
+    protected $guzzle;
 
-    public function __construct(Shell $shell, Client $client)
+    public function __construct(Shell $shell, Client $guzzle)
     {
         $this->shell = $shell;
-        $this->client = $client;
+        $this->guzzle = $guzzle;
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'port') {
                 $prompt['default'] = $this->defaultPort;
@@ -125,7 +126,7 @@ abstract class BaseService
 
     public function getTagsResponse(): Stream
     {
-        return $this->client->get($this->buildTagsUrl())->getBody();
+        return $this->guzzle->get($this->buildTagsUrl())->getBody();
     }
 
     public function buildTagsUrl(): string
