@@ -51,7 +51,7 @@ class Docker
         $output = $this->containersRawOutput()->getOutput();
 
         return array_filter(array_map(function ($line) {
-           return array_filter(explode("        ", $line));
+            return array_filter(explode('        ', $line));
         }, explode("\n", $output)));
     }
 }
