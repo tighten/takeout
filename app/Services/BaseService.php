@@ -11,8 +11,9 @@ abstract class BaseService
 {
     use WritesToConsole;
 
-    protected $organization = 'library';
+    protected $organization = 'library'; // Official repositories use `library` as the organization name.
     protected $imageName;
+    protected $tag;
     protected $install;
     protected $defaultPort;
     protected $defaultPrompts = [
@@ -47,6 +48,12 @@ abstract class BaseService
     public function install()
     {
         $this->prompts();
+
+        if (! $this->imageIsDownloaded()) {
+            $this->info("Downloading docker image...\n");
+            $this->shell->exec("docker pull {$this->buildOrgImageTagString()}");
+        }
+
         $this->info('Installing ' . $this->shortName() . "...\n");
 
         $output = $this->shell->exec($this->buildInstallString());
@@ -68,13 +75,25 @@ abstract class BaseService
         foreach ($this->prompts as $prompt) {
             $this->askQuestion($prompt);
         }
+
+        $this->promptResponses['organization'] = $this->organization;
+        $this->promptResponses['imageName'] = $this->imageName;
+        $this->tag = $this->promptResponses['tag'];
+    }
+
+    public function imageIsDownloaded()
+    {
+        $output = $this->shell->execQuietly("docker image inspect {$this->buildOrgImageTagString()}");
+        return $output->getExitCode() === 0;
+    }
+
+    public function buildOrgImageTagString()
+    {
+        return "{$this->organization}/{$this->imageName}:{$this->tag}";
     }
 
     public function buildInstallString(): string
     {
-        $this->promptResponses['organization'] = $this->organization;
-        $this->promptResponses['imageName'] = $this->imageName;
-
         $placeholders = array_map(function ($key) {
             return "{{$key}}";
         }, array_keys($this->promptResponses));
@@ -86,13 +105,11 @@ abstract class BaseService
 
     public function containerName(): string
     {
-        $tag = $this->promptResponses['tag'];
-
-        if ($tag === 'latest') {
-            $tag = $this->getLatestTag();
+        if ($this->tag === 'latest') {
+            $this->tag = $this->getLatestTag();
         }
 
-        return 'TO--' . $this->shortName() . '--' . $tag;
+        return 'TO--' . $this->shortName() . '--' . $this->tag;
     }
 
     public function shortName(): string
