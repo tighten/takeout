@@ -3,29 +3,39 @@
 namespace Tests\Feature;
 
 use App\Exceptions\InvalidServiceShortnameException;
-use Illuminate\Support\Facades\Artisan;
+use App\Services\MeiliSearch;
+use App\Shell\Docker;
+use App\Shell\Shell;
+use Illuminate\Support\Str;
+use Symfony\Component\Process\Process;
 use Tests\TestCase;
+use Mockery as M;
 
 class InstallCommandTest extends TestCase
 {
     /** @test */
     function it_finds_services_by_shortname()
     {
-        $this->markTestIncomplete();
+        $service = 'meilisearch';
 
-        // Hopefully keep commands from being run on my computer
-        $this->mock(Shell::class, function ($mock) {
-            $mock->shouldIgnoreMissing();
+        $this->mock(Shell::class, function ($mock) use ($service) {
+            $process = M::mock(Process::class);
+            $process->shouldReceive('getExitCode')->twice()->andReturn(0);
+            $mock->shouldReceive('execQuietly')->once()->andReturn($process);
+            $mock->shouldReceive('exec')->once()->with(M::on(function ($arg) use ($service) {
+                return Str::contains($arg, $service);
+            }))->andReturn($process);
         });
 
-        $this->artisan('install meilisearch');
-            // ->expectsQuestion('What is your name?', 'Taylor Otwell')
-            // ->expectsQuestion('Which language do you program in?', 'PHP')
-            // ->expectsOutput('Your name is Taylor Otwell and you program in PHP.')
-            // ->assertExitCode(0);
-        // @todo: assert that the Meilisearch service was matched
+        $this->mock(Docker::class, function ($mock) {
+            $mock->shouldReceive('isInstalled')->andReturn(true);
+        });
 
-
+        $this->artisan('install ' . $service)
+             ->expectsQuestion('Which host port would you like this service to use?', '3306')
+             ->expectsQuestion('Which tag (version) of this service would you like to use?', 'v0.12.0')
+             ->expectsQuestion('What is the Docker volume name?', 'test')
+             ->assertExitCode(0);
     }
 
     /** @test */
