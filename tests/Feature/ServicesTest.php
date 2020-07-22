@@ -57,7 +57,7 @@ class ServicesTest extends TestCase
     function it_gets_fqcn_by_shortname()
     {
         $services = app(Services::class);
-        $this->assertEquals('\App\Services\MeiliSearch', $services->get('meilisearch'));
+        $this->assertEquals('App\Services\MeiliSearch', $services->get('meilisearch'));
     }
 
     /** @test */

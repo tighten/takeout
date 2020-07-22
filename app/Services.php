@@ -27,7 +27,7 @@ class Services
         return collect(scandir(base_path('app/Services')))->reject(function ($file) {
             return in_array($file, ['.', '..', 'BaseService.php']);
         })->map(function ($file) {
-            return '\App\Services\\' . substr($file, 0, -4);
+            return 'App\Services\\' . substr($file, 0, -4);
         })->toArray();
     }
 

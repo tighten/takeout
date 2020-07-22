@@ -18,24 +18,16 @@ class InstallCommandTest extends TestCase
     {
         $service = 'meilisearch';
 
-        $this->mock(Shell::class, function ($mock) use ($service) {
-            $process = M::mock(Process::class);
-            $process->shouldReceive('getExitCode')->twice()->andReturn(0);
-            $mock->shouldReceive('execQuietly')->once()->andReturn($process);
-            $mock->shouldReceive('exec')->once()->with(M::on(function ($arg) use ($service) {
-                return Str::contains($arg, $service);
-            }))->andReturn($process);
+        $this->mock(MeiliSearch::class, function ($mock) use ($service) {
+            $mock->shouldReceive('install')->once();
+            $mock->shouldReceive('shortName')->once()->andReturn($service);
         });
 
         $this->mock(Docker::class, function ($mock) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
         });
 
-        $this->artisan('install ' . $service)
-             ->expectsQuestion('Which host port would you like this service to use?', '3306')
-             ->expectsQuestion('Which tag (version) of this service would you like to use?', 'v0.12.0')
-             ->expectsQuestion('What is the Docker volume name?', 'test')
-             ->assertExitCode(0);
+        $this->artisan('install ' . $service);
     }
 
     /** @test */
