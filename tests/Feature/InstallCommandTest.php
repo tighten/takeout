@@ -41,6 +41,10 @@ class InstallCommandTest extends TestCase
     /** @test */
     function it_displays_error_if_invalid_shortname_passed()
     {
+        $this->mock(Docker::class, function ($mock) {
+            $mock->shouldReceive('isInstalled')->andReturn(true);
+        });
+
         $this->expectException(InvalidServiceShortnameException::class);
         $this->artisan('install asdfasdfadsfasdfadsf')
             ->assertExitCode(0);
