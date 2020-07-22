@@ -86,6 +86,7 @@ docker ps --format "{{.Names}}" | grep 'TO-*'
 - Deliver package in a way that's friendly to non-PHP developers
 - Add 'upgrade' command, which saves the config settings for the old one, brings up a new one with the same tag and parameters, and allows you to re-specify the version constraint
 - Allow for more than one of each service (e.g. mysql 5.7, mysql 8, another mysql 8, etc.)
+- Allow other people to extend Takeout by adding their own plugins (thanks to @angrybrad for the idea!)
 
 ## FAQs
 
