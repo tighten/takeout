@@ -69,7 +69,9 @@ abstract class BaseService
     public function prompts()
     {
         foreach ($this->defaultPrompts as $prompt) {
-            $this->askQuestion($prompt);
+            do {
+                $this->askQuestion($prompt);
+            } while ($prompt['shortname'] === 'port' && $this->portIsUnavailable());
         }
 
         foreach ($this->prompts as $prompt) {
@@ -149,5 +151,19 @@ abstract class BaseService
     public function buildTagsUrl(): string
     {
         return "https://registry.hub.docker.com/v2/repositories/{$this->organization}/{$this->imageName}/tags";
+    }
+
+    protected function portIsUnavailable()
+    {
+        // Check to see if the system is running a service with the desired port
+        $process = $this->shell->execQuietly("netstat -vanp tcp | grep {$this->promptResponses['port']}");
+
+        // A successful netstat command means a port in use was found
+        if ($process->isSuccessful()) {
+            app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
+            return true;
+        }
+
+        return false;
     }
 }
