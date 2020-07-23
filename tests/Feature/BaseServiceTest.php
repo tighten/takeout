@@ -40,8 +40,9 @@ class BaseServiceTest extends TestCase
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
             $process->shouldReceive('getExitCode')->twice()->andReturn(0);
+            $process->shouldReceive('isSuccessful')->once()->andReturn(false);
 
-            $mock->shouldReceive('execQuietly')->once()->andReturn($process);
+            $mock->shouldReceive('execQuietly')->twice()->andReturn($process);
             $mock->shouldReceive('exec')->once()->with(M::on(function ($arg) {
                 return Str::contains($arg, 'meilisearch');
             }))->andReturn($process);

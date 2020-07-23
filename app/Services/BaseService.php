@@ -153,7 +153,7 @@ abstract class BaseService
         return "https://registry.hub.docker.com/v2/repositories/{$this->organization}/{$this->imageName}/tags";
     }
 
-    protected function portIsUnavailable()
+    public function portIsUnavailable()
     {
         // Check to see if the system is running a service with the desired port
         $process = $this->shell->execQuietly("netstat -vanp tcp | grep {$this->promptResponses['port']}");
