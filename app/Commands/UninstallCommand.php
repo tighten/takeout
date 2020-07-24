@@ -21,6 +21,8 @@ class UninstallCommand extends Command
      */
     protected $description = 'Uninstall a service.';
 
+    protected $uninstallableServices;
+
     /**
      * Execute the console command.
      *
@@ -29,6 +31,7 @@ class UninstallCommand extends Command
     public function handle()
     {
         $this->initializeCommand();
+        $this->uninstallableServices = $this->uninstallableServices();
 
         $service = $this->argument('serviceName');
 
@@ -36,31 +39,40 @@ class UninstallCommand extends Command
             return $this->uninstallByServiceName($service);
         }
 
-        $option = $this->menu('Services for uninstall', $this->uninstallableServices())->open();
+        $serviceContainerId = $this->menu('Services for uninstall', $this->uninstallableServices)->open();
 
-        if (! $option) {
+        if (! $serviceContainerId) {
             return;
         }
 
-        $this->uninstallByContainerId($option);
+        $this->uninstallByContainerId($serviceContainerId);
     }
 
     public function uninstallByServiceName(string $service)
     {
-        $serviceMatches = collect($this->uninstallableServices())->filter(function ($containerName, $containerId) use ($service) {
-            return substr($containerName, 0, strlen($service)) === $service;
-        });
-
-        if ($serviceMatches->count() > 1) {
-            dd('We cannot handle multiple instances yet. @todo');
-        }
+        $serviceMatches = collect($this->uninstallableServices)
+            ->filter(function ($containerName, $containerId) use ($service) {
+                return substr($containerName, 0, strlen($service)) === $service;
+            });
 
         if ($serviceMatches->count() === 0) {
             $this->error("\nCannot find a Takeout-managed instance of {$service}.");
             return;
         }
 
-        $this->uninstallByContainerId($serviceMatches->flip()->first());
+        if ($serviceMatches->count() > 1) {
+            $serviceContainerId = $this->menu('Select which service to uninstall.', $serviceMatches->toArray())->open();
+
+            if (! $serviceContainerId) {
+                return;
+            }
+        }
+
+        if ($serviceMatches->count() === 1) {
+            $serviceContainerId = $serviceMatches->flip()->first();
+        }
+
+        $this->uninstallByContainerId($serviceContainerId);
     }
 
     public function uninstallByContainerId(string $containerId)
