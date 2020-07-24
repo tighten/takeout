@@ -34,7 +34,7 @@ class Docker
         }
     }
 
-    public function isInstalled()
+    public function isInstalled(): Bool
     {
         $process = $this->shell->execQuietly('docker --version 2>&1');
 
@@ -53,5 +53,27 @@ class Docker
         return array_filter(array_map(function ($line) {
             return array_filter(explode('        ', $line));
         }, explode("\n", $output)));
+    }
+
+    public function imageIsDownloaded($organization, $image, $tag): Bool
+    {
+        $output = $this->shell->execQuietly(sprintf(
+            "docker image inspect %s/%s:%s",
+            $organization,
+            $image,
+            $tag
+        ));
+
+        return $output->getExitCode() === 0;
+    }
+
+    public function downloadImage($organization, $image, $tag): Bool
+    {
+        $this->shell->exec(sprintf(
+            "docker pull %s/%s:%s",
+            $organization,
+            $image,
+            $tag
+        ));
     }
 }

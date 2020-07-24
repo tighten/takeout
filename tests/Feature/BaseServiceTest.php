@@ -21,16 +21,6 @@ class BaseServiceTest extends TestCase
     }
 
     /** @test */
-    function it_lists_10_newest_available_tags_for_service()
-    {
-        $mysql = app(MySql::class);
-        $tags = $mysql->getTags();
-        $this->assertEquals('latest', $tags[0]);
-        $this->assertTrue(in_array('5.7', $tags));
-        $this->assertCount(10, $tags);
-    }
-
-    /** @test */
     function it_installs_services()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {

@@ -2,11 +2,10 @@
 
 namespace App\Services;
 
+use App\Shell\Docker;
 use App\Shell\Environment;
 use App\Shell\Shell;
 use App\WritesToConsole;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Stream;
 
 abstract class BaseService
 {
@@ -32,14 +31,14 @@ abstract class BaseService
     protected $prompts;
     protected $promptResponses;
     protected $shell;
-    protected $guzzle;
     protected $environment;
+    protected $docker;
 
-    public function __construct(Shell $shell, Client $guzzle, Environment $environment)
+    public function __construct(Shell $shell, Environment $environment, Docker $docker)
     {
         $this->shell = $shell;
-        $this->guzzle = $guzzle;
         $this->environment = $environment;
+        $this->docker = $docker;
 
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'port') {
@@ -53,12 +52,12 @@ abstract class BaseService
     {
         $this->prompts();
 
-        if (! $this->imageIsDownloaded()) {
+        if (! $this->docker->imageIsDownloaded($this->organization, $this->imageName, $this->tag)) {
             $this->info("Downloading docker image...\n");
-            $this->shell->exec("docker pull {$this->buildOrgImageTagString()}");
+            $this->docker->downloadImage($this->organization, $this->imageName, $this->tag);
         }
 
-        $this->info('Installing ' . $this->shortName() . "...\n");
+        $this->info("Installing {$this->shortName()}...\n");
 
         $output = $this->shell->exec($this->buildInstallString());
 
@@ -70,12 +69,15 @@ abstract class BaseService
         $this->error('Installation failed!');
     }
 
-    public function prompts()
+    protected function prompts()
     {
         foreach ($this->defaultPrompts as $prompt) {
-            do {
-                $this->askQuestion($prompt);
-            } while ($prompt['shortname'] === 'port' && $this->portIsUnavailable());
+            $this->askQuestion($prompt);
+
+            while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
+                app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
+                $this->askQuestion('prompt');
+            }
         }
 
         foreach ($this->prompts as $prompt) {
@@ -87,18 +89,7 @@ abstract class BaseService
         $this->tag = $this->promptResponses['tag'];
     }
 
-    public function imageIsDownloaded()
-    {
-        $output = $this->shell->execQuietly("docker image inspect {$this->buildOrgImageTagString()}");
-        return $output->getExitCode() === 0;
-    }
-
-    public function buildOrgImageTagString()
-    {
-        return "{$this->organization}/{$this->imageName}:{$this->tag}";
-    }
-
-    public function buildInstallString(): string
+    protected function buildInstallString(): string
     {
         $placeholders = array_map(function ($key) {
             return "{{$key}}";
@@ -109,13 +100,23 @@ abstract class BaseService
         return 'docker run -d --name="' . $this->containerName() . '" ' . $install;
     }
 
-    public function containerName(): string
+    protected function containerName(): string
     {
         if ($this->tag === 'latest') {
-            $this->tag = $this->getLatestTag();
+            $this->tag = $this->dockerTags->getLatestTag($this->organization, $this->imageName);
         }
 
         return 'TO--' . $this->shortName() . '--' . $this->tag;
+    }
+
+    public function organization(): string
+    {
+        return $this->organization;
+    }
+
+    public function imageName(): string
+    {
+        return $this->imageName;
     }
 
     public function shortName(): string
@@ -123,47 +124,8 @@ abstract class BaseService
         return strtolower(class_basename(static::class));
     }
 
-    public function askQuestion($prompt): void
+    protected function askQuestion($prompt): void
     {
         $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
-    }
-
-    public function getLatestTag(): string
-    {
-        return collect($this->getTags())->first(function ($tag) {
-            return $tag !== 'latest';
-        });
-    }
-
-    public function getTags(): array
-    {
-        return $this->filterResponseForTags($this->getTagsResponse());
-    }
-
-    public function filterResponseForTags(Stream $stream): array
-    {
-        return collect(json_decode($stream->getContents(), true)['results'])->map(function ($result) {
-            return $result['name'];
-        })->filter()->toArray();
-    }
-
-    public function getTagsResponse(): Stream
-    {
-        return $this->guzzle->get($this->buildTagsUrl())->getBody();
-    }
-
-    public function buildTagsUrl(): string
-    {
-        return "https://registry.hub.docker.com/v2/repositories/{$this->organization}/{$this->imageName}/tags";
-    }
-
-    public function portIsUnavailable()
-    {
-        if ($this->environment->portIsAvailable($this->promptResponses['port'])) {
-            return false;
-        }
-
-        app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
-        return true;
     }
 }
