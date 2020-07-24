@@ -64,23 +64,9 @@ takeout uninstall mysql
 
 Uninstalls this service if possible.
 
-## Brainstorming
-
-How to get all running containers' names (so we can grep and filter out those not starting with our prefix):
-
-```bash
-docker ps --format "{{.Names}}" | grep 'TO-*'
-```
-
-### Potential commands:
-
-- install: pass service name or pick from menu
-- list: show all installed-by-takeout services, for each also show status (running/not running)
-- uninstall: pass service name or pick from menu
-- self-remove: Deletes all installed services and then maybe self-uninstalls?
-
 ## Future plans
 
+- self-remove: Deletes all installed services and then maybe self-uninstalls?
 - upgrade: v2: destroys old container, brings up a new one with a newly-specified tag (prompt user for it) and keeps all other parameters (e.g. port, volume) exactly the same as the old one
 - pt/passthrough: proxy commands through to docker (`./takeout pt mysql stop`)
 - Deliver package in a way that's friendly to non-PHP developers
