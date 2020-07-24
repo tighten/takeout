@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Shell\Environment;
 use App\Shell\Shell;
 use App\WritesToConsole;
 use GuzzleHttp\Client;
@@ -32,11 +33,14 @@ abstract class BaseService
     protected $promptResponses;
     protected $shell;
     protected $guzzle;
+    protected $environment;
 
-    public function __construct(Shell $shell, Client $guzzle)
+    public function __construct(Shell $shell, Client $guzzle, Environment $environment)
     {
         $this->shell = $shell;
         $this->guzzle = $guzzle;
+        $this->environment = $environment;
+
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'port') {
                 $prompt['default'] = $this->defaultPort;
@@ -155,15 +159,11 @@ abstract class BaseService
 
     public function portIsUnavailable()
     {
-        // Check to see if the system is running a service with the desired port
-        $process = $this->shell->execQuietly("netstat -vanp tcp | grep {$this->promptResponses['port']}");
-
-        // A successful netstat command means a port in use was found
-        if ($process->isSuccessful()) {
-            app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
-            return true;
+        if ($this->environment->portIsAvailable($this->promptResponses['port'])) {
+            return false;
         }
 
-        return false;
+        app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
+        return true;
     }
 }

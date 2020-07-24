@@ -1,19 +1,18 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
-use App\Services\MeiliSearch;
+use App\Shell\Environment;
 use App\Shell\Shell;
-use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
+use Mockery as M;
 use Symfony\Component\Process\Process;
 use Tests\TestCase;
-use Mockery as M;
 
-class BaseServiceTest extends TestCase
+class EnvironmentTest extends TestCase
 {
     /** @test **/
-    public function it_detects_a_port_conflict()
+    function it_detects_a_port_conflict()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $mock->shouldIgnoreMissing();
@@ -26,14 +25,12 @@ class BaseServiceTest extends TestCase
             $mock->shouldReceive('execQuietly')->once()->andReturn($process);
         });
 
-        $service = app(MeiliSearch::Class);
-        $service->promptResponse['port'] = 7700;
-
-        $this->assertTrue($service->portIsUnavailable());
+        $environment = app(Environment::Class);
+        $this->assertFalse($environment->portIsAvailable(1234));
     }
 
     /** @test **/
-    public function it_detects_a_port_is_available()
+    function it_detects_a_port_is_available()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $mock->shouldIgnoreMissing();
@@ -46,9 +43,7 @@ class BaseServiceTest extends TestCase
             $mock->shouldReceive('execQuietly')->once()->andReturn($process);
         });
 
-        $service = app(MeiliSearch::Class);
-        $service->promptResponse['port'] = 7700;
-
-        $this->assertFalse($service->portIsUnavailable());
+        $environment = app(Environment::Class);
+        $this->assertTrue($environment->portIsAvailable(1234));
     }
 }
