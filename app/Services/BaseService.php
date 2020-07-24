@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Shell\Docker;
+use App\Shell\DockerTags;
 use App\Shell\Environment;
 use App\Shell\Shell;
 use App\WritesToConsole;
@@ -35,11 +36,12 @@ abstract class BaseService
     protected $environment;
     protected $docker;
 
-    public function __construct(Shell $shell, Environment $environment, Docker $docker)
+    public function __construct(Shell $shell, Environment $environment, Docker $docker, DockerTags $dockerTags)
     {
         $this->shell = $shell;
         $this->environment = $environment;
         $this->docker = $docker;
+        $this->dockerTags = $dockerTags;
 
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'port') {
@@ -105,7 +107,7 @@ abstract class BaseService
 
             while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
                 app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
-                $this->askQuestion('prompt');
+                $this->askQuestion($prompt);
             }
         }
 
@@ -132,16 +134,11 @@ abstract class BaseService
 
     protected function buildInstallString(): string
     {
-        // @todo consider a collection refactor
-        $placeholders = array_map(function ($key) {
-            return "{{$key}}";
-        }, array_keys($this->promptResponses));
+        $responses = collect($this->promptResponses)->mapWithKeys(function ($value, $key) {
+            return ["{{$key}}" => $value];
+        });
 
-        return str_replace(
-            $placeholders,
-            array_values($this->promptResponses),
-            $this->install
-        );
+        return str_replace($responses->keys()->toArray(), $responses->values()->toArray(), $this->install);
     }
 
     protected function containerName(): string
