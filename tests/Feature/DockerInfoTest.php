@@ -15,7 +15,7 @@ class DockerInfoTest extends TestCase
     {
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
-            $process->shouldReceive('getExitCode')->andReturn(0);
+            $process->shouldReceive('isSuccessful')->andReturn(true);
             $mock->shouldReceive('execQuietly')->andReturn($process);
         });
 
@@ -27,7 +27,7 @@ class DockerInfoTest extends TestCase
     {
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
-            $process->shouldReceive('getExitCode')->andReturn(127);
+            $process->shouldReceive('isSuccessful')->andReturn(false);
             $mock->shouldReceive('execQuietly')->andReturn($process);
         });
 

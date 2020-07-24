@@ -14,7 +14,7 @@ class Shell
         $this->output = $output;
     }
 
-    public function exec($command, $description = null, $quiet = false): Process
+    public function exec($command, $description = null, $quiet = false, $parameters = []): Process
     {
         if ($description) {
             $this->output->writeln($this->formatStartMessage($description));
@@ -31,14 +31,14 @@ class Shell
             }
 
             $this->output->writeLn($this->formatMessage($buffer));
-        });
+        }, $parameters);
 
         return $process;
     }
 
-    public function execQuietly($command, $description = null): Process
+    public function execQuietly($command, $description = null, $parameters = []): Process
     {
-        return $this->exec($command, $description, $quietly = true);
+        return $this->exec($command, $description, $quietly = true, $parameters);
     }
 
     public function formatStartMessage(string $buffer)

@@ -18,9 +18,9 @@ class Docker
     {
         $this->stopContainer($containerId);
 
-        $output = $this->shell->exec('docker rm ' . $containerId);
+        $process = $this->shell->exec('docker rm ' . $containerId);
 
-        if ($output->getExitCode() !== 0) {
+        if (! $process->isSuccessful()) {
             throw new Exception('Failed removing container ' . $containerId);
         }
     }
@@ -29,7 +29,7 @@ class Docker
     {
         $output = $this->shell->exec('docker stop ' . $containerId);
 
-        if ($output->getExitCode() !== 0) {
+        if (! $process->isSuccessful()) {
             throw new Exception('Failed stopping container ' . $containerId);
         }
     }
@@ -38,7 +38,7 @@ class Docker
     {
         $process = $this->shell->execQuietly('docker --version 2>&1');
 
-        return $process->getExitCode() === 0;
+        return $process->isSuccessful();
     }
 
     public function containersRawOutput(): Process
@@ -58,7 +58,7 @@ class Docker
     public function imageIsDownloaded($organization, $imageName, $tag): Bool
     {
         $process = $this->shell->execQuietly(sprintf(
-            "docker image inspect %s/%s:%s",
+            'docker image inspect %s/%s:%s',
             $organization,
             $imageName,
             $tag
@@ -70,16 +70,16 @@ class Docker
     public function downloadImage($organization, $imageName, $tag)
     {
         $this->shell->exec(sprintf(
-            "docker pull %s/%s:%s",
+            'docker pull %s/%s:%s',
             $organization,
             $imageName,
             $tag
         ));
     }
 
-    public function bootContainer($containerName, $installString)
+    public function bootContainer($installTemplate, $parameters)
     {
-        $process = $this->shell->exec("docker run -d --name={$containerName} $installString");
+        $process = $this->shell->exec('docker run -d --name "$CONTAINER_NAME" ' . $installTemplate, null, false, $parameters);
 
         if (! $process->isSuccessful()) {
             throw new Exception("Failed installing {$containerName}");

@@ -16,16 +16,16 @@ abstract class BaseService
     protected $organization = 'library'; // Official repositories use `library` as the organization name.
     protected $imageName;
     protected $tag;
-    protected $install;
+    protected $installTemplate;
     protected $defaultPort;
     protected $defaultPrompts = [
         [
-            'shortname' => 'port',
+            'shortname' => 'PORT',
             'prompt' => 'Which host port would you like this service to use?',
             // Default is set in the constructor
         ],
         [
-            'shortname' => 'tag',
+            'shortname' => 'TAG',
             'prompt' => 'Which tag (version) of this service would you like to use?',
             'default' => 'latest',
         ],
@@ -44,15 +44,15 @@ abstract class BaseService
         $this->dockerTags = $dockerTags;
 
         $this->defaultPrompts = array_map(function ($prompt) {
-            if ($prompt['shortname'] === 'port') {
+            if ($prompt['shortname'] === 'PORT') {
                 $prompt['default'] = $this->defaultPort;
             }
             return $prompt;
         }, $this->defaultPrompts);
 
         $this->promptResponses = [
-            'organization' => $this->organization,
-            'imageName' => $this->imageName,
+            'ORGANIZATION' => $this->organization,
+            'IMAGE_NAME' => $this->imageName,
         ];
     }
 
@@ -65,8 +65,8 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                $this->containerName(),
-                $this->buildInstallString()
+                $this->installTemplate,
+                $this->buildParameters(),
             );
 
             $this->info("\nInstallation complete!");
@@ -105,7 +105,7 @@ abstract class BaseService
         foreach ($this->defaultPrompts as $prompt) {
             $this->askQuestion($prompt);
 
-            while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
+            while ($prompt['shortname'] === 'PORT' && ! $this->environment->portIsAvailable($this->promptResponses['PORT'])) {
                 app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
                 $this->askQuestion($prompt);
             }
@@ -115,7 +115,7 @@ abstract class BaseService
             $this->askQuestion($prompt);
         }
 
-        $this->tag = $this->resolveTag($this->promptResponses['tag']);
+        $this->tag = $this->resolveTag($this->promptResponses['TAG']);
     }
 
     protected function askQuestion($prompt): void
@@ -132,16 +132,11 @@ abstract class BaseService
         return $responseTag;
     }
 
-    protected function buildInstallString(): string
+    protected function buildParameters()
     {
-        $generatedInstall = $this->install;
-
-        collect($this->promptResponses)
-            ->each(function ($value, $key) use (&$generatedInstall) {
-                 $generatedInstall = str_replace("{{$key}}", $value, $generatedInstall);
-            });
-
-        return $generatedInstall;
+        $parameters = $this->promptResponses;
+        $parameters['CONTAINER_NAME'] = $this->containerName();
+        return $parameters;
     }
 
     protected function containerName(): string
