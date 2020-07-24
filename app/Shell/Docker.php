@@ -43,15 +43,14 @@ class Docker
 
     public function containersRawOutput(): Process
     {
-        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}}\t{{.Names}}"');
+        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}}"');
     }
 
     public function containers(): array
     {
         $output = $this->containersRawOutput()->getOutput();
-
         return array_filter(array_map(function ($line) {
-            return array_filter(explode('        ', $line));
+            return array_filter(explode(',', $line));
         }, explode("\n", $output)));
     }
 
