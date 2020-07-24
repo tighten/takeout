@@ -55,25 +55,34 @@ class Docker
         }, explode("\n", $output)));
     }
 
-    public function imageIsDownloaded($organization, $image, $tag): Bool
+    public function imageIsDownloaded($organization, $imageName, $tag): Bool
     {
-        $output = $this->shell->execQuietly(sprintf(
+        $process = $this->shell->execQuietly(sprintf(
             "docker image inspect %s/%s:%s",
             $organization,
-            $image,
+            $imageName,
             $tag
         ));
 
-        return $output->getExitCode() === 0;
+        return $process->isSuccessful();
     }
 
-    public function downloadImage($organization, $image, $tag): Bool
+    public function downloadImage($organization, $imageName, $tag)
     {
         $this->shell->exec(sprintf(
             "docker pull %s/%s:%s",
             $organization,
-            $image,
+            $imageName,
             $tag
         ));
+    }
+
+    public function bootContainer($containerName, $installString)
+    {
+        $process = $this->shell->exec("docker run -d --name={$containerName} $installString");
+
+        if (! $process->isSuccessful()) {
+            throw new Exception("Failed installing {$containerName}");
+        }
     }
 }

@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Services\MeiliSearch;
 use App\Services\MySql;
+use App\Shell\Docker;
+use App\Shell\DockerTags;
 use App\Shell\Shell;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -29,17 +31,17 @@ class BaseServiceTest extends TestCase
 
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
-            $process->shouldReceive('getExitCode')->twice()->andReturn(0);
-            $process->shouldReceive('isSuccessful')->once()->andReturn(false);
+            $process->shouldReceive('isSuccessful')->andReturn(false);
 
-            $mock->shouldReceive('execQuietly')->twice()->andReturn($process);
-            $mock->shouldReceive('exec')->once()->with(M::on(function ($arg) {
-                return Str::contains($arg, 'meilisearch');
-            }))->andReturn($process);
+            $mock->shouldReceive('execQuietly')->andReturn($process);
         });
 
         $this->mock(Docker::class, function ($mock) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
+            $mock->shouldReceive('imageIsDownloaded')->andReturn(true);
+
+            // This is the actual assertion
+            $mock->shouldReceive('bootContainer')->with(['getmeili/meilisearch']);
         });
 
         $service = app(MeiliSearch::Class); // Extends BaseService

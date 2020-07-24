@@ -6,6 +6,7 @@ use App\Shell\Docker;
 use App\Shell\Environment;
 use App\Shell\Shell;
 use App\WritesToConsole;
+use Throwable;
 
 abstract class BaseService
 {
@@ -29,7 +30,7 @@ abstract class BaseService
         ],
     ];
     protected $prompts;
-    protected $promptResponses;
+    protected $promptResponses = [];
     protected $shell;
     protected $environment;
     protected $docker;
@@ -46,67 +47,30 @@ abstract class BaseService
             }
             return $prompt;
         }, $this->defaultPrompts);
+
+        $this->promptResponses = [
+            'organization' => $this->organization,
+            'imageName' => $this->imageName,
+        ];
     }
 
     public function install()
     {
         $this->prompts();
-
-        if (! $this->docker->imageIsDownloaded($this->organization, $this->imageName, $this->tag)) {
-            $this->info("Downloading docker image...\n");
-            $this->docker->downloadImage($this->organization, $this->imageName, $this->tag);
-        }
+        $this->ensureImageIsDownloaded();
 
         $this->info("Installing {$this->shortName()}...\n");
 
-        $output = $this->shell->exec($this->buildInstallString());
+        try {
+            $this->docker->bootContainer(
+                $this->containerName(),
+                $this->buildInstallString()
+            );
 
-        if ($output->getExitCode() === 0) {
-            return $this->info("\nInstallation complete!");
+            $this->info("\nInstallation complete!");
+        } catch (Throwable $e) {
+            return $this->error("\nInstallation failed!");
         }
-
-        $this->line("\n");
-        $this->error('Installation failed!');
-    }
-
-    protected function prompts()
-    {
-        foreach ($this->defaultPrompts as $prompt) {
-            $this->askQuestion($prompt);
-
-            while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
-                app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
-                $this->askQuestion('prompt');
-            }
-        }
-
-        foreach ($this->prompts as $prompt) {
-            $this->askQuestion($prompt);
-        }
-
-        $this->promptResponses['organization'] = $this->organization;
-        $this->promptResponses['imageName'] = $this->imageName;
-        $this->tag = $this->promptResponses['tag'];
-    }
-
-    protected function buildInstallString(): string
-    {
-        $placeholders = array_map(function ($key) {
-            return "{{$key}}";
-        }, array_keys($this->promptResponses));
-
-        $install = str_replace($placeholders, array_values($this->promptResponses), $this->install);
-
-        return 'docker run -d --name="' . $this->containerName() . '" ' . $install;
-    }
-
-    protected function containerName(): string
-    {
-        if ($this->tag === 'latest') {
-            $this->tag = $this->dockerTags->getLatestTag($this->organization, $this->imageName);
-        }
-
-        return 'TO--' . $this->shortName() . '--' . $this->tag;
     }
 
     public function organization(): string
@@ -124,8 +88,64 @@ abstract class BaseService
         return strtolower(class_basename(static::class));
     }
 
+    protected function ensureImageIsDownloaded()
+    {
+        if ($this->docker->imageIsDownloaded($this->organization, $this->imageName, $this->tag)) {
+            return;
+        }
+
+        $this->info("Downloading docker image...\n");
+        $this->docker->downloadImage($this->organization, $this->imageName, $this->tag);
+    }
+
+    protected function prompts()
+    {
+        foreach ($this->defaultPrompts as $prompt) {
+            $this->askQuestion($prompt);
+
+            while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
+                app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
+                $this->askQuestion('prompt');
+            }
+        }
+
+        foreach ($this->prompts as $prompt) {
+            $this->askQuestion($prompt);
+        }
+
+        $this->tag = $this->resolveTag($this->promptResponses['tag']);
+    }
+
     protected function askQuestion($prompt): void
     {
         $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
+    }
+
+    protected function resolveTag($responseTag)
+    {
+        if ($responseTag === 'latest') {
+            return $this->dockerTags->getLatestTag($this->organization, $this->imageName);
+        }
+
+        return $responseTag;
+    }
+
+    protected function buildInstallString(): string
+    {
+        // @todo consider a collection refactor
+        $placeholders = array_map(function ($key) {
+            return "{{$key}}";
+        }, array_keys($this->promptResponses));
+
+        return str_replace(
+            $placeholders,
+            array_values($this->promptResponses),
+            $this->install
+        );
+    }
+
+    protected function containerName(): string
+    {
+        return 'TO--' . $this->shortName() . '--' . $this->tag;
     }
 }

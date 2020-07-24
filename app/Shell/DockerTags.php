@@ -14,17 +14,17 @@ class DockerTags
         $this->guzzle = $guzzle;
     }
 
-    public function getLatestTag($organization, $image): string
+    public function getLatestTag($organization, $imageName): string
     {
-        return collect($this->getTags($organization, $image))->first(function ($tag) {
+        return collect($this->getTags($organization, $imageName))->first(function ($tag) {
             return $tag !== 'latest';
         });
     }
 
-    public function getTags($organization, $image): array
+    public function getTags($organization, $imageName): array
     {
         return $this->filterResponseForTags(
-            $this->getTagsResponse($organization, $image)
+            $this->getTagsResponse($organization, $imageName)
         );
     }
 
@@ -37,19 +37,19 @@ class DockerTags
             ->toArray();
     }
 
-    protected function getTagsResponse($organization, $image): Stream
+    protected function getTagsResponse($organization, $imageName): Stream
     {
         return $this->guzzle
-            ->get($this->buildTagsUrl($organization, $image))
+            ->get($this->buildTagsUrl($organization, $imageName))
             ->getBody();
     }
 
-    protected function buildTagsUrl($organization, $image): string
+    protected function buildTagsUrl($organization, $imageName): string
     {
         return sprintf(
             "https://registry.hub.docker.com/v2/repositories/%s/%s/tags",
             $organization,
-            $image
+            $imageName
         );
     }
 }
