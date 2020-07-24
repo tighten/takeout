@@ -134,11 +134,14 @@ abstract class BaseService
 
     protected function buildInstallString(): string
     {
-        $responses = collect($this->promptResponses)->mapWithKeys(function ($value, $key) {
-            return ["{{$key}}" => $value];
-        });
+        $generatedInstall = $this->install;
 
-        return str_replace($responses->keys()->toArray(), $responses->values()->toArray(), $this->install);
+        collect($this->promptResponses)
+            ->each(function ($value, $key) use (&$generatedInstall) {
+                 $generatedInstall = str_replace("{{$key}}", $value, $generatedInstall);
+            });
+
+        return $generatedInstall;
     }
 
     protected function containerName(): string
