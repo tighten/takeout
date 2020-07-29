@@ -13,8 +13,8 @@ class DockerContainersTest extends TestCase
     function fakeContainerList()
     {
         return <<<EOD
-CONTAINER ID        NAMES
-123456789abc        TO-meilisearch
+CONTAINER ID,NAMES,STATUS
+123456789abc,TO-meilisearch,Up 15 Minutes
 EOD;
     }
 
@@ -30,8 +30,8 @@ EOD;
         $output = app(Docker::class)->containers();
 
         $expectedTable = [
-            ['CONTAINER ID', 'NAMES'],
-            ['123456789abc', 'TO-meilisearch'],
+            ['CONTAINER ID', 'NAMES', 'STATUS'],
+            ['123456789abc', 'TO-meilisearch', 'Up 15 Minutes'],
         ];
 
         $this->assertEquals($expectedTable, $output);
