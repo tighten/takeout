@@ -16,7 +16,7 @@ abstract class BaseService
     protected $organization = 'library'; // Official repositories use `library` as the organization name.
     protected $imageName;
     protected $tag;
-    protected $install;
+    protected $installTemplate;
     protected $defaultPort;
     protected $defaultPrompts = [
         [
@@ -52,7 +52,7 @@ abstract class BaseService
 
         $this->promptResponses = [
             'organization' => $this->organization,
-            'imageName' => $this->imageName,
+            'image_name' => $this->imageName,
         ];
     }
 
@@ -65,8 +65,8 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                $this->containerName(),
-                $this->buildInstallString()
+                $this->installTemplate,
+                $this->buildParameters(),
             );
 
             $this->info("\nInstallation complete!");
@@ -132,13 +132,11 @@ abstract class BaseService
         return $responseTag;
     }
 
-    protected function buildInstallString(): string
+    protected function buildParameters()
     {
-        $responses = collect($this->promptResponses)->mapWithKeys(function ($value, $key) {
-            return ["{{$key}}" => $value];
-        });
-
-        return str_replace($responses->keys()->toArray(), $responses->values()->toArray(), $this->install);
+        $parameters = $this->promptResponses;
+        $parameters['container_name'] = $this->containerName();
+        return $parameters;
     }
 
     protected function containerName(): string
