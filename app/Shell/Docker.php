@@ -77,7 +77,7 @@ class Docker
         ));
     }
 
-    public function bootContainer($installTemplate, $parameters)
+    public function bootContainer(string $installTemplate, array $parameters): void
     {
         $process = $this->shell->exec('docker run -d --name "$CONTAINER_NAME" ' . $installTemplate, null, false, $parameters);
 
