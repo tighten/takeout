@@ -55,21 +55,18 @@ class UninstallCommand extends Command
                 return substr($containerName, 0, strlen($service)) === $service;
             });
 
-        if ($serviceMatches->count() === 0) {
-            $this->error("\nCannot find a Takeout-managed instance of {$service}.");
-            return;
-        }
+        switch ($serviceMatches->count()) {
+            case 0:
+                return $this->error("\nCannot find a Takeout-managed instance of {$service}.");
+            case 1:
+                $serviceContainerId = $serviceMatches->flip()->first();
+                break;
+            default: // > 1
+                $serviceContainerId = $this->menu('Select which service to uninstall.', $serviceMatches->toArray())->open();
 
-        if ($serviceMatches->count() > 1) {
-            $serviceContainerId = $this->menu('Select which service to uninstall.', $serviceMatches->toArray())->open();
-
-            if (! $serviceContainerId) {
-                return;
-            }
-        }
-
-        if ($serviceMatches->count() === 1) {
-            $serviceContainerId = $serviceMatches->flip()->first();
+                if (! $serviceContainerId) {
+                    return;
+                }
         }
 
         $this->uninstallByContainerId($serviceContainerId);
