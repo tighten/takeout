@@ -15,7 +15,7 @@ class MeiliSearch extends BaseService
         ],
     ];
 
-    protected $install = '-p {port}:7700 \
-        -v {volume}:/data.ms \
-        {organization}/{imageName}:{tag}';
+    protected $installTemplate = '-p "$port":7700 \
+        -v "$volume":/data.ms \
+        "$organization"/"$image_name":"$tag"';
 }

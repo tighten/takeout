@@ -18,18 +18,18 @@ class Docker
     {
         $this->stopContainer($containerId);
 
-        $output = $this->shell->exec('docker rm ' . $containerId);
+        $process = $this->shell->exec('docker rm ' . $containerId);
 
-        if ($output->getExitCode() !== 0) {
+        if (! $process->isSuccessful()) {
             throw new Exception('Failed removing container ' . $containerId);
         }
     }
 
     public function stopContainer(string $containerId)
     {
-        $output = $this->shell->exec('docker stop ' . $containerId);
+        $process = $this->shell->exec('docker stop ' . $containerId);
 
-        if ($output->getExitCode() !== 0) {
+        if (! $process->isSuccessful()) {
             throw new Exception('Failed stopping container ' . $containerId);
         }
     }
@@ -38,7 +38,7 @@ class Docker
     {
         $process = $this->shell->execQuietly('docker --version 2>&1');
 
-        return $process->getExitCode() === 0;
+        return $process->isSuccessful();
     }
 
     public function containersRawOutput(): Process
@@ -57,7 +57,7 @@ class Docker
     public function imageIsDownloaded($organization, $imageName, $tag): Bool
     {
         $process = $this->shell->execQuietly(sprintf(
-            "docker image inspect %s/%s:%s",
+            'docker image inspect %s/%s:%s',
             $organization,
             $imageName,
             $tag
@@ -69,16 +69,16 @@ class Docker
     public function downloadImage($organization, $imageName, $tag)
     {
         $this->shell->exec(sprintf(
-            "docker pull %s/%s:%s",
+            'docker pull %s/%s:%s',
             $organization,
             $imageName,
             $tag
         ));
     }
 
-    public function bootContainer($containerName, $installString)
+    public function bootContainer(string $installTemplate, array $parameters): void
     {
-        $process = $this->shell->exec("docker run -d --name={$containerName} $installString");
+        $process = $this->shell->exec('docker run -d --name "$container_name" ' . $installTemplate, $parameters);
 
         if (! $process->isSuccessful()) {
             throw new Exception("Failed installing {$containerName}");

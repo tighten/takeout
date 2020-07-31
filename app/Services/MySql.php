@@ -19,8 +19,8 @@ class MySql extends BaseService
         ],
     ];
 
-    protected $install = '-p {port}:3306 \
-        -e MYSQL_ROOT_PASSWORD={root_password} \
-        -v {volume}:/var/lib/mysql \
-        {organization}/{imageName}:{tag}';
+    protected $installTemplate = '-p "$port":3306 \
+        -e MYSQL_ROOT_PASSWORD="$root_password" \
+        -v "$volume":/var/lib/mysql \
+        "$organization"/"$image_name":"$tag"';
 }
