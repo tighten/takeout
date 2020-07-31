@@ -14,12 +14,8 @@ class Shell
         $this->output = $output;
     }
 
-    public function exec($command, $description = null, $quiet = false, $parameters = []): Process
+    public function exec($command, $parameters = [], $quiet = false): Process
     {
-        if ($description) {
-            $this->output->writeln($this->formatStartMessage($description));
-        }
-
         $process = $this->buildProcess($command);
         $process->run(function ($type, $buffer) use ($quiet) {
             if (empty($buffer) || $buffer === PHP_EOL || $quiet) {
@@ -36,9 +32,9 @@ class Shell
         return $process;
     }
 
-    public function execQuietly($command, $description = null, $parameters = []): Process
+    public function execQuietly($command, $parameters = []): Process
     {
-        return $this->exec($command, $description, $quietly = true, $parameters);
+        return $this->exec($command, $parameters, $quiet = true);
     }
 
     public function formatStartMessage(string $buffer)

@@ -27,7 +27,7 @@ class Docker
 
     public function stopContainer(string $containerId)
     {
-        $output = $this->shell->exec('docker stop ' . $containerId);
+        $process = $this->shell->exec('docker stop ' . $containerId);
 
         if (! $process->isSuccessful()) {
             throw new Exception('Failed stopping container ' . $containerId);
@@ -79,7 +79,7 @@ class Docker
 
     public function bootContainer(string $installTemplate, array $parameters): void
     {
-        $process = $this->shell->exec('docker run -d --name "$CONTAINER_NAME" ' . $installTemplate, null, false, $parameters);
+        $process = $this->shell->exec('docker run -d --name "$container_name" ' . $installTemplate, $parameters);
 
         if (! $process->isSuccessful()) {
             throw new Exception("Failed installing {$containerName}");

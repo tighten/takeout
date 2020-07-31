@@ -20,12 +20,12 @@ abstract class BaseService
     protected $defaultPort;
     protected $defaultPrompts = [
         [
-            'shortname' => 'PORT',
+            'shortname' => 'port',
             'prompt' => 'Which host port would you like this service to use?',
             // Default is set in the constructor
         ],
         [
-            'shortname' => 'TAG',
+            'shortname' => 'tag',
             'prompt' => 'Which tag (version) of this service would you like to use?',
             'default' => 'latest',
         ],
@@ -44,15 +44,15 @@ abstract class BaseService
         $this->dockerTags = $dockerTags;
 
         $this->defaultPrompts = array_map(function ($prompt) {
-            if ($prompt['shortname'] === 'PORT') {
+            if ($prompt['shortname'] === 'port') {
                 $prompt['default'] = $this->defaultPort;
             }
             return $prompt;
         }, $this->defaultPrompts);
 
         $this->promptResponses = [
-            'ORGANIZATION' => $this->organization,
-            'IMAGE_NAME' => $this->imageName,
+            'organization' => $this->organization,
+            'image_name' => $this->imageName,
         ];
     }
 
@@ -105,7 +105,7 @@ abstract class BaseService
         foreach ($this->defaultPrompts as $prompt) {
             $this->askQuestion($prompt);
 
-            while ($prompt['shortname'] === 'PORT' && ! $this->environment->portIsAvailable($this->promptResponses['PORT'])) {
+            while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
                 app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
                 $this->askQuestion($prompt);
             }
@@ -115,7 +115,7 @@ abstract class BaseService
             $this->askQuestion($prompt);
         }
 
-        $this->tag = $this->resolveTag($this->promptResponses['TAG']);
+        $this->tag = $this->resolveTag($this->promptResponses['tag']);
     }
 
     protected function askQuestion($prompt): void
@@ -135,7 +135,7 @@ abstract class BaseService
     protected function buildParameters()
     {
         $parameters = $this->promptResponses;
-        $parameters['CONTAINER_NAME'] = $this->containerName();
+        $parameters['container_name'] = $this->containerName();
         return $parameters;
     }
 

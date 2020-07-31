@@ -9,13 +9,13 @@ class MeiliSearch extends BaseService
     protected $defaultPort = 7700;
     protected $prompts = [
         [
-            'shortname' => 'VOLUME',
+            'shortname' => 'volume',
             'prompt' => 'What is the Docker volume name?',
             'default' => 'meili_data',
         ],
     ];
 
-    protected $installTemplate = '-p "$PORT":7700 \
-        -v "$VOLUME":/data.ms \
-        "$ORGANIZATION"/"$IMAGE_NAME":"$TAG"';
+    protected $installTemplate = '-p "$port":7700 \
+        -v "$volume":/data.ms \
+        "$organization"/"$image_name":"$tag"';
 }

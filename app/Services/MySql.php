@@ -8,19 +8,19 @@ class MySql extends BaseService
     protected $defaultPort = 3306;
     protected $prompts = [
         [
-            'shortname' => 'VOLUME',
+            'shortname' => 'volume',
             'prompt' => 'What is the Docker volume name?',
             'default' => 'mysql_data',
         ],
         [
-            'shortname' => 'ROOT_PASSWORD',
+            'shortname' => 'root_password',
             'prompt' => 'What will the root password be?',
             'default' => 'password',
         ],
     ];
 
-    protected $installTemplate = '-p "$PORT":3306 \
-        -e MYSQL_ROOT_PASSWORD="$ROOT_PASSWORD" \
-        -v "$VOLUME":/var/lib/mysql \
-        "$ORGANIZATION"/"$IMAGE_NAME":"$TAG"';
+    protected $installTemplate = '-p "$port":3306 \
+        -e MYSQL_ROOT_PASSWORD="$root_password" \
+        -v "$volume":/var/lib/mysql \
+        "$organization"/"$image_name":"$tag"';
 }
