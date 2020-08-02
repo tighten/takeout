@@ -1,4 +1,6 @@
-# <img src="takeout-container.png" alt="Takeout container" align="right"> Takeout
+![Takeout - Docker-based dependency management for macOS](https://raw.githubusercontent.com/tightenco/takeout/main/takeout-banner.png?version=1)
+
+# Takeout
 
 Takeout is a Mac-based CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
 
