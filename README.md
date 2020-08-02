@@ -1,4 +1,4 @@
-![Takeout - Docker-based dependency management for macOS](https://raw.githubusercontent.com/tightenco/takeout/main/takeout-banner.png?version=1)
+![Takeout - Docker-based dependency management for macOS](takeout-banner.png?version=1)
 
 # Takeout
 
