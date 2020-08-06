@@ -47,7 +47,7 @@ class DockerTags
     protected function buildTagsUrl($organization, $imageName): string
     {
         return sprintf(
-            "https://registry.hub.docker.com/v2/repositories/%s/%s/tags",
+            'https://registry.hub.docker.com/v2/repositories/%s/%s/tags',
             $organization,
             $imageName
         );
