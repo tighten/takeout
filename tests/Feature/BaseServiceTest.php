@@ -3,11 +3,8 @@
 namespace Tests\Feature;
 
 use App\Services\MeiliSearch;
-use App\Services\MySql;
 use App\Shell\Docker;
-use App\Shell\DockerTags;
 use App\Shell\Shell;
-use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use Mockery as M;
 use Symfony\Component\Process\Process;
