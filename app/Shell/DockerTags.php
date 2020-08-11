@@ -4,6 +4,7 @@ namespace App\Shell;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Stream;
+use Psr\Http\Message\StreamInterface;
 
 class DockerTags
 {
@@ -14,14 +15,14 @@ class DockerTags
         $this->guzzle = $guzzle;
     }
 
-    public function getLatestTag($organization, $imageName): string
+    public function getLatestTag(string $organization, string $imageName): string
     {
         return collect($this->getTags($organization, $imageName))->first(function ($tag) {
             return $tag !== 'latest';
         });
     }
 
-    public function getTags($organization, $imageName): array
+    public function getTags(string $organization, string $imageName): array
     {
         return $this->filterResponseForTags(
             $this->getTagsResponse($organization, $imageName)
@@ -37,7 +38,7 @@ class DockerTags
             ->toArray();
     }
 
-    protected function getTagsResponse($organization, $imageName): Stream
+    protected function getTagsResponse($organization, $imageName): StreamInterface
     {
         return $this->guzzle
             ->get($this->buildTagsUrl($organization, $imageName))

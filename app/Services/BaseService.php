@@ -35,6 +35,7 @@ abstract class BaseService
     protected $shell;
     protected $environment;
     protected $docker;
+    protected $dockerTags;
 
     public function __construct(Shell $shell, Environment $environment, Docker $docker, DockerTags $dockerTags)
     {
@@ -56,7 +57,7 @@ abstract class BaseService
         ];
     }
 
-    public function install()
+    public function install(): void
     {
         $this->prompts();
         $this->ensureImageIsDownloaded();
@@ -71,7 +72,7 @@ abstract class BaseService
 
             $this->info("\nInstallation complete!");
         } catch (Throwable $e) {
-            return $this->error("\nInstallation failed!");
+            $this->error("\nInstallation failed!");
         }
     }
 
@@ -90,7 +91,12 @@ abstract class BaseService
         return strtolower(class_basename(static::class));
     }
 
-    protected function ensureImageIsDownloaded()
+    public function defaultPort(): int
+    {
+        return $this->defaultPort;
+    }
+
+    protected function ensureImageIsDownloaded(): void
     {
         if ($this->docker->imageIsDownloaded($this->organization, $this->imageName, $this->tag)) {
             return;
@@ -100,7 +106,7 @@ abstract class BaseService
         $this->docker->downloadImage($this->organization, $this->imageName, $this->tag);
     }
 
-    protected function prompts()
+    protected function prompts(): void
     {
         foreach ($this->defaultPrompts as $prompt) {
             $this->askQuestion($prompt);
@@ -118,7 +124,7 @@ abstract class BaseService
         $this->tag = $this->resolveTag($this->promptResponses['tag']);
     }
 
-    protected function askQuestion($prompt): void
+    protected function askQuestion(array $prompt): void
     {
         $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
     }
@@ -132,11 +138,12 @@ abstract class BaseService
         return $responseTag;
     }
 
-    protected function buildParameters()
+    protected function buildParameters(): array
     {
         $parameters = $this->promptResponses;
         $parameters['container_name'] = $this->containerName();
         $parameters['tag'] = $this->tag; // Overwrite "latest" with actual latest tag
+
         return $parameters;
     }
 

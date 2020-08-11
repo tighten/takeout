@@ -7,7 +7,7 @@ use App\Shell\Docker;
 
 trait InitializesCommands
 {
-    public function initializeCommand()
+    public function initializeCommand(): void
     {
         app()->bind('console', function () {
             return $this;
