@@ -43,7 +43,7 @@ class Docker
 
     public function containersRawOutput(): Process
     {
-        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}}"');
+        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Ports}},{{.Status}}"');
     }
 
     public function containers(): array
