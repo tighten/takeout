@@ -15,6 +15,7 @@ abstract class BaseService
 
     protected $organization = 'library'; // Official repositories use `library` as the organization name.
     protected $imageName;
+    protected $dockerTagsClass = DockerTags::class;
     protected $tag;
     protected $installTemplate;
     protected $defaultPort;
@@ -35,14 +36,12 @@ abstract class BaseService
     protected $shell;
     protected $environment;
     protected $docker;
-    protected $dockerTags;
 
-    public function __construct(Shell $shell, Environment $environment, Docker $docker, DockerTags $dockerTags)
+    public function __construct(Shell $shell, Environment $environment, Docker $docker)
     {
         $this->shell = $shell;
         $this->environment = $environment;
         $this->docker = $docker;
-        $this->dockerTags = $dockerTags;
 
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'port') {
@@ -132,7 +131,7 @@ abstract class BaseService
     protected function resolveTag($responseTag)
     {
         if ($responseTag === 'latest') {
-            return $this->dockerTags->getLatestTag($this->organization, $this->imageName);
+            return app()->make($this->dockerTagsClass, ['service' => $this])->getLatestTag();
         }
 
         return $responseTag;

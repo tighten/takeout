@@ -2,6 +2,7 @@
 
 namespace App\Shell;
 
+use App\Services\BaseService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Stream;
 use Psr\Http\Message\StreamInterface;
@@ -9,23 +10,25 @@ use Psr\Http\Message\StreamInterface;
 class DockerTags
 {
     protected $guzzle;
+    protected $service;
 
-    public function __construct(Client $guzzle)
+    public function __construct(Client $guzzle, BaseService $service)
     {
         $this->guzzle = $guzzle;
+        $this->service = $service;
     }
 
-    public function getLatestTag(string $organization, string $imageName): string
+    public function getLatestTag(): string
     {
-        return collect($this->getTags($organization, $imageName))->first(function ($tag) {
+        return collect($this->getTags())->first(function ($tag) {
             return $tag !== 'latest';
         });
     }
 
-    public function getTags(string $organization, string $imageName): array
+    public function getTags(): array
     {
         return $this->filterResponseForTags(
-            $this->getTagsResponse($organization, $imageName)
+            $this->getTagsResponse()
         );
     }
 
@@ -38,19 +41,24 @@ class DockerTags
             ->toArray();
     }
 
-    protected function getTagsResponse($organization, $imageName): StreamInterface
+    protected function getTagsResponse(): StreamInterface
     {
         return $this->guzzle
-            ->get($this->buildTagsUrl($organization, $imageName))
+            ->get($this->buildTagsUrl())
             ->getBody();
     }
 
-    protected function buildTagsUrl($organization, $imageName): string
+    protected function buildTagsUrl(): string
     {
         return sprintf(
-            'https://registry.hub.docker.com/v2/repositories/%s/%s/tags',
-            $organization,
-            $imageName
+            $this->tagsUrlTemplate(),
+            $this->service->organization(),
+            $this->service->imageName()
         );
+    }
+
+    protected function tagsUrlTemplate(): string
+    {
+        return 'https://registry.hub.docker.com/v2/repositories/%s/%s/tags';
     }
 }
