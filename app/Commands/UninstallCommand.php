@@ -75,12 +75,17 @@ class UninstallCommand extends Command
     public function uninstallByContainerId(string $containerId)
     {
         try {
-            app(Docker::class)->removeContainer($containerId);
+            $docker = app(Docker::class);
+            $volumeName = $docker->attachedVolumeName($containerId);
+            $docker->removeContainer($containerId);
+            $this->info("\nService uninstalled.");
+            if ($volumeName) {
+                $this->info("\nThe uninstalled service was using a volume named {$volumeName}. If you would like to remove this data, run:");
+                $this->info("\n docker volume rm {$volumeName}");
+            }
         } catch (Throwable $e) {
             $this->error('Uninstallation failed!');
         }
-
-        $this->info("\nService uninstalled.");
     }
 
     public function uninstallableServices(): array

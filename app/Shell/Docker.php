@@ -84,4 +84,11 @@ class Docker
             throw new Exception("Failed installing {$containerName}");
         }
     }
+
+    public function attachedVolumeName(string $containerId)
+    {
+        $response = $this->shell->execQuietly("docker inspect --format='{{json .Mounts}}' {$containerId}");
+        $jsonResponse = json_decode($response->getOutput());
+        return optional($jsonResponse)[0]->Name ?? null;
+    }
 }
