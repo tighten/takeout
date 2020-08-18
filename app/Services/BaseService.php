@@ -128,7 +128,7 @@ abstract class BaseService
         $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
     }
 
-    protected function resolveTag($responseTag)
+    protected function resolveTag($responseTag): string
     {
         if ($responseTag === 'latest') {
             return app()->make($this->dockerTagsClass, ['service' => $this])->getLatestTag();

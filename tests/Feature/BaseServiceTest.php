@@ -24,9 +24,9 @@ class BaseServiceTest extends TestCase
     function it_installs_services()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
-//            $service = new MeiliSearch;
-//            $mock->shouldReceive('ask')->with('Which host port would you like this service to use?', $service->defaultPort())->andReturn(7700);
-//            $mock->shouldReceive('ask')->with('Which tag (version) of this service would you like to use?', 'latest')->andReturn('v1.1.1');
+            $defaultPort = app(MeiliSearch::class)->defaultPort();
+            $mock->shouldReceive('ask')->with('Which host port would you like this service to use?', $defaultPort)->andReturn(7700);
+            $mock->shouldReceive('ask')->with('Which tag (version) of this service would you like to use?', 'latest')->andReturn('v1.1.1');
             $mock->shouldIgnoreMissing();
         }));
 

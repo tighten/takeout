@@ -4,7 +4,6 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Shell\Docker;
-use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
 class ListCommand extends Command
@@ -25,12 +24,7 @@ class ListCommand extends Command
      */
     protected $description = 'List all services installed by Takeout.';
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
+    public function handle(): void
     {
         $this->initializeCommand();
 

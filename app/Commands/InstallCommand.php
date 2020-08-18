@@ -21,19 +21,15 @@ class InstallCommand extends Command
      */
     protected $description = 'Install a service.';
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
+    public function handle(): void
     {
         $this->initializeCommand();
 
         $service = $this->argument('serviceName');
 
         if ($service) {
-            return $this->install($service);
+            $this->install($service);
+            return;
         }
 
         $option = $this->menu('Services for install', $this->installableServices())->open();
@@ -42,17 +38,17 @@ class InstallCommand extends Command
             return;
         }
 
-        return $this->install($option);
+        $this->install($option);
     }
 
-    public function installableServices()
+    public function installableServices(): array
     {
         return collect((new Services)->all())->mapWithKeys(function ($fqcn, $shortName) {
             return [$shortName => Str::afterLast($fqcn, '\\')];
         })->toArray();
     }
 
-    public function install(string $service)
+    public function install(string $service): void
     {
         $fqcn = (new Services)->get($service);
         app($fqcn)->install();

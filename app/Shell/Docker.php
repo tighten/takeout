@@ -14,7 +14,7 @@ class Docker
         $this->shell = $shell;
     }
 
-    public function removeContainer(string $containerId)
+    public function removeContainer(string $containerId): void
     {
         $this->stopContainer($containerId);
 
@@ -25,7 +25,7 @@ class Docker
         }
     }
 
-    public function stopContainer(string $containerId)
+    public function stopContainer(string $containerId): void
     {
         $process = $this->shell->exec('docker stop ' . $containerId);
 
@@ -41,17 +41,18 @@ class Docker
         return $process->isSuccessful();
     }
 
-    public function containersRawOutput(): Process
-    {
-        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Ports}},{{.Status}}"');
-    }
-
     public function containers(): array
     {
-        $output = $this->containersRawOutput()->getOutput();
+        $output = trim($this->containersRawOutput()->getOutput());
+
         return array_filter(array_map(function ($line) {
-            return array_filter(explode(',', $line));
+            return explode(',', $line);
         }, explode("\n", $output)));
+    }
+
+    protected function containersRawOutput(): Process
+    {
+        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Ports}},{{.Status}}"');
     }
 
     public function imageIsDownloaded(string $organization, string $imageName, ?string $tag): bool
