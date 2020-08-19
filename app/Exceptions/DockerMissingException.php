@@ -7,7 +7,7 @@ use Exception;
 
 class DockerMissingException extends Exception
 {
-    public function render($request = null)
+    public function render($request = null): void
     {
         $console = app('console');
         $shell = app(Shell::class);

@@ -22,42 +22,39 @@ class UninstallCommand extends Command
     protected $description = 'Uninstall a service.';
 
     protected $uninstallableServices;
+    protected $docker;
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
+    public function handle(Docker $docker)
     {
+        $this->docker = $docker;
         $this->initializeCommand();
         $this->uninstallableServices = $this->uninstallableServices();
 
-        $service = $this->argument('serviceName');
-
-        if ($service) {
-            return $this->uninstallByServiceName($service);
+        if ($this->argument('serviceName')) {
+            return $this->uninstallByServiceName($this->argument('serviceName'));
         }
 
-        $serviceContainerId = $this->menu('Services for uninstall', $this->uninstallableServices)->open();
-
-        if (! $serviceContainerId) {
-            return;
-        }
-
-        $this->uninstallByContainerId($serviceContainerId);
+        $this->showUninstallServiceMenu();
     }
 
-    public function uninstallByServiceName(string $service)
+    public function uninstallableServices(): array
+    {
+        return collect($this->docker->containers())->skip(1)->mapWithKeys(function ($line) {
+            return [$line[0] => str_replace('TO--', '', $line[1])];
+        })->toArray();
+    }
+
+    public function uninstallByServiceName(string $service): void
     {
         $serviceMatches = collect($this->uninstallableServices)
-            ->filter(function ($containerName, $containerId) use ($service) {
+            ->filter(function ($containerName) use ($service) {
                 return substr($containerName, 0, strlen($service)) === $service;
             });
 
         switch ($serviceMatches->count()) {
             case 0:
-                return $this->error("\nCannot find a Takeout-managed instance of {$service}.");
+                $this->error("\nCannot find a Takeout-managed instance of {$service}.");
+                return;
             case 1:
                 $serviceContainerId = $serviceMatches->flip()->first();
                 break;
@@ -72,29 +69,30 @@ class UninstallCommand extends Command
         $this->uninstallByContainerId($serviceContainerId);
     }
 
-    public function uninstallByContainerId(string $containerId)
+    public function showUninstallServiceMenu(): void
+    {
+        $serviceContainerId = $this->menu('Services for uninstall', $this->uninstallableServices)->open();
+
+        if ($serviceContainerId) {
+            $this->uninstallByContainerId($serviceContainerId);
+        }
+    }
+
+    public function uninstallByContainerId(string $containerId): void
     {
         try {
-            $docker = app(Docker::class);
-            $volumeName = $docker->attachedVolumeName($containerId);
-            $docker->removeContainer($containerId);
+            $volumeName = $this->docker->attachedVolumeName($containerId);
+
+            $this->docker->removeContainer($containerId);
             $this->info("\nService uninstalled.");
+
             if ($volumeName) {
-                $this->info("\nThe uninstalled service was using a volume named {$volumeName}. If you would like to remove this data, run:");
+                $this->info("\nThe uninstalled service was using a volume named {$volumeName}.");
+                $this->info("If you would like to remove this data, run:");
                 $this->info("\n docker volume rm {$volumeName}");
             }
         } catch (Throwable $e) {
             $this->error('Uninstallation failed!');
         }
-    }
-
-    public function uninstallableServices(): array
-    {
-        $services = app(Docker::class)->containers();
-        array_shift($services);
-
-        return collect($services)->mapWithKeys(function ($line) {
-            return [$line[0] => ucwords(str_replace(['TO--', '--'], ['', ' '], $line[1]))];
-        })->toArray();
     }
 }

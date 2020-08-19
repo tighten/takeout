@@ -4,7 +4,6 @@ namespace App\Shell;
 
 use App\Services\BaseService;
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Stream;
 use Psr\Http\Message\StreamInterface;
 
 class DockerTags
@@ -27,18 +26,9 @@ class DockerTags
 
     public function getTags(): array
     {
-        return $this->filterResponseForTags(
-            $this->getTagsResponse()
-        );
-    }
+        $response = json_decode($this->getTagsResponse()->getContents(), true);
 
-    protected function filterResponseForTags(Stream $stream): array
-    {
-        return collect(json_decode($stream->getContents(), true)['results'])
-            ->map(function ($result) {
-                return $result['name'];
-            })->filter()
-            ->toArray();
+        return collect($response['results'])->map->name->filter()->toArray();
     }
 
     protected function getTagsResponse(): StreamInterface
