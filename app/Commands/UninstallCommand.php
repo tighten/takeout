@@ -30,19 +30,11 @@ class UninstallCommand extends Command
         $this->initializeCommand();
         $this->uninstallableServices = $this->uninstallableServices();
 
-        $service = $this->argument('serviceName');
-
-        if ($service) {
-            return $this->uninstallByServiceName($service);
+        if ($this->argument('serviceName')) {
+            return $this->uninstallByServiceName($this->argument('serviceName'));
         }
 
-        $serviceContainerId = $this->menu('Services for uninstall', $this->uninstallableServices)->open();
-
-        if (! $serviceContainerId) {
-            return;
-        }
-
-        $this->uninstallByContainerId($serviceContainerId);
+        $this->showUninstallServiceMenu();
     }
 
     public function uninstallableServices(): array
@@ -77,14 +69,30 @@ class UninstallCommand extends Command
         $this->uninstallByContainerId($serviceContainerId);
     }
 
+    public function showUninstallServiceMenu(): void
+    {
+        $serviceContainerId = $this->menu('Services for uninstall', $this->uninstallableServices)->open();
+
+        if ($serviceContainerId) {
+            $this->uninstallByContainerId($serviceContainerId);
+        }
+    }
+
     public function uninstallByContainerId(string $containerId): void
     {
         try {
+            $volumeName = $this->docker->attachedVolumeName($containerId);
+
             $this->docker->removeContainer($containerId);
+            $this->info("\nService uninstalled.");
+
+            if ($volumeName) {
+                $this->info("\nThe uninstalled service was using a volume named {$volumeName}.");
+                $this->info("If you would like to remove this data, run:");
+                $this->info("\n docker volume rm {$volumeName}");
+            }
         } catch (Throwable $e) {
             $this->error('Uninstallation failed!');
         }
-
-        $this->info("\nService uninstalled.");
     }
 }
