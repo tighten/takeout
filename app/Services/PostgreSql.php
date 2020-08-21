@@ -19,7 +19,7 @@ class PostgreSql extends BaseService
         ],
     ];
 
-    protected $installTemplate = '-p "$port":3306 \
+    protected $dockerRunTemplate = '-p "$port":3306 \
         -e POSTGRES_PASSWORD="$root_password" \
         -v "$volume":/var/lib/postgresql/data \
             "$organization"/"$image_name":"$tag"';

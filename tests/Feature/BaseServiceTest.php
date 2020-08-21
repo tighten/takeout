@@ -21,7 +21,7 @@ class BaseServiceTest extends TestCase
     }
 
     /** @test */
-    function it_installs_services()
+    function it_enables_services()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $defaultPort = app(MeiliSearch::class)->defaultPort();
@@ -46,6 +46,6 @@ class BaseServiceTest extends TestCase
         });
 
         $service = app(MeiliSearch::Class); // Extends BaseService
-        $service->install();
+        $service->enable();
     }
 }

@@ -7,19 +7,12 @@ use App\Services;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
-class InstallCommand extends Command
+class EnableCommand extends Command
 {
     use InitializesCommands;
 
-    /**
-     * The signature of the command.
-     */
-    protected $signature = 'install {serviceName?}';
-
-    /**
-     * The description of the command.
-     */
-    protected $description = 'Install a service.';
+    protected $signature = 'enable {serviceName?}';
+    protected $description = 'Enable a service.';
 
     public function handle(): void
     {
@@ -28,29 +21,29 @@ class InstallCommand extends Command
         $service = $this->argument('serviceName');
 
         if ($service) {
-            $this->install($service);
+            $this->enable($service);
             return;
         }
 
-        $option = $this->menu('Services for install', $this->installableServices())->open();
+        $option = $this->menu('Services to enable', $this->enableableServices())->open();
 
         if (! $option) {
             return;
         }
 
-        $this->install($option);
+        $this->enable($option);
     }
 
-    public function installableServices(): array
+    public function enableableServices(): array
     {
         return collect((new Services)->all())->mapWithKeys(function ($fqcn, $shortName) {
             return [$shortName => Str::afterLast($fqcn, '\\')];
         })->toArray();
     }
 
-    public function install(string $service): void
+    public function enable(string $service): void
     {
         $fqcn = (new Services)->get($service);
-        app($fqcn)->install();
+        app($fqcn)->enable();
     }
 }

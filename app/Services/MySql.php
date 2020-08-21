@@ -19,7 +19,7 @@ class MySql extends BaseService
         ],
     ];
 
-    protected $installTemplate = '-p "$port":3306 \
+    protected $dockerRunTemplate = '-p "$port":3306 \
         -e MYSQL_ROOT_PASSWORD="$root_password" \
         -v "$volume":/var/lib/mysql \
         "$organization"/"$image_name":"$tag"';

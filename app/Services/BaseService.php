@@ -17,7 +17,7 @@ abstract class BaseService
     protected $imageName;
     protected $dockerTagsClass = DockerTags::class;
     protected $tag;
-    protected $installTemplate;
+    protected $dockerRunTemplate;
     protected $defaultPort;
     protected $defaultPrompts = [
         [
@@ -56,22 +56,22 @@ abstract class BaseService
         ];
     }
 
-    public function install(): void
+    public function enable(): void
     {
         $this->prompts();
         $this->ensureImageIsDownloaded();
 
-        $this->info("Installing {$this->shortName()}...\n");
+        $this->info("Enabling {$this->shortName()}...\n");
 
         try {
             $this->docker->bootContainer(
-                $this->installTemplate,
+                $this->dockerRunTemplate,
                 $this->buildParameters(),
             );
 
-            $this->info("\nInstallation complete!");
+            $this->info("\nService enabled!");
         } catch (Throwable $e) {
-            $this->error("\nInstallation failed!");
+            $this->error("\nService failed to enable!!");
         }
     }
 

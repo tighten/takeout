@@ -18,7 +18,7 @@ class MsSql extends BaseService
         ],
     ];
 
-    protected $installTemplate = '-p "$port":1433 \
+    protected $dockerRunTemplate = '-p "$port":1433 \
         -e ACCEPT_EULA=Y \
         -e SA_PASSWORD="$sa_password" \
         "$organization"/"$image_name":"$tag"';

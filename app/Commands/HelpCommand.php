@@ -18,11 +18,11 @@ class HelpCommand extends Command
 
     protected $indent = 22;
     protected $commands = [
-        'install' => 'Install a service from a list of options',
-        'install {service}' => 'Install the provided service',
-        'uninstall' => 'Uninstall a service from a list of options',
-        'uninstall {service}' => 'Uninstall the provided service',
-        'list:services' => 'List all installed services',
+        'enable' => 'Enable a service from a list of options',
+        'enable {service}' => 'Enable the provided service',
+        'disable' => 'Disable a service from a list of options',
+        'disable {service}' => 'Disable the provided service',
+        'list:services' => 'List all enabled services',
     ];
 
     public function handle(): void

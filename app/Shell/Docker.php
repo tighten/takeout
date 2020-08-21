@@ -77,9 +77,9 @@ class Docker
         ));
     }
 
-    public function bootContainer(string $installTemplate, array $parameters): void
+    public function bootContainer(string $dockerRunTemplate, array $parameters): void
     {
-        $process = $this->shell->exec('docker run -d --name "$container_name" ' . $installTemplate, $parameters);
+        $process = $this->shell->exec('docker run -d --name "$container_name" ' . $dockerRunTemplate, $parameters);
 
         if (! $process->isSuccessful()) {
             throw new Exception("Failed installing {$containerName}");

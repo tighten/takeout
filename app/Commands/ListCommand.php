@@ -22,7 +22,7 @@ class ListCommand extends Command
      *
      * @var string
      */
-    protected $description = 'List all services installed by Takeout.';
+    protected $description = 'List all services enabled by Takeout.';
 
     public function handle(): void
     {
