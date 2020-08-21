@@ -52,7 +52,7 @@ class Docker
 
     protected function containersRawOutput(): Process
     {
-        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Ports}},{{.Status}}"');
+        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"');
     }
 
     public function imageIsDownloaded(string $organization, string $imageName, ?string $tag): bool
