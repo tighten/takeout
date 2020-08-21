@@ -75,6 +75,8 @@ return [
 
     'remove' => [
         // ..
+        Symfony\Component\Console\Command\HelpCommand::class,
+        NunoMaduro\LaravelConsoleSummary\SummaryCommand::class,
     ],
 
 ];

@@ -10,18 +10,7 @@ class ListCommand extends Command
 {
     use InitializesCommands;
 
-    /**
-     * The signature of the command.
-     *
-     * @var string
-     */
-    protected $signature = 'list:services';
-
-    /**
-     * The description of the command.
-     *
-     * @var string
-     */
+    protected $signature = 'list';
     protected $description = 'List all services enabled by Takeout.';
 
     public function handle(): void
@@ -30,6 +19,7 @@ class ListCommand extends Command
 
         $containers = app(Docker::class)->containers();
 
+        $this->line("\n");
         $this->table(array_shift($containers), $containers);
     }
 }

@@ -6,23 +6,15 @@ use LaravelZero\Framework\Commands\Command;
 
 class HelpCommand extends Command
 {
-    /**
-     * The signature of the command.
-     */
-    protected $signature = 'helpcommand';
-
-    /**
-     * The description of the command.
-     */
+    protected $signature = 'help';
     protected $description = 'Display a help menu.';
-
     protected $indent = 22;
     protected $commands = [
         'enable' => 'Enable a service from a list of options',
         'enable {service}' => 'Enable the provided service',
         'disable' => 'Disable a service from a list of options',
         'disable {service}' => 'Disable the provided service',
-        'list:services' => 'List all enabled services',
+        'list' => 'List all enabled services',
     ];
 
     public function handle(): void
