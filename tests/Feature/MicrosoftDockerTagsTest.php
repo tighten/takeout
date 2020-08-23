@@ -14,18 +14,14 @@ class MicrosoftDockerTagsTest extends TestCase
     /** @test */
     function it_gets_a_general_availability_release()
     {
-        $mssql = app(MsSql::class);
-        $dockerTags = app(MicrosoftDockerTags::class, ['service' => $mssql]);
-        $output = $dockerTags->getLatestTag();
-
-        $this->assertTrue(Str::contains($output, '-GA-'));
+        $dockerTags = app(MicrosoftDockerTags::class, ['service' => app(MsSql::class)]);
+        $this->assertStringContainsString('-GA-', $dockerTags->getLatestTag());
     }
 
     /** @test */
     function it_ignores_tags_without_ga_string()
     {
         $mssql = app(MsSql::class);
-
         $dockerTags = M::mock(MicrosoftDockerTags::class, [app(Client::class), $mssql])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
@@ -42,16 +38,13 @@ class MicrosoftDockerTagsTest extends TestCase
     function it_reverses_tag_list()
     {
         $mssql = app(MsSql::class);
-
         $dockerTags = M::mock(MicrosoftDockerTags::class, [app(Client::class), $mssql])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
         $dockerTags->shouldReceive('getTagsResponse')->andReturn(new MicrosoftDockerTagsFakestream('abc'));
 
-        $tag = $dockerTags->getLatestTag();
-
-        $this->assertEquals('2024-GA-ubuntu-18.04', $tag);
+        $this->assertEquals('2024-GA-ubuntu-18.04', $dockerTags->getLatestTag());
     }
 }
 

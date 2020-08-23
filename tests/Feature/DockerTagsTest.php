@@ -27,14 +27,9 @@ class DockerTagsTest extends TestCase
     {
         $mysql = app(MySql::class);
 
-        $dockerTags = M::mock(DockerTags::class, [app(Client::class), $mysql])
-            ->makePartial();
+        $dockerTags = M::mock(DockerTags::class, [app(Client::class), $mysql])->makePartial();
+        $dockerTags->shouldReceive('getTags')->andReturn(collect(['latest', 'next latest tag']));
 
-        $tags = collect(['latest', 'next latest tag yay']);
-        $dockerTags->shouldReceive('getTags')->andReturn($tags);
-
-        $tag = $dockerTags->getLatestTag();
-
-        $this->assertEquals('next latest tag yay', $tag);
+        $this->assertEquals('next latest tag', $dockerTags->getLatestTag());
     }
 }
