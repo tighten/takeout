@@ -25,9 +25,7 @@ class DockerTagsTest extends TestCase
     /** @test */
     function it_gets_the_latest_tag_not_named_latest()
     {
-        $mysql = app(MySql::class);
-
-        $dockerTags = M::mock(DockerTags::class, [app(Client::class), $mysql])->makePartial();
+        $dockerTags = M::mock(DockerTags::class, [app(Client::class), app(Mysql::class)])->makePartial();
         $dockerTags->shouldReceive('getTags')->andReturn(collect(['latest', 'next latest tag']));
 
         $this->assertEquals('next latest tag', $dockerTags->getLatestTag());
