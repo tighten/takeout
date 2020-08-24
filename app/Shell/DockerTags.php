@@ -4,6 +4,7 @@ namespace App\Shell;
 
 use App\Services\BaseService;
 use GuzzleHttp\Client;
+use Illuminate\Support\Collection;
 use Psr\Http\Message\StreamInterface;
 
 class DockerTags
@@ -19,16 +20,16 @@ class DockerTags
 
     public function getLatestTag(): string
     {
-        return collect($this->getTags())->first(function ($tag) {
+        return $this->getTags()->first(function ($tag) {
             return $tag !== 'latest';
         });
     }
 
-    public function getTags(): array
+    public function getTags(): Collection
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
 
-        return collect($response['results'])->map->name->filter()->toArray();
+        return collect($response['results'])->map->name->filter();
     }
 
     protected function getTagsResponse(): StreamInterface
