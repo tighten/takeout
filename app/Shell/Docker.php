@@ -110,7 +110,7 @@ class Docker
         return optional($jsonResponse)[0]->Name ?? null;
     }
 
-    public function isDockerServiceRunning(): boolean
+    public function isDockerServiceRunning(): bool
     {
         $response = $this->shell->execQuietly('launchctl list | grep com.docker.docker');
         return $response->isSuccessful();
