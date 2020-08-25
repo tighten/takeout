@@ -21,6 +21,7 @@ class EnableCommandTest extends TestCase
 
         $this->mock(Docker::class, function ($mock) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
+            $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
         });
 
         $this->artisan('enable ' . $service);
@@ -31,6 +32,7 @@ class EnableCommandTest extends TestCase
     {
         $this->mock(Docker::class, function ($mock) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
+            $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
         });
 
         $this->expectException(InvalidServiceShortnameException::class);
