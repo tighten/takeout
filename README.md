@@ -77,7 +77,14 @@ Run `takeout enable mysql` twice; the first time, you'll want to choose the defa
 
 Now, if you run `takeout list`, you'll see both services running at the same time.  
 
-@todo show the 
+```bash
++--------------+--------------------------+-------------------+------------------------+-------------------------+
+| CONTAINER ID | NAMES                    | STATUS            | PORTS                  |                         |
++--------------+--------------------------+-------------------+------------------------+-------------------------+
+| eb5ab1fa055c | TO--mysql--8.0           | Up 53 seconds     | 33060/tcp              |  0.0.0.0:3307->3306/tcp |
+| d02fe70db67f | TO--mysql--5.7           | Up About a minute | 0.0.0.0:3306->3306/tcp |  33060/tcp              |
++--------------+--------------------------+-------------------+------------------------+-------------------------+
+```
 
 ## FAQs
 
@@ -89,14 +96,12 @@ Now, if you run `takeout list`, you'll see both services running at the same tim
 <details>
     <summary><strong>If I disable a service but Takeout still shows the port as taken, how do I proceed?</strong></summary>
     
-    First, run `lsof -i :3306` (where `3306` is the port that's unavailable.)
+    First, run `lsof -i :3306` (where 3306 is the port that's unavailable.)
     
     If you see output like this:
     
-    ```
     com.docke   936 mattstauffer   52u  IPv6 0xc0d6f0b06d5c4efb      0t0  TCP localhost:mysql->localhost:62919 (FIN_WAIT_2)
     TablePlus 96155 mattstauffer   16u  IPv4 0xc0d6f0b0b6dccf6b      0t0  TCP localhost:62919->localhost:mysql (CLOSE_WAIT)
-    ```
     
     The solution is to just close your database GUI, and then it should be released.
 </details>
