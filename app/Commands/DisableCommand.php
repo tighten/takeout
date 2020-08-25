@@ -75,13 +75,28 @@ class DisableCommand extends Command
         try {
             $volumeName = $this->docker->attachedVolumeName($containerId);
 
-            $this->docker->removeContainer($containerId);
-            $this->info("\nService disabled.");
+            $this->task('Disabling Service...', $this->docker->removeContainer($containerId));
 
             if ($volumeName) {
                 $this->info("\nThe disabled service was using a volume named {$volumeName}.");
-                $this->info("If you would like to remove this data, run:");
+                $this->info('If you would like to remove this data, run:');
                 $this->info("\n docker volume rm {$volumeName}");
+            }
+
+            if (count($this->docker->containers(true)) === 1) {
+                $option = $this->menu('No Containers are running. Turn off Docker for Mac?', [
+                    'Yes',
+                    'No',
+                ])->open();
+
+                switch ($option) {
+                    case 0:
+                        $this->task('Stopping Docker Service ', $this->docker->stopDockerService());
+                        break;
+                    case 1:
+                    default:
+                        break;
+                }
             }
         } catch (Throwable $e) {
             $this->error('Disabling failed!');

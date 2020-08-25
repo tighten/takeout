@@ -41,18 +41,23 @@ class Docker
         return $process->isSuccessful();
     }
 
-    public function containers(): array
+    public function containers($all = false): array
     {
-        $output = trim($this->containersRawOutput()->getOutput());
+        $output = trim($this->containersRawOutput($all)->getOutput());
 
         return array_filter(array_map(function ($line) {
             return explode(',', $line);
         }, explode("\n", $output)));
     }
 
-    protected function containersRawOutput(): Process
+    protected function containersRawOutput($all = false): Process
     {
-        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"');
+        if ($all) {
+            $dockerProcessStatusString = 'docker ps -a --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
+        } else {
+            $dockerProcessStatusString = 'docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
+        }
+        return $this->shell->execQuietly($dockerProcessStatusString);
     }
 
     public function imageIsDownloaded(string $organization, string $imageName, ?string $tag): bool
@@ -91,5 +96,16 @@ class Docker
         $response = $this->shell->execQuietly("docker inspect --format='{{json .Mounts}}' {$containerId}");
         $jsonResponse = json_decode($response->getOutput());
         return optional($jsonResponse)[0]->Name ?? null;
+    }
+
+    public function isDockerServiceRunning()
+    {
+        $response = $this->shell->execQuietly('launchctl list | grep com.docker.docker');
+        return $response->isSuccessful();
+    }
+
+    public function stopDockerService()
+    {
+        $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
     }
 }
