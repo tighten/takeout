@@ -4,18 +4,13 @@
 
 Takeout is a Mac-based CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
 
-With `takeout enable mysql` you're running MySQL, and never have to worry about Homebrew MySQL again.
+It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/docs/valet).
+
+With `takeout enable mysql` you're running MySQL, and never have to worry about managing or fixing Homebrew MySQL again.
 
 But you can also easily enable ElasticSearch, Postgres, MSSQL, Redis, and more, with a simple command.
 
-## History
-
-Tighten programmer [Jose Soto](https://twitter.com/josecanhelp) has long been advocating ([podcast](https://twentypercenttime.simplecast.com/episodes/jose-soto-docker-for-local-development), [Laracasts](https://laracasts.com/series/guest-spotlight/episodes/2)) the usage of simple, small Docker containers for local development dependencies. Instead of building your entire local dev stack using something like Vessel, you use your existing web server (likely Laravel Valet) but rely on Docker for managing your services like MySQL and Redis.
-
-Tighten programmer [Matt Stauffer](https://twitter.com/stauffermatt) thought of the idea of packaging Jose's way of working with Docker up into a simple command-line tool, and Takeout was born.
-
-**Example services:**
-
+**Current list of services:**
 - MySQL
 - Postgres
 - MSSQL
@@ -26,55 +21,63 @@ Tighten programmer [Matt Stauffer](https://twitter.com/stauffermatt) thought of 
 
 ## Requirements
 
-- Docker for Mac installed
+- macOS
+- [Composer](https://getcomposer.org/) installed
+- [Docker for Mac](https://docs.docker.com/docker-for-mac/) installed
 
 ## Installation
 
-@todo
+- Install Takeout with Composer by running `composer global require tightenco/takeout`. Make sure the `~/.composer/vendor/bin` directory is in your system's "PATH".
 
 ## Usage
 
+Run `takeout` and then a command name from anywhere in your terminal. 
+
+One of Takeout's primary benefits is that it boots ("enables") or deletes ("disables") Docker containers for your various dependencies quickly and easily.
+
+Because Docker offers persistent volume storage, deleting a container (which we call "disabling" it) doesn't actually delete its data. That means you can enable and disable services with reckless abandon.
+
 ### Enable a service
+
+Show a list of all services you can enable.
 
 ```bash
 takeout enable
 ```
 
-Presents you with a menu of potential services to enable.
-
 ### Enable a specific service
+
+Passed the short name of a service, enable the given service.
 
 ```bash
 takeout enable mysql
 ```
 
-Installs this service if possible
-
 ### Disable a service
+
+Show a list of all enabled services you can disable.
 
 ```bash
 takeout disable
 ```
 
-Presents you with a list of your enabled services, and you can pick one to disable.
-
 ### Disable a specific service
 
+Passed the short name of a service, disable the enabled service which matches it most closely.
+ 
 ```bash
 takeout disable mysql
 ```
 
-Disables this service if possible.
+## Running multiple versions of a dependency
 
-## Future plans
+Another of Takeout's benefits is that it allows you to have multiple versions of a dependency installed and running at the same time. That means, for example, that you can run MySQL 5.7 and 8.0 running at the same time, on different ports.
 
-- self-remove: Deletes all enabled services and then maybe self-uninstalls?
-- upgrade: v2: destroys old container, brings up a new one with a newly-specified tag (prompt user for it) and keeps all other parameters (e.g. port, volume) exactly the same as the old one
-- pt/passthrough: proxy commands through to docker (`./takeout pt mysql stop`)
-- Deliver package in a way that's friendly to non-PHP developers
-- Add 'upgrade' command, which saves the config settings for the old one, brings up a new one with the same tag and parameters, and allows you to re-specify the version constraint
-- Allow for more than one of each service (e.g. mysql 5.7, mysql 8, another mysql 8, etc.)
-- Allow other people to extend Takeout by adding their own plugins (thanks to @angrybrad for the idea!)
+Run `takeout enable mysql` twice; the first time, you'll want to choose the default port (`3306`) and the first version (`5.7`), and the second time, you'll want to choose a second port (`3306`) and the second version (`8.0`).
+
+Now, if you run `takeout list`, you'll see both services running at the same time.  
+
+@todo show the 
 
 ## FAQs
 
@@ -83,7 +86,28 @@ Disables this service if possible.
 
     Sadly, no.
 </details>
+<details>
+    <summary><strong>If I disable a service but Takeout still shows the port as taken, how do I proceed?</strong></summary>
+    
+    First, run `lsof -i :3306` (where `3306` is the port that's unavailable.)
+    
+    If you see output like this:
+    
+    ```
+    com.docke   936 mattstauffer   52u  IPv6 0xc0d6f0b06d5c4efb      0t0  TCP localhost:mysql->localhost:62919 (FIN_WAIT_2)
+    TablePlus 96155 mattstauffer   16u  IPv4 0xc0d6f0b0b6dccf6b      0t0  TCP localhost:62919->localhost:mysql (CLOSE_WAIT)
+    ```
+    
+    The solution is to just close your database GUI, and then it should be released.
+</details>
 
-## Todo
+## Future plans
 
-See our [Project Board](https://github.com/tightenco/takeout/projects/1) for tasks.
+The best way to see our future plans is to check out the [Projects Board](https://github.com/tightenco/takeout/projects/1), but here are a few plans for the future:
+
+- Electron-based GUI
+- `self-remove` command: Deletes all enabled services and then maybe self-uninstalls?
+- `upgrade`: destroys the old container, brings up a new one with a newly-specified tag (prompt user for it, default `latest`) and keeps all other parameters (e.g. port, volume) exactly the same as the old one
+- `pt/passthrough`: proxy commands through to docker (`./takeout pt mysql stop`)
+- Deliver package in a way that's friendly to non-PHP developers (Homebrew? NPM?)
+- Allow other people to extend Takeout by adding their own plugins (thanks to @angrybrad for the idea!)
