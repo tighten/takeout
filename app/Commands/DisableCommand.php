@@ -31,7 +31,7 @@ class DisableCommand extends Command
 
     public function disableableServices(): array
     {
-        return collect($this->docker->containers())->skip(1)->mapWithKeys(function ($line) {
+        return collect($this->docker->takeoutContainers())->skip(1)->mapWithKeys(function ($line) {
             return [$line[0] => str_replace('TO--', '', $line[1])];
         })->toArray();
     }

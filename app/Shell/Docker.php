@@ -43,14 +43,12 @@ class Docker
 
     public function takeoutContainers(): array
     {
-        $output = trim($this->takeoutContainersRawOutput()->getOutput());
-        return $this->containerRawOutputToArray($output);
+        return $this->containerRawOutputToArray($this->takeoutContainersRawOutput());
     }
 
     public function allContainers(): array
     {
-        $output = trim($this->allContainersRawOutput()->getOutput());
-        return $this->containerRawOutputToArray($output);
+        return $this->containerRawOutputToArray($this->allContainersRawOutput());
     }
 
     protected function containerRawOutputToArray($output): array
@@ -60,16 +58,16 @@ class Docker
         }, explode("\n", $output)));
     }
 
-    protected function takeoutContainersRawOutput(): Process
+    protected function takeoutContainersRawOutput(): string
     {
         $dockerProcessStatusString = 'docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
-        return $this->shell->execQuietly($dockerProcessStatusString);
+        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 
-    protected function allContainersRawOutput(): Process
+    protected function allContainersRawOutput(): string
     {
         $dockerProcessStatusString = 'docker ps -a --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
-        return $this->shell->execQuietly($dockerProcessStatusString);
+        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 
     public function imageIsDownloaded(string $organization, string $imageName, ?string $tag): bool
