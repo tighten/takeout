@@ -88,14 +88,9 @@ class DisableCommand extends Command
                     'Yes',
                     'No',
                 ])->open();
-
-                switch ($option) {
-                    case 0:
-                        $this->task('Stopping Docker service ', $this->docker->stopDockerService());
-                        break;
-                    case 1:
-                    default:
-                        break;
+                
+                if ($option === 0) {
+                    $this->task('Stopping Docker service ', $this->docker->stopDockerService());
                 }
             }
         } catch (Throwable $e) {
