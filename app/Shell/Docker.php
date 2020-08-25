@@ -54,19 +54,19 @@ class Docker
     protected function containerRawOutputToArray($output): array
     {
         return array_filter(array_map(function ($line) {
-            return explode(',', $line);
+            return explode('|', $line);
         }, explode("\n", $output)));
     }
 
     protected function takeoutContainersRawOutput(): string
     {
-        $dockerProcessStatusString = 'docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
+        $dockerProcessStatusString = 'docker ps -a --filter "name=TO-" --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
         return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 
     protected function allContainersRawOutput(): string
     {
-        $dockerProcessStatusString = 'docker ps -a --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
+        $dockerProcessStatusString = 'docker ps -a --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
         return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 

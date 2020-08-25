@@ -13,8 +13,8 @@ class DockerContainersTest extends TestCase
     function fakeContainerList()
     {
         return <<<EOD
-CONTAINER ID,NAMES,STATUS
-123456789abc,TO-meilisearch,Up 15 Minutes
+CONTAINER ID|NAMES|STATUS|PORTS
+123456789abc|TO-meilisearch|Up 15 Minutes|7700:7700
 EOD;
     }
 
