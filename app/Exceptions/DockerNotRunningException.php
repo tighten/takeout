@@ -17,6 +17,6 @@ class DockerNotRunningException extends Exception
         $console->line('');
         $console->line('Open Docker for Mac or run:');
         $console->line('open --background -a Docker');
-        $console->line('to start the Docker daemon.');
+        $console->line('to start the Docker service.');
     }
 }

@@ -91,7 +91,7 @@ class DisableCommand extends Command
 
                 switch ($option) {
                     case 0:
-                        $this->task('Stopping Docker Service ', $this->docker->stopDockerService());
+                        $this->task('Stopping Docker service ', $this->docker->stopDockerService());
                         break;
                     case 1:
                     default:
