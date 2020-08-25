@@ -31,7 +31,7 @@ class DisableCommand extends Command
 
     public function disableableServices(): array
     {
-        return collect($this->docker->containers())->skip(1)->mapWithKeys(function ($line) {
+        return collect($this->docker->takeoutContainers())->skip(1)->mapWithKeys(function ($line) {
             return [$line[0] => str_replace('TO--', '', $line[1])];
         })->toArray();
     }
@@ -75,13 +75,23 @@ class DisableCommand extends Command
         try {
             $volumeName = $this->docker->attachedVolumeName($containerId);
 
-            $this->docker->removeContainer($containerId);
-            $this->info("\nService disabled.");
+            $this->task('Disabling Service...', $this->docker->removeContainer($containerId));
 
             if ($volumeName) {
                 $this->info("\nThe disabled service was using a volume named {$volumeName}.");
-                $this->info("If you would like to remove this data, run:");
+                $this->info('If you would like to remove this data, run:');
                 $this->info("\n docker volume rm {$volumeName}");
+            }
+
+            if (count($this->docker->allContainers()) === 1) {
+                $option = $this->menu('No Containers are running. Turn off Docker for Mac?', [
+                    'Yes',
+                    'No',
+                ])->open();
+                
+                if ($option === 0) {
+                    $this->task('Stopping Docker service ', $this->docker->stopDockerService());
+                }
             }
         } catch (Throwable $e) {
             $this->error('Disabling failed!');

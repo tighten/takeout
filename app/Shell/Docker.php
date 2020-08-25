@@ -41,18 +41,33 @@ class Docker
         return $process->isSuccessful();
     }
 
-    public function containers(): array
+    public function takeoutContainers(): array
     {
-        $output = trim($this->containersRawOutput()->getOutput());
+        return $this->containerRawOutputToArray($this->takeoutContainersRawOutput());
+    }
 
+    public function allContainers(): array
+    {
+        return $this->containerRawOutputToArray($this->allContainersRawOutput());
+    }
+
+    protected function containerRawOutputToArray($output): array
+    {
         return array_filter(array_map(function ($line) {
             return explode(',', $line);
         }, explode("\n", $output)));
     }
 
-    protected function containersRawOutput(): Process
+    protected function takeoutContainersRawOutput(): string
     {
-        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"');
+        $dockerProcessStatusString = 'docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
+        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
+    }
+
+    protected function allContainersRawOutput(): string
+    {
+        $dockerProcessStatusString = 'docker ps -a --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
+        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 
     public function imageIsDownloaded(string $organization, string $imageName, ?string $tag): bool
@@ -91,5 +106,16 @@ class Docker
         $response = $this->shell->execQuietly("docker inspect --format='{{json .Mounts}}' {$containerId}");
         $jsonResponse = json_decode($response->getOutput());
         return optional($jsonResponse)[0]->Name ?? null;
+    }
+
+    public function isDockerServiceRunning(): bool
+    {
+        $response = $this->shell->execQuietly('launchctl list | grep com.docker.docker');
+        return $response->isSuccessful();
+    }
+
+    public function stopDockerService(): void
+    {
+        $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
     }
 }
