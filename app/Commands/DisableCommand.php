@@ -83,7 +83,7 @@ class DisableCommand extends Command
                 $this->info("\n docker volume rm {$volumeName}");
             }
 
-            if (count($this->docker->containers(true)) === 1) {
+            if (count($this->docker->allContainers()) === 1) {
                 $option = $this->menu('No Containers are running. Turn off Docker for Mac?', [
                     'Yes',
                     'No',

@@ -17,7 +17,7 @@ class ListCommand extends Command
     {
         $this->initializeCommand();
 
-        $containers = app(Docker::class)->containers();
+        $containers = app(Docker::class)->takeoutContainers();
 
         $this->line("\n");
         $this->table(array_shift($containers), $containers);

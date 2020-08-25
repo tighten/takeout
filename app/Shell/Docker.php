@@ -41,22 +41,34 @@ class Docker
         return $process->isSuccessful();
     }
 
-    public function containers($all = false): array
+    public function takeoutContainers(): array
     {
-        $output = trim($this->containersRawOutput($all)->getOutput());
+        $output = trim($this->takeoutContainersRawOutput()->getOutput());
+        return $this->containerRawOutputToArray($output);
+    }
 
+    public function allContainers(): array
+    {
+        $output = trim($this->allContainersRawOutput()->getOutput());
+        return $this->containerRawOutputToArray($output);
+    }
+
+    protected function containerRawOutputToArray($output): array
+    {
         return array_filter(array_map(function ($line) {
             return explode(',', $line);
         }, explode("\n", $output)));
     }
 
-    protected function containersRawOutput($all = false): Process
+    protected function takeoutContainersRawOutput(): Process
     {
-        if ($all) {
-            $dockerProcessStatusString = 'docker ps -a --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
-        } else {
-            $dockerProcessStatusString = 'docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
-        }
+        $dockerProcessStatusString = 'docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
+        return $this->shell->execQuietly($dockerProcessStatusString);
+    }
+
+    protected function allContainersRawOutput(): Process
+    {
+        $dockerProcessStatusString = 'docker ps -a --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"';
         return $this->shell->execQuietly($dockerProcessStatusString);
     }
 
@@ -98,13 +110,13 @@ class Docker
         return optional($jsonResponse)[0]->Name ?? null;
     }
 
-    public function isDockerServiceRunning()
+    public function isDockerServiceRunning(): boolean
     {
         $response = $this->shell->execQuietly('launchctl list | grep com.docker.docker');
         return $response->isSuccessful();
     }
 
-    public function stopDockerService()
+    public function stopDockerService(): void
     {
         $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
     }

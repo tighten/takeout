@@ -27,7 +27,7 @@ EOD;
             $mock->shouldReceive('execQuietly')->andReturn($process);
         });
 
-        $output = app(Docker::class)->containers();
+        $output = app(Docker::class)->takeoutContainers();
 
         $expectedTable = [
             ['CONTAINER ID', 'NAMES', 'STATUS'],
