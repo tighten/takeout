@@ -5,13 +5,9 @@ namespace Tests\Feature;
 use App\Exceptions\InvalidServiceShortnameException;
 use App\Services\MeiliSearch;
 use App\Shell\Docker;
-use App\Shell\Shell;
-use Illuminate\Support\Str;
-use Symfony\Component\Process\Process;
 use Tests\TestCase;
-use Mockery as M;
 
-class InstallCommandTest extends TestCase
+class EnableCommandTest extends TestCase
 {
     /** @test */
     function it_finds_services_by_shortname()
@@ -19,7 +15,7 @@ class InstallCommandTest extends TestCase
         $service = 'meilisearch';
 
         $this->mock(MeiliSearch::class, function ($mock) use ($service) {
-            $mock->shouldReceive('install')->once();
+            $mock->shouldReceive('enable')->once();
             $mock->shouldReceive('shortName')->once()->andReturn($service);
         });
 
@@ -27,7 +23,7 @@ class InstallCommandTest extends TestCase
             $mock->shouldReceive('isInstalled')->andReturn(true);
         });
 
-        $this->artisan('install ' . $service);
+        $this->artisan('enable ' . $service);
     }
 
     /** @test */
@@ -38,7 +34,7 @@ class InstallCommandTest extends TestCase
         });
 
         $this->expectException(InvalidServiceShortnameException::class);
-        $this->artisan('install asdfasdfadsfasdfadsf')
+        $this->artisan('enable asdfasdfadsfasdfadsf')
             ->assertExitCode(0);
     }
 }

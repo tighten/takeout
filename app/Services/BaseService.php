@@ -15,8 +15,9 @@ abstract class BaseService
 
     protected $organization = 'library'; // Official repositories use `library` as the organization name.
     protected $imageName;
+    protected $dockerTagsClass = DockerTags::class;
     protected $tag;
-    protected $installTemplate;
+    protected $dockerRunTemplate;
     protected $defaultPort;
     protected $defaultPrompts = [
         [
@@ -36,12 +37,11 @@ abstract class BaseService
     protected $environment;
     protected $docker;
 
-    public function __construct(Shell $shell, Environment $environment, Docker $docker, DockerTags $dockerTags)
+    public function __construct(Shell $shell, Environment $environment, Docker $docker)
     {
         $this->shell = $shell;
         $this->environment = $environment;
         $this->docker = $docker;
-        $this->dockerTags = $dockerTags;
 
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'port') {
@@ -56,22 +56,22 @@ abstract class BaseService
         ];
     }
 
-    public function install()
+    public function enable(): void
     {
         $this->prompts();
         $this->ensureImageIsDownloaded();
 
-        $this->info("Installing {$this->shortName()}...\n");
+        $this->info("Enabling {$this->shortName()}...\n");
 
         try {
             $this->docker->bootContainer(
-                $this->installTemplate,
+                $this->dockerRunTemplate,
                 $this->buildParameters(),
             );
 
-            $this->info("\nInstallation complete!");
+            $this->info("\nService enabled!");
         } catch (Throwable $e) {
-            return $this->error("\nInstallation failed!");
+            $this->error("\nService failed to enable!!");
         }
     }
 
@@ -90,7 +90,12 @@ abstract class BaseService
         return strtolower(class_basename(static::class));
     }
 
-    protected function ensureImageIsDownloaded()
+    public function defaultPort(): int
+    {
+        return $this->defaultPort;
+    }
+
+    protected function ensureImageIsDownloaded(): void
     {
         if ($this->docker->imageIsDownloaded($this->organization, $this->imageName, $this->tag)) {
             return;
@@ -100,7 +105,7 @@ abstract class BaseService
         $this->docker->downloadImage($this->organization, $this->imageName, $this->tag);
     }
 
-    protected function prompts()
+    protected function prompts(): void
     {
         foreach ($this->defaultPrompts as $prompt) {
             $this->askQuestion($prompt);
@@ -118,25 +123,26 @@ abstract class BaseService
         $this->tag = $this->resolveTag($this->promptResponses['tag']);
     }
 
-    protected function askQuestion($prompt): void
+    protected function askQuestion(array $prompt): void
     {
         $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
     }
 
-    protected function resolveTag($responseTag)
+    protected function resolveTag($responseTag): string
     {
         if ($responseTag === 'latest') {
-            return $this->dockerTags->getLatestTag($this->organization, $this->imageName);
+            return app()->make($this->dockerTagsClass, ['service' => $this])->getLatestTag();
         }
 
         return $responseTag;
     }
 
-    protected function buildParameters()
+    protected function buildParameters(): array
     {
         $parameters = $this->promptResponses;
         $parameters['container_name'] = $this->containerName();
         $parameters['tag'] = $this->tag; // Overwrite "latest" with actual latest tag
+
         return $parameters;
     }
 

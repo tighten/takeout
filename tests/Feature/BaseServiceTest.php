@@ -3,15 +3,13 @@
 namespace Tests\Feature;
 
 use App\Services\MeiliSearch;
-use App\Services\MySql;
 use App\Shell\Docker;
-use App\Shell\DockerTags;
 use App\Shell\Shell;
-use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use Mockery as M;
 use Symfony\Component\Process\Process;
 use Tests\TestCase;
+use function app;
 
 class BaseServiceTest extends TestCase
 {
@@ -23,9 +21,12 @@ class BaseServiceTest extends TestCase
     }
 
     /** @test */
-    function it_installs_services()
+    function it_enables_services()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
+            $defaultPort = app(MeiliSearch::class)->defaultPort();
+            $mock->shouldReceive('ask')->with('Which host port would you like this service to use?', $defaultPort)->andReturn(7700);
+            $mock->shouldReceive('ask')->with('Which tag (version) of this service would you like to use?', 'latest')->andReturn('v1.1.1');
             $mock->shouldIgnoreMissing();
         }));
 
@@ -45,6 +46,6 @@ class BaseServiceTest extends TestCase
         });
 
         $service = app(MeiliSearch::Class); // Extends BaseService
-        $service->install();
+        $service->enable();
     }
 }

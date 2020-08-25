@@ -14,7 +14,7 @@ class Docker
         $this->shell = $shell;
     }
 
-    public function removeContainer(string $containerId)
+    public function removeContainer(string $containerId): void
     {
         $this->stopContainer($containerId);
 
@@ -25,7 +25,7 @@ class Docker
         }
     }
 
-    public function stopContainer(string $containerId)
+    public function stopContainer(string $containerId): void
     {
         $process = $this->shell->exec('docker stop ' . $containerId);
 
@@ -34,27 +34,28 @@ class Docker
         }
     }
 
-    public function isInstalled(): Bool
+    public function isInstalled(): bool
     {
         $process = $this->shell->execQuietly('docker --version 2>&1');
 
         return $process->isSuccessful();
     }
 
-    public function containersRawOutput(): Process
-    {
-        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}}"');
-    }
-
     public function containers(): array
     {
-        $output = $this->containersRawOutput()->getOutput();
+        $output = trim($this->containersRawOutput()->getOutput());
+
         return array_filter(array_map(function ($line) {
-            return array_filter(explode(',', $line));
+            return explode(',', $line);
         }, explode("\n", $output)));
     }
 
-    public function imageIsDownloaded($organization, $imageName, $tag): Bool
+    protected function containersRawOutput(): Process
+    {
+        return $this->shell->execQuietly('docker ps -a --filter "name=TO-" --format "table {{.ID}},{{.Names}},{{.Status}},{{.Ports}}"');
+    }
+
+    public function imageIsDownloaded(string $organization, string $imageName, ?string $tag): bool
     {
         $process = $this->shell->execQuietly(sprintf(
             'docker image inspect %s/%s:%s',
@@ -66,7 +67,7 @@ class Docker
         return $process->isSuccessful();
     }
 
-    public function downloadImage($organization, $imageName, $tag)
+    public function downloadImage(string $organization, string $imageName, ?string $tag): void
     {
         $this->shell->exec(sprintf(
             'docker pull %s/%s:%s',
@@ -76,12 +77,19 @@ class Docker
         ));
     }
 
-    public function bootContainer(string $installTemplate, array $parameters): void
+    public function bootContainer(string $dockerRunTemplate, array $parameters): void
     {
-        $process = $this->shell->exec('docker run -d --name "$container_name" ' . $installTemplate, $parameters);
+        $process = $this->shell->exec('docker run -d --name "$container_name" ' . $dockerRunTemplate, $parameters);
 
         if (! $process->isSuccessful()) {
             throw new Exception("Failed installing {$containerName}");
         }
+    }
+
+    public function attachedVolumeName(string $containerId)
+    {
+        $response = $this->shell->execQuietly("docker inspect --format='{{json .Mounts}}' {$containerId}");
+        $jsonResponse = json_decode($response->getOutput());
+        return optional($jsonResponse)[0]->Name ?? null;
     }
 }

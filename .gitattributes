@@ -1,7 +1,4 @@
 * text=auto
 /.github export-ignore
-.styleci.yml export-ignore
-.scrutinizer.yml export-ignore
-BACKERS.md export-ignore
-CONTRIBUTING.md export-ignore
-CHANGELOG.md export-ignore
+.editorconfig export-ignore
+takeout-banner.png export-ignore

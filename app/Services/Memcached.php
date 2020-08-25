@@ -8,6 +8,6 @@ class Memcached extends BaseService
     protected $defaultPort = 11211;
     protected $prompts = [];
 
-    protected $installTemplate = '-p "$port":11212 \
+    protected $dockerRunTemplate = '-p "$port":11212 \
             "$organization"/"$image_name":"$tag"';
 }

@@ -4,9 +4,9 @@
 
 Takeout is a Mac-based CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
 
-With `takeout install mysql` you're running MySQL, and never have to worry about Homebrew MySQL again.
+With `takeout enable mysql` you're running MySQL, and never have to worry about Homebrew MySQL again.
 
-But you can also easily install ElasticSearch, Postgres, MSSQL, Redis, and more, with a simple command.
+But you can also easily enable ElasticSearch, Postgres, MSSQL, Redis, and more, with a simple command.
 
 ## History
 
@@ -34,41 +34,41 @@ Tighten programmer [Matt Stauffer](https://twitter.com/stauffermatt) thought of 
 
 ## Usage
 
-### Install with no params
+### Enable a service
 
 ```bash
-takeout install
+takeout enable
 ```
 
-Presents you with a menu of potential services to install.
+Presents you with a menu of potential services to enable.
 
-### Install passing service name
+### Enable a specific service
 
 ```bash
-takeout install mysql
+takeout enable mysql
 ```
 
 Installs this service if possible
 
-### Uninstall with no params
+### Disable a service
 
 ```bash
-takeout uninstall
+takeout disable
 ```
 
-Presents you with a list of your installed services, and you can pick one to uninstall.
+Presents you with a list of your enabled services, and you can pick one to disable.
 
-### Uninstall with params
+### Disable a specific service
 
 ```bash
-takeout uninstall mysql
+takeout disable mysql
 ```
 
-Uninstalls this service if possible.
+Disables this service if possible.
 
 ## Future plans
 
-- self-remove: Deletes all installed services and then maybe self-uninstalls?
+- self-remove: Deletes all enabled services and then maybe self-uninstalls?
 - upgrade: v2: destroys old container, brings up a new one with a newly-specified tag (prompt user for it) and keeps all other parameters (e.g. port, volume) exactly the same as the old one
 - pt/passthrough: proxy commands through to docker (`./takeout pt mysql stop`)
 - Deliver package in a way that's friendly to non-PHP developers
@@ -79,7 +79,7 @@ Uninstalls this service if possible.
 ## FAQs
 
 <details>
-    <summary><strong>Will this install the PHP drivers for me via PECL?</strong></summary>
+    <summary><strong>Will this enable the PHP drivers for me via PECL?</strong></summary>
 
     Sadly, no.
 </details>

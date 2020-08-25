@@ -11,7 +11,7 @@ class Environment
         $this->shell = $shell;
     }
 
-    public function portIsAvailable($port)
+    public function portIsAvailable($port): bool
     {
         // Check to see if the system is running a service with the desired port
         $process = $this->shell->execQuietly("netstat -vanp tcp | grep {$port}");

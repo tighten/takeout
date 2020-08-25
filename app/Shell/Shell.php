@@ -14,7 +14,7 @@ class Shell
         $this->output = $output;
     }
 
-    public function exec($command, $parameters = [], $quiet = false): Process
+    public function exec(string $command, array $parameters = [], bool $quiet = false): Process
     {
         $process = $this->buildProcess($command);
         $process->run(function ($type, $buffer) use ($quiet) {
@@ -32,27 +32,27 @@ class Shell
         return $process;
     }
 
-    public function execQuietly($command, $parameters = []): Process
+    public function execQuietly(string $command, array $parameters = []): Process
     {
         return $this->exec($command, $parameters, $quiet = true);
     }
 
-    public function formatStartMessage(string $buffer)
+    public function formatStartMessage(string $buffer): string
     {
         return rtrim(sprintf('<bg=blue;fg=white> RUN </> <fg=blue>%s</>', $buffer));
     }
 
-    public function formatErrorMessage(string $buffer)
+    public function formatErrorMessage(string $buffer): string
     {
         return rtrim(sprintf('<bg=red;fg=white> ERR </> %s', $buffer));
     }
 
-    public function formatMessage(string $buffer)
+    public function formatMessage(string $buffer): string
     {
         return rtrim(sprintf('<bg=green;fg=white> OUT </> %s', $buffer));
     }
 
-    public function buildProcess($command): Process
+    public function buildProcess(string $command): Process
     {
         $process = Process::fromShellCommandline($command);
         $process->setTimeout(null);

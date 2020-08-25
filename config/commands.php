@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => NunoMaduro\LaravelConsoleSummary\SummaryCommand::class,
+    'default' => App\Commands\HelpCommand::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -75,6 +75,8 @@ return [
 
     'remove' => [
         // ..
+        Symfony\Component\Console\Command\HelpCommand::class,
+        NunoMaduro\LaravelConsoleSummary\SummaryCommand::class,
     ],
 
 ];
