@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class Mailhog extends BaseService
+class MailHog extends BaseService
 {
     protected $organization = 'mailhog';
     protected $imageName = 'mailhog';
