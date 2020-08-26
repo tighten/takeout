@@ -22,7 +22,6 @@ class MailHog extends BaseService
 
     protected $dockerRunTemplate = '-p "$port":1025 \
         -p "$web_port":8025 \
-        -e MYSQL_ROOT_PASSWORD="$root_password" \
         -v "$volume":/var/lib/mysql \
         "$organization"/"$image_name":"$tag"';
 }
