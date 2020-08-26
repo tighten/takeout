@@ -8,19 +8,19 @@ class Mailhog extends BaseService
     protected $imageName = 'mailhog';
     protected $defaultPort = 1025;
     protected $prompts = [
-        [
-            'shortname' => 'volume',
-            'prompt' => 'What is the Docker volume name?',
-            'default' => 'mailhog_data',
-        ],
-        [
-            'shortname' => 'web_port',
-            'prompt' => 'What will the web port?',
-            'default' => '8025',
-        ],
-    ];
+            [
+                'shortname' => 'web_port',
+                'prompt'    => 'What will the web port?',
+                'default'   => '8025',
+            ],
+            [
+                'shortname' => 'volume',
+                'prompt'    => 'What is the Docker volume name?',
+                'default'   => 'mailhog_data',
+            ],
+        ];
 
-    protected $dockerRunTemplate = '-p "$port":3306 \
+    protected $dockerRunTemplate = '-p "$port":1025 \
         -p "$web_port":8025 \
         -e MYSQL_ROOT_PASSWORD="$root_password" \
         -v "$volume":/var/lib/mysql \
