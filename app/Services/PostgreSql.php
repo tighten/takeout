@@ -14,7 +14,7 @@ class PostgreSql extends BaseService
         ],
         [
             'shortname' => 'root_password',
-            'prompt' => 'What will the root password be?',
+            'prompt' => 'What will the password for the `postgres` user be?',
             'default' => 'password',
         ],
     ];

@@ -13,7 +13,7 @@ class MsSql extends BaseService
     protected $prompts = [
         [
             'shortname' => 'sa_password',
-            'prompt' => 'What will the SA password be?',
+            'prompt' => 'What will the password for the `sa` user be?',
             'default' => 'useA$strongPas1337',
         ],
     ];
