@@ -43,5 +43,5 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["takeout"]
+    "bin": ["builds/takeout"]
 }
