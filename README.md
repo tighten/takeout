@@ -27,7 +27,13 @@ But you can also easily enable ElasticSearch, Postgres, MSSQL, Redis, and more, 
 
 ## Installation
 
-- Install Takeout with Composer by running `composer global require tightenco/takeout`. Make sure the `~/.composer/vendor/bin` directory is in your system's "PATH".
+Install Takeout with Composer by running:
+
+```bash
+composer global require tightenco/takeout
+```
+
+Make sure the `~/.composer/vendor/bin` directory is in your system's "PATH".
 
 ## Usage
 
