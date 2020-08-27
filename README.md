@@ -20,6 +20,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Redis, and more
 - Memcached
 - MailHog
 - MariaDB
+- Minio
 
 ## Requirements
 
