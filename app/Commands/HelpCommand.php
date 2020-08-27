@@ -14,6 +14,8 @@ class HelpCommand extends Command
         'enable {service}' => 'Enable the provided service',
         'disable' => 'Disable a service from a list of options',
         'disable {service}' => 'Disable the provided service',
+        'restart' => 'Restart a stopped container',
+        'restart {container}' => 'Restart a stopped container',
         'list' => 'List all enabled services',
     ];
 
