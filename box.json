@@ -9,6 +9,7 @@
     "files": [
         "composer.json"
     ],
+    "exclude-dev-files": false,
     "exclude-composer-files": false,
     "compression": "GZ",
     "compactors": [
