@@ -8,11 +8,11 @@ It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/doc
 
 With `takeout enable mysql` you're running MySQL, and never have to worry about managing or fixing Homebrew MySQL again.
 
-But you can also easily enable ElasticSearch, Postgres, MSSQL, Redis, and more, with a simple command.
+But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Redis, and more, with a simple command.
 
 **Current list of services:**
 - MySQL
-- Postgres
+- PostgreSQL
 - MSSQL
 - ElasticSearch
 - MeiliSearch
@@ -79,7 +79,7 @@ takeout disable mysql
 
 Another of Takeout's benefits is that it allows you to have multiple versions of a dependency installed and running at the same time. That means, for example, that you can run both MySQL 5.7 and 8.0 at the same time, on different ports.
 
-Run `takeout enable mysql` twice; the first time, you'll want to choose the default port (`3306`) and the first version (`5.7`), and the second time, you'll want to choose a second port (`3307`) and the second version (`8.0`).
+Run `takeout enable mysql` twice; the first time, you'll want to choose the default port (`3306`) and the first version (`5.7`), and the second time, you'll want to choose a second port (`3307`), the second version (`8.0`) and a different volume name (so that they don't share the same `mysql_data`).
 
 Now, if you run `takeout list`, you'll see both services running at the same time.  
 
