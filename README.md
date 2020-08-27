@@ -77,9 +77,9 @@ takeout disable mysql
 
 ## Running multiple versions of a dependency
 
-Another of Takeout's benefits is that it allows you to have multiple versions of a dependency installed and running at the same time. That means, for example, that you can run MySQL 5.7 and 8.0 running at the same time, on different ports.
+Another of Takeout's benefits is that it allows you to have multiple versions of a dependency installed and running at the same time. That means, for example, that you can run both MySQL 5.7 and 8.0 at the same time, on different ports.
 
-Run `takeout enable mysql` twice; the first time, you'll want to choose the default port (`3306`) and the first version (`5.7`), and the second time, you'll want to choose a second port (`3306`) and the second version (`8.0`).
+Run `takeout enable mysql` twice; the first time, you'll want to choose the default port (`3306`) and the first version (`5.7`), and the second time, you'll want to choose a second port (`3307`) and the second version (`8.0`).
 
 Now, if you run `takeout list`, you'll see both services running at the same time.  
 
@@ -87,7 +87,7 @@ Now, if you run `takeout list`, you'll see both services running at the same tim
 +--------------+----------------+---------------+-----------------------------------+
 | CONTAINER ID | NAMES          | STATUS        | PORTS                             |
 +--------------+----------------+---------------+-----------------------------------+
-| 4bf3379ab2f5 | TO--mysql--5.7 | Up 2 seconds  | 0.0.0.0:3306->3306/tcp, 33060/tcp |
+| 4bf3379ab2f5 | TO--mysql--5.7 | Up 2 seconds  | 33060/tcp, 0.0.0.0:3306->3306/tcp |
 | 983acf46ceef | TO--mysql--8.0 | Up 35 seconds | 33060/tcp, 0.0.0.0:3307->3306/tcp |
 +--------------+----------------+---------------+-----------------------------------+
 ```
