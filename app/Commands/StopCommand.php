@@ -29,15 +29,15 @@ class StopCommand extends Command
             return;
         }
 
-        $this->menu('Containers to restart')
-            ->addItems($this->restartableContainers())
+        $this->menu('Containers to stop')
+            ->addItems($this->stoppableContainers())
             ->open();
     }
 
-    public function restartableContainers(): array
+    public function stoppableContainers(): array
     {
         return collect(app(Docker::class)->takeoutContainers())->skip(1)->reduce(function ($containers, $container) {
-            if(!Str::contains($container[2], 'Up')) {
+            if(Str::contains($container[2], 'Up')) {
                 $containers->push(["$container[0] - $container[1]", function(CliMenu $menu) use ($container) {
                     $this->stop($menu->getSelectedItem()->getText());
 
