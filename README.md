@@ -19,6 +19,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Redis, and more
 - Redis
 - Memcached
 - MailHog
+- MariaDB
 
 ## Requirements
 
