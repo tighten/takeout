@@ -25,7 +25,10 @@ class EnableCommand extends Command
             return;
         }
 
-        $option = $this->menu('Services to enable', $this->enableableServices())->open();
+        $option = $this->menu('Services to enable', $this->enableableServices())
+            ->addLineBreak('', 1)
+            ->setPadding(2, 5)
+            ->open();
 
         if (! $option) {
             return;
@@ -37,7 +40,8 @@ class EnableCommand extends Command
     public function enableableServices(): array
     {
         return collect((new Services)->all())->mapWithKeys(function ($fqcn, $shortName) {
-            return [$shortName => Str::afterLast($fqcn, '\\')];
+            $fullName = Str::of($fqcn)->replace(['MsS', 'Sql'], ['MS S', 'SQL']);
+            return [$shortName => Str::afterLast($fullName, '\\')];
         })->toArray();
     }
 
