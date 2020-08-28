@@ -12,8 +12,7 @@ jobs:
             matrix:
                 os: [macOS]
                 #os: [macOS, Ubuntu, Windows]
-                php: [7.4]
-                #php: [7.2, 7.3, 7.4]
+                php: [7.2, 7.3, 7.4]
                 dependency: [prefer-stable]
                 #dependency: [prefer-lowest, prefer-stable]
 
