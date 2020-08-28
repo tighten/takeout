@@ -18,6 +18,7 @@ But you can also easily enable ElasticSearch, Postgres, MSSQL, Redis, and more, 
 - MeiliSearch
 - Redis
 - Memcached
+- MailHog
 
 ## Requirements
 
