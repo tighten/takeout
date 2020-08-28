@@ -66,7 +66,7 @@ abstract class BaseService
         try {
             $this->docker->bootContainer(
                 $this->dockerRunTemplate,
-                $this->buildParameters(),
+                $this->buildParameters()
             );
 
             $this->info("\nService enabled!");
