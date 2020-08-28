@@ -90,8 +90,8 @@ class DisableCommand extends Command
                 $option = $this->menu('No containers are running. Turn off Docker for Mac?', [
                     'Yes',
                     'No',
-                ])->open();
                 
+                ])->disableDefaultItems()->open();
                 if ($option === 0) {
                     $this->task('Stopping Docker service ', $this->docker->stopDockerService());
                 }
