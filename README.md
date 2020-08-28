@@ -21,6 +21,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Redis, and more
 - MailHog
 - MariaDB
 - Minio
+- InfluxDB
 
 ## Requirements
 
