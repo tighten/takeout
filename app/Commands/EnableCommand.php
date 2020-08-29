@@ -40,8 +40,7 @@ class EnableCommand extends Command
     public function enableableServices(): array
     {
         return collect((new Services)->all())->mapWithKeys(function ($fqcn, $shortName) {
-            $fullName = Str::of($fqcn)->replace(['MsS', 'Sql'], ['MS S', 'SQL']);
-            return [$shortName => Str::afterLast($fullName, '\\')];
+            return [$shortName => Str::afterLast($this->formatName($fqcn), '\\')];
         })->toArray();
     }
 
@@ -49,5 +48,12 @@ class EnableCommand extends Command
     {
         $fqcn = (new Services)->get($service);
         app($fqcn)->enable();
+    }
+
+    private function formatName(string $name): string
+    {
+        $search = ['MsSql', 'MySql', 'PostgreSql'];
+        $replace = ['MS SQL', 'MySQL', 'PostgreSQL'];
+        return Str::of($name)->replace($search, $replace);
     }
 }
