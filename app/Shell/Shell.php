@@ -73,12 +73,7 @@ class Shell
     protected function formatMultiline($buffer): string
     {
         $bufferArray = explode(PHP_EOL, $buffer);
-        $buffer = [];
-        $buffer[0] = $bufferArray[0];
-        unset($bufferArray[0]);
-        foreach ($bufferArray as $line) {
-            $buffer[] = $this->indentBy(self::SPACES) . $line;
-        }
+        $buffer = $this->alignMultiline($bufferArray);
         return implode(PHP_EOL, $buffer);
     }
 
@@ -98,5 +93,20 @@ class Shell
     protected function indentBy($spaces)
     {
         return str_repeat(' ', $spaces);
+    }
+
+    /**
+     * @param bool $bufferArray
+     * @param array $buffer
+     * @return array
+     */
+    protected function alignMultiline(array $bufferArray): array
+    {
+        $buffer[0] = $bufferArray[0];
+        unset($bufferArray[0]);
+        foreach ($bufferArray as $line) {
+            $buffer[] = $this->indentBy(self::SPACES) . $line;
+        }
+        return $buffer;
     }
 }
