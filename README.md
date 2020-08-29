@@ -121,6 +121,12 @@ The solution is to just close your database GUI, and then it should be released.
 Why would you use this instead of compiling your dependencies from scratch? Better yet, why not write your own database engine? It's the only way to know there's not an NSA backdoor in it.
 </details>
 
+<details>
+<summary><strong>Sometimes I cannot connect to MySql with SequelPro at 127.0.0.1</strong></summary>
+
+You can try 0.0.0.0 in this case. Make sure that the port is correct.
+</details>
+
 ## Future plans
 
 The best way to see our future plans is to check out the [Projects Board](https://github.com/tightenco/takeout/projects/1), but here are a few plans for the future:
