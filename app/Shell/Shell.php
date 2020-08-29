@@ -7,6 +7,8 @@ use Symfony\Component\Process\Process;
 
 class Shell
 {
+    const SPACES = 6;
+
     protected $output;
 
     public function __construct(ConsoleOutput $output)
@@ -27,7 +29,7 @@ class Shell
             }
 
             if ($this->isMultiline($buffer)){
-                $buffer = $this->formatMultiline($buffer, '      ');
+                $buffer = $this->formatMultiline($buffer);
             }
 
             $this->output->writeLn($this->formatMessage($buffer));
@@ -68,17 +70,16 @@ class Shell
      * @param $buffer
      * @return string
      */
-    protected function formatMultiline($buffer, $spaces): string
+    protected function formatMultiline($buffer): string
     {
-        $implode = explode("\n", $buffer);
-        $array = [];
-        $array[0] = $implode[0];
-        unset($implode[0]);
-        foreach ($implode as $i) {
-            $array[] = $spaces . $i;
+        $bufferArray = explode(PHP_EOL, $buffer);
+        $buffer = [];
+        $buffer[0] = $bufferArray[0];
+        unset($bufferArray[0]);
+        foreach ($bufferArray as $line) {
+            $buffer[] = $this->indentBy(self::SPACES) . $line;
         }
-        $buffer = implode(PHP_EOL, $array);
-        return $buffer;
+        return implode(PHP_EOL, $buffer);
     }
 
     /**
@@ -88,5 +89,14 @@ class Shell
     protected function isMultiline($buffer): bool
     {
         return substr_count($buffer, "\n") > 1;
+    }
+
+    /**
+     * @param $spaces
+     * @return mixed
+     */
+    protected function indentBy($spaces)
+    {
+        return str_repeat(' ', $spaces);
     }
 }
