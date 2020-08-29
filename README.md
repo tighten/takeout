@@ -20,6 +20,8 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Redis, and more
 - Memcached
 - MailHog
 - MariaDB
+- Minio
+- InfluxDB
 - DynamoDB
 
 ## Requirements
@@ -98,21 +100,26 @@ Now, if you run `takeout list`, you'll see both services running at the same tim
 ## FAQs
 
 <details>
-    <summary><strong>Will this enable the PHP drivers for me via PECL?</strong></summary>
+<summary><strong>Will this enable the PHP drivers for me via PECL?</strong></summary>
 
-    Sadly, no.
+Sadly, no.
 </details>
 <details>
-    <summary><strong>If I disable a service but Takeout still shows the port as taken, how do I proceed?</strong></summary>
+<summary><strong>If I disable a service but Takeout still shows the port as taken, how do I proceed?</strong></summary>
     
-    First, run `lsof -i :3306` (where 3306 is the port that's unavailable.)
+First, run `lsof -i :3306` (where 3306 is the port that's unavailable.)
     
-    If you see output like this:
+If you see output like this:
     
     com.docke   936 mattstauffer   52u  IPv6 0xc0d6f0b06d5c4efb      0t0  TCP localhost:mysql->localhost:62919 (FIN_WAIT_2)
     TablePlus 96155 mattstauffer   16u  IPv4 0xc0d6f0b0b6dccf6b      0t0  TCP localhost:62919->localhost:mysql (CLOSE_WAIT)
     
-    The solution is to just close your database GUI, and then it should be released.
+The solution is to just close your database GUI, and then it should be released.
+</details>
+<details>
+<summary><strong>Why would you use this instead of `docker-compose`?</strong></summary>
+
+Why would you use this instead of compiling your dependencies from scratch? Better yet, why not write your own database engine? It's the only way to know there's not an NSA backdoor in it.
 </details>
 
 ## Future plans
