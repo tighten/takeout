@@ -26,6 +26,10 @@ class Shell
                 return $this->output->writeLn($this->formatErrorMessage($buffer));
             }
 
+            if ($this->isMultiline($buffer)){
+                $buffer = $this->formatMultiline($buffer, '      ');
+            }
+
             $this->output->writeLn($this->formatMessage($buffer));
         }, $parameters);
 
@@ -58,5 +62,31 @@ class Shell
         $process->setTimeout(null);
 
         return $process;
+    }
+
+    /**
+     * @param $buffer
+     * @return string
+     */
+    protected function formatMultiline($buffer, $spaces): string
+    {
+        $implode = explode("\n", $buffer);
+        $array = [];
+        $array[0] = $implode[0];
+        unset($implode[0]);
+        foreach ($implode as $i) {
+            $array[] = $spaces . $i;
+        }
+        $buffer = implode(PHP_EOL, $array);
+        return $buffer;
+    }
+
+    /**
+     * @param $buffer
+     * @return bool
+     */
+    protected function isMultiline($buffer): bool
+    {
+        return substr_count($buffer, "\n") > 1;
     }
 }
