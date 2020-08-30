@@ -14,7 +14,7 @@ class Environment
     public function portIsAvailable($port): bool
     {
         // Check to see if the system is running a service with the desired port
-        $process = $this->shell->execQuietly("netstat -vanp tcp | grep {$port}");
+        $process = $this->shell->execQuietly("losf -i :{$port} | grep 'com.dock'");
 
         // A successful netstat command means a port in use was found
         return ! $process->isSuccessful();
