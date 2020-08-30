@@ -111,7 +111,7 @@ abstract class BaseService
             $this->askQuestion($prompt);
 
             while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
-                app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
+                app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.");
                 $this->askQuestion($prompt);
             }
         }
