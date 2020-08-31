@@ -31,6 +31,11 @@ abstract class BaseService
             'prompt' => 'Which tag (version) of this service would you like to use?',
             'default' => 'latest',
         ],
+        [
+            'shortname' => 'nickname',
+            'prompt' => 'Enter a nickname for this container',
+            // Default is set in the constructor
+        ],
     ];
     protected $prompts;
     protected $promptResponses = [];
@@ -48,6 +53,9 @@ abstract class BaseService
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'port') {
                 $prompt['default'] = $this->defaultPort;
+            }
+            if ($prompt['shortname'] === 'nickname') {
+                $prompt['default'] = uniqid();
             }
             return $prompt;
         }, $this->defaultPrompts);
@@ -95,6 +103,11 @@ abstract class BaseService
     public function shortName(): string
     {
         return strtolower(class_basename(static::class));
+    }
+
+    public function nickname(): string
+    {
+        return Str::slug($this->promptResponses['nickname']);
     }
 
     public function defaultPort(): int
@@ -155,6 +168,6 @@ abstract class BaseService
 
     protected function containerName(): string
     {
-        return 'TO--' . $this->shortName() . '--' . $this->tag;
+        return 'TO--' . $this->shortName() . '--' . $this->nickname() . '--' . $this->tag;
     }
 }
