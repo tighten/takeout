@@ -34,6 +34,15 @@ class Docker
         }
     }
 
+    public function startContainer(string $containerId): void
+    {
+        $process = $this->shell->exec('docker start ' . $containerId);
+
+        if (! $process->isSuccessful()) {
+            throw new Exception('Failed starting container ' . $containerId);
+        }
+    }
+
     public function isInstalled(): bool
     {
         $process = $this->shell->execQuietly('docker --version 2>&1');

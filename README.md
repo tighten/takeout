@@ -79,6 +79,38 @@ Passed the short name of a service, disable the enabled service which matches it
 takeout disable mysql
 ```
 
+### Start a stopped container
+
+Show a list of all stopped containers you can start.
+
+```bash
+takeout start
+```
+
+### Start a specific stopped container
+
+Passed the container ID of stopped container, start the stopped container which matches it.
+ 
+```bash
+takeout start {container_id}
+```
+
+### Stop a running container
+
+Show a list of all running containers you can stop.
+
+```bash
+takeout stop
+```
+
+### Stop a specific running container
+
+Passed the container ID of running container, stop the running container which matches it.
+ 
+```bash
+takeout stop {container_id}
+```
+
 ## Running multiple versions of a dependency
 
 Another of Takeout's benefits is that it allows you to have multiple versions of a dependency installed and running at the same time. That means, for example, that you can run both MySQL 5.7 and 8.0 at the same time, on different ports.
