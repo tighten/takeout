@@ -4,7 +4,7 @@ namespace App\Services;
 
 class DynamoDB extends BaseService
 {
-    protected $organization = 'cnadiminti';
+    protected $organization = 'amazon';
     protected $imageName = 'dynamodb-local';
     protected $defaultPort = 8000;
     protected $prompts = [
@@ -16,6 +16,8 @@ class DynamoDB extends BaseService
     ];
 
     protected $dockerRunTemplate = '-p "$port":8000 \
+        -u root \
         -v "$volume":/dynamodb_local_db \
-        "$organization"/"$image_name":"$tag"';
+        "$organization"/"$image_name":"$tag" \
+        -jar DynamoDBLocal.jar --sharedDb -dbPath /dynamodb_local_db';
 }
