@@ -118,7 +118,7 @@ The solution is to just close your database GUI, and then it should be released.
 <details>
 <summary><strong>Why would you use this instead of `docker-compose`?</strong></summary>
 
-Why would you use this instead of compiling your dependencies from scratch? Better yet, why not write your own database engine? It's the only way to know there's not an NSA backdoor in it.
+Using `docker-compose` sets up your dependencies on a project-by-project basis, which is a perfectly fine way to do things. If it makes more sense to you to have a single copy of each of your dependencies for your entire global environment, Takeout makes more sense.
 </details>
 
 ## Future plans
