@@ -63,7 +63,10 @@ class DisableCommand extends Command
 
     public function showDisableServiceMenu(): void
     {
-        $serviceContainerId = $this->menu('Services to disable', $this->disableableServices)->open();
+        $serviceContainerId = $this->menu('Services to disable', $this->disableableServices)
+            ->addLineBreak('', 1)
+            ->setPadding(2, 5)
+            ->open();
 
         if ($serviceContainerId) {
             $this->disableByContainerId($serviceContainerId);
@@ -84,11 +87,11 @@ class DisableCommand extends Command
             }
 
             if (count($this->docker->allContainers()) === 1) {
-                $option = $this->menu('No Containers are running. Turn off Docker for Mac?', [
+                $option = $this->menu('No containers are running. Turn off Docker for Mac?', [
                     'Yes',
                     'No',
-                ])->open();
                 
+                ])->disableDefaultItems()->open();
                 if ($option === 0) {
                     $this->task('Stopping Docker service ', $this->docker->stopDockerService());
                 }
