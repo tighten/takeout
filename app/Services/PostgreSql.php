@@ -23,4 +23,6 @@ class PostgreSql extends BaseService
         -e POSTGRES_PASSWORD="$root_password" \
         -v "$volume":/var/lib/postgresql/data \
             "$organization"/"$image_name":"$tag"';
+
+    protected static $displayName = 'PostgreSQL';
 }

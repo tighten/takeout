@@ -22,4 +22,6 @@ class MsSql extends BaseService
         -e ACCEPT_EULA=Y \
         -e SA_PASSWORD="$sa_password" \
         "$organization"/"$image_name":"$tag"';
+
+    protected static $displayName = 'MS SQL Server';
 }

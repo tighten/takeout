@@ -23,4 +23,6 @@ class MySql extends BaseService
         -e MYSQL_ROOT_PASSWORD="$root_password" \
         -v "$volume":/var/lib/mysql \
         "$organization"/"$image_name":"$tag"';
+
+    protected static $displayName = 'MySQL';
 }

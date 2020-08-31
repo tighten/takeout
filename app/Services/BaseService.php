@@ -7,6 +7,7 @@ use App\Shell\DockerTags;
 use App\Shell\Environment;
 use App\Shell\Shell;
 use App\WritesToConsole;
+use Illuminate\Support\Str;
 use Throwable;
 
 abstract class BaseService
@@ -36,6 +37,7 @@ abstract class BaseService
     protected $shell;
     protected $environment;
     protected $docker;
+    protected static $displayName;
 
     public function __construct(Shell $shell, Environment $environment, Docker $docker)
     {
@@ -54,6 +56,11 @@ abstract class BaseService
             'organization' => $this->organization,
             'image_name' => $this->imageName,
         ];
+    }
+
+    public static function name(): string
+    {
+        return static::$displayName ?? Str::afterLast(static::class, '\\');
     }
 
     public function enable(): void

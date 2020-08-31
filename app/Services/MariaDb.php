@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class MariaDB extends BaseService
+class MariaDb extends BaseService
 {
     protected $imageName = 'mariadb';
     protected $defaultPort = 3306;
@@ -23,4 +23,6 @@ class MariaDB extends BaseService
         -e MYSQL_ROOT_PASSWORD="$root_password" \
         -v "$volume":/var/lib/mysql \
         "$organization"/"$image_name":"$tag"';
+
+    protected static $displayName = 'MariaDB';
 }
