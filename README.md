@@ -85,7 +85,7 @@ takeout start
 
 ### Start a specific stopped container
 
-Passed the container id of stopped container, start the stopped container which matches it.
+Passed the container ID of stopped container, start the stopped container which matches it.
  
 ```bash
 takeout start {container_id}
@@ -101,7 +101,7 @@ takeout stop
 
 ### Stop a specific running container
 
-Passed the container id of running container, stop the running container which matches it.
+Passed the container ID of running container, stop the running container which matches it.
  
 ```bash
 takeout stop {container_id}

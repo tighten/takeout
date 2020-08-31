@@ -11,17 +11,16 @@ use PhpSchool\CliMenu\CliMenu;
 
 class StopCommand extends Command
 {
-
     use InitializesCommands;
 
-    protected $signature = 'stop {container?}';
+    protected $signature = 'stop {containerId?}';
     protected $description = 'Stop a service.';
 
     public function handle(): void
     {
         $this->initializeCommand();
 
-        $container = $this->argument('container');
+        $container = $this->argument('containerId');
 
         if ($container) {
             $this->stop($container);
@@ -36,22 +35,20 @@ class StopCommand extends Command
 
     public function stoppableContainers(): array
     {
-        return collect(app(Docker::class)->takeoutContainers())->skip(1)->reduce(function ($containers, $container) {
-            if(Str::contains($container[2], 'Up')) {
-                $containers->push(["$container[0] - $container[1]", function(CliMenu $menu) use ($container) {
-                    $this->stop($menu->getSelectedItem()->getText());
+        return collect(app(Docker::class)->takeoutContainers())->skip(1)->filter(function($container) {
+            return Str::contains($container[2], 'Up');
+        })->map(function ($container) {
+            return ["$container[0] - $container[1]", function(CliMenu $menu) use ($container) {
+                $this->stop($menu->getSelectedItem()->getText());
 
-                    foreach($menu->getItems() as $item) {
-                        if($item->getText() === "$container[0] - $container[1]") {
-                            $menu->removeItem($item);
-                        }
+                foreach($menu->getItems() as $item) {
+                    if($item->getText() === "$container[0] - $container[1]") {
+                        $menu->removeItem($item);
                     }
+                }
 
-                    $menu->redraw();
-                }]);
-            }
-
-            return $containers;
+                $menu->redraw();
+            }];
         }, collect())->toArray();
     }
 
