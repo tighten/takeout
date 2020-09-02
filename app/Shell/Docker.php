@@ -8,10 +8,29 @@ use Symfony\Component\Process\Process;
 class Docker
 {
     protected $shell;
+    protected $cmd;
 
     public function __construct(Shell $shell)
     {
         $this->shell = $shell;
+        $this->cmd = $this->detectDockerCommand();
+    }
+    
+    //Checks for OS version
+    // returns command for OS
+    private function detectDockerCommand(): string
+    {
+        switch (true) {
+            case stristr(PHP_OS, 'DAR'):
+                return "launchctl list | grep com.docker.docker";
+            case stristr(PHP_OS, 'WIN'):
+                return "Get-Process 'com.docker.proxy'"; //Powershell Command
+                // return "docker version"; // standard cmd Command
+            case stristr(PHP_OS, 'LINUX'):
+                return 'pgrep -f /usr/bin/dockerd';
+            default:
+                return "launchctl list | grep com.docker.docker";
+        }
     }
 
     public function removeContainer(string $containerId): void
@@ -119,7 +138,7 @@ class Docker
 
     public function isDockerServiceRunning(): bool
     {
-        $response = $this->shell->execQuietly('launchctl list | grep com.docker.docker');
+        $response = $this->shell->execQuietly($this->cmd);
         return $response->isSuccessful();
     }
 
