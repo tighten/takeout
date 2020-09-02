@@ -107,7 +107,7 @@ abstract class BaseService
 
     public function nickname(): string
     {
-        return Str::slug($this->promptResponses['nickname']);
+        return Str::slug($this->promptResponses['nickname'] ?? '');
     }
 
     public function defaultPort(): int
@@ -168,6 +168,13 @@ abstract class BaseService
 
     protected function containerName(): string
     {
-        return 'TO--' . $this->shortName() . '--' . $this->nickname() . '--' . $this->tag;
+        return collect([
+            'TO',
+            $this->shortName(),
+            $this->tag,
+            $this->nickname(),
+        ])->filter(function($str) {
+            return !empty($str);
+        })->join('--');
     }
 }
