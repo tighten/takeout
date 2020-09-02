@@ -22,6 +22,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Redis, and more
 - MariaDB
 - Minio
 - InfluxDB
+- DynamoDB
 
 ## Requirements
 
