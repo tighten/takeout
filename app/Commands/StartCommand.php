@@ -3,7 +3,6 @@
 namespace App\Commands;
 
 use App\InitializesCommands;
-use App\Services;
 use App\Shell\Docker;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -16,14 +15,21 @@ class StartCommand extends Command
     protected $signature = 'start {containerId?}';
     protected $description = 'Start a stopped container.';
 
+    protected $docker;
+
+    public function __construct(Docker $docker)
+    {
+        $this->docker = $docker;
+
+        parent::__construct();
+    }
+
     public function handle(): void
     {
         $this->initializeCommand();
 
-        $container = $this->argument('containerId');
-
-        if ($container) {
-            $this->start($container);
+        if ($this->argument('containerId')) {
+            $this->start($this->argument('containerid'));
 
             return;
         }
@@ -35,29 +41,34 @@ class StartCommand extends Command
 
     public function startableContainers(): array
     {
-        return collect(app(Docker::class)->takeoutContainers())->skip(1)->reject(function($container) {
+        return collect($this->docker->takeoutContainers())->skip(1)->reject(function($container) {
             return Str::contains($container[2], 'Up');
         })->map(function ($container) {
-            return ["$container[0] - $container[1]", function(CliMenu $menu) use ($container) {
-                $this->start($menu->getSelectedItem()->getText());
+            return [
+                "$container[1] (ID: $container[0])",
+                function (CliMenu $menu) use ($container) {
+                    $this->start($container[0]);
 
-                foreach($menu->getItems() as $item) {
-                    if($item->getText() === "$container[0] - $container[1]") {
-                        $menu->removeItem($item);
-                    }
+                    $this->redrawMenuExcludingCurrent($menu);
                 }
-
-                $menu->redraw();
-            }];
-        }, collect())->toArray();
+            ];
+        })->toArray();
     }
 
-    public function start(string $container): void
+    public function start(string $containerId): void
     {
-        if(Str::contains($container, ' -')) {
-            $container = Str::before($container, ' -');
+        dd($containerId);
+        $this->docker->startContainer(Str::before($container, ' -'));
+    }
+
+    protected function redrawMenuExcludingCurrent($menu)
+    {
+        foreach ($menu->getItems() as $index => $item) {
+            if ($item === $menu->getSelectedItem()) {
+                $menu->removeItem($item);
+            }
         }
 
-        app(Docker::class)->startContainer($container);
+        $menu->redraw();
     }
 }
