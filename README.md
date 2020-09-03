@@ -164,3 +164,18 @@ The best way to see our future plans is to check out the [Projects Board](https:
 - `pt/passthrough`: proxy commands through to docker (`./takeout pt mysql stop`)
 - Deliver package in a way that's friendly to non-PHP developers (Homebrew? NPM?)
 - Allow other people to extend Takeout by adding their own plugins (thanks to @angrybrad for the idea!)
+
+## Process for release
+
+If you're working with us and are assigned to pushing a release, here's the easiest process:
+
+1. Pull down the latest version of `main` (`git checkout main && git pull`)
+2. Build for the version you're targeting (`./takeout app:build`)
+3. Commit your build and push it up
+4. Visit the [Takeout Releases page](https://github.com/tightenco/takeout/releases)
+5. Draft a new release with both the tag version and release title of your tag (e.g. `v1.5.1`)
+6. Set the body to be a bullet-point list with simple descriptions for each of the PRs merged, as well as the PR link in parentheses at the end. For example:
+
+    `- Fix internal Memcached port (#92)`
+7. Hit `Publish release`
+8. Profit
