@@ -1,0 +1,20 @@
+{
+    "chmod": "0755",
+    "directories": [
+        "app",
+        "bootstrap",
+        "config",
+        "vendor"
+    ],
+    "files": [
+        "composer.json"
+    ],
+    "exclude-dev-files": false,
+    "exclude-composer-files": false,
+    "compression": "GZ",
+    "compactors": [
+        "KevinGH\\Box\\Compactor\\Php",
+        "KevinGH\\Box\\Compactor\\Json"
+    ]
+}
+
