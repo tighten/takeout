@@ -118,7 +118,14 @@ abstract class BaseService
             $this->askQuestion($prompt);
 
             while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
-                app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
+                $port_info = $this->environment->portInfo($this->promptResponses['port']);
+                if ($port_info && count($port_info) === 3) {
+                    list($process_name, $pid, $user) = $port_info;
+                    app('console')->error("Port {$this->promptResponses['port']} is used by process PID {$pid} named {$process_name} by user {$user}. Please select a different port.\n");
+                } else {
+                    app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.\n");
+                }
+
                 $this->askQuestion($prompt);
             }
         }

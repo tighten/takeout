@@ -19,4 +19,11 @@ class Environment
         // A successful netstat command means a port in use was found
         return ! $process->isSuccessful();
     }
+
+    public function portInfo($port): array
+    {
+        $process = $this->shell
+            ->execQuietly("lsof -n -P | grep -Ei 'ipv4.*:{$port}' |  tr -s ' ' | cut -d' ' -f1,2,3");
+        return $process->isSuccessful() ? explode(" ", trim($process->getOutput())) : [];
+    }
 }
