@@ -167,13 +167,14 @@ The best way to see our future plans is to check out the [Projects Board](https:
 
 ## Process for release
 
-If you're working with us and are assigned to pushing a release, here's the easiest process:
+If you're working with us and are assigned to push a release, here's the easiest process:
 
-1. Pull down the latest version of `main` (`git checkout main && git pull`)
-2. Build for the version you're targeting (`./takeout app:build`)
-3. Commit your build and push it up
-4. Visit the [Takeout Releases page](https://github.com/tightenco/takeout/releases)
-5. Draft a new release with both the tag version and release title of your tag (e.g. `v1.5.1`)
+
+1. Visit the [Takeout Releases page](https://github.com/tightenco/takeout/releases); figure out what your next tag will be (increase the third number if it's a patch or fix; increase the second number if it's adding features)
+2. On your local machine, pull down the latest version of `main` (`git checkout main && git pull`)
+3. Build for the version you're targeting (`./takeout app:build`)
+4. Commit your build and push it up
+5. [Draft a new release](https://github.com/tightenco/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
 6. Set the body to be a bullet-point list with simple descriptions for each of the PRs merged, as well as the PR link in parentheses at the end. For example:
 
     `- Fix internal Memcached port (#92)`
