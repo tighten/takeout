@@ -32,7 +32,7 @@ abstract class BaseService
             'default' => 'latest',
         ],
     ];
-    protected $prompts;
+    protected $prompts = [];
     protected $promptResponses = [];
     protected $shell;
     protected $environment;

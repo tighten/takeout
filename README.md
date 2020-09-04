@@ -23,6 +23,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Redis, and more
 - Minio
 - InfluxDB
 - DynamoDB
+- Beanstalkd
 
 ## Requirements
 

@@ -20,9 +20,15 @@ class DockerTags
 
     public function getLatestTag(): string
     {
-        return $this->getTags()->first(function ($tag) {
-            return $tag !== 'latest';
+        $nonLatestTags = $this->getTags()->reject(function ($tag) {
+            return $tag === 'latest';
         });
+
+        if ($nonLatestTags->isEmpty()) {
+            return 'latest';
+        }
+
+        return $nonLatestTags->first();
     }
 
     public function getTags(): Collection
