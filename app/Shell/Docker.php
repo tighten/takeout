@@ -119,7 +119,7 @@ class Docker
 
     public function isDockerServiceRunning(): bool
     {
-        $response = $this->shell->execQuietly('launchctl list | grep com.docker.docker');
+        $response = $this->shell->execQuietly('docker info');
         return $response->isSuccessful();
     }
 
