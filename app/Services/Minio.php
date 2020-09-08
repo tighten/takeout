@@ -24,9 +24,9 @@ class Minio extends BaseService
         ],
     ];
 
-    protected $dockerRunTemplate = '-p "$port":9000 \
-        -e MINIO_ACCESS_KEY=$access_key
-        -e MINIO_SECRET_KEY=$secret_key
-        -v "$volume":/data \
-        "$organization"/"$image_name":"$tag"';
+    protected $dockerRunTemplate = '-p "${:port}":9000 \
+        -e MINIO_ACCESS_KEY=${:access_key}
+        -e MINIO_SECRET_KEY=${:secret_key}
+        -v "${:volume}":/data \
+        "${:organization}"/"${:image_name}":"${:tag}"';
 }

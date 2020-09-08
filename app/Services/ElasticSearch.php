@@ -14,8 +14,8 @@ class ElasticSearch extends BaseService
         ],
     ];
 
-    protected $dockerRunTemplate = '-p "$port":9200 \
+    protected $dockerRunTemplate = '-p "${:port}":9200 \
         -e "discovery.type=single-node"  \
-        -v "$volume":/usr/share/elasticsearch/data \
-        "$organization"/"$image_name":"$tag"';
+        -v "${:volume}":/usr/share/elasticsearch/data \
+        "${:organization}"/"${:image_name}":"${:tag}"';
 }

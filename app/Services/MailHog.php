@@ -15,7 +15,7 @@ class MailHog extends BaseService
         ]
     ];
 
-    protected $dockerRunTemplate = '-p "$port":1025 \
-        -p "$web_port":8025 \
-        "$organization"/"$image_name":"$tag"';
+    protected $dockerRunTemplate = '-p "${:port}":1025 \
+        -p "${:web_port}":8025 \
+        "${:organization}"/"${:image_name}":"${:tag}"';
 }
