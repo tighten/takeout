@@ -4,10 +4,11 @@ namespace App\Shell;
 
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Str;
 
 class Shell
 {
-    const SPACES = 6;
+    const SPACES = 6; // Same spacing as " OUT " plus a space before output
 
     protected $output;
 
@@ -66,10 +67,6 @@ class Shell
         return $process;
     }
 
-    /**
-     * @param $buffer
-     * @return string
-     */
     protected function formatMultiline($buffer): string
     {
         $bufferArray = explode(PHP_EOL, $buffer);
@@ -77,36 +74,15 @@ class Shell
         return implode(PHP_EOL, $buffer);
     }
 
-    /**
-     * @param $buffer
-     * @return bool
-     */
     protected function isMultiline($buffer): bool
     {
         return substr_count($buffer, "\n") > 1;
     }
 
-    /**
-     * @param $spaces
-     * @return mixed
-     */
-    protected function indentBy($spaces)
-    {
-        return str_repeat(' ', $spaces);
-    }
-
-    /**
-     * @param bool $bufferArray
-     * @param array $buffer
-     * @return array
-     */
     protected function alignMultiline(array $bufferArray): array
     {
-        $buffer[0] = $bufferArray[0];
-        unset($bufferArray[0]);
-        foreach ($bufferArray as $line) {
-            $buffer[] = $this->indentBy(self::SPACES) . $line;
-        }
-        return $buffer;
+        return collect($bufferArray)->map(function ($item, $index) {
+            return $index > 0 ? Str::of($item)->prepend(str_repeat(' ', self::SPACES)) : $item;
+        })->toArray();
     }
 }
