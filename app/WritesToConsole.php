@@ -28,4 +28,9 @@ trait WritesToConsole
     {
         app('console')->info($message);
     }
+
+    public function task(string $message, $callable): void
+    {
+        app('console')->task($message, $callable);
+    }
 }
