@@ -78,7 +78,7 @@ abstract class BaseService
 
             $this->info("\nService enabled!");
         } catch (Throwable $e) {
-            $this->error("\nService failed to enable!!");
+            $this->error("\n" . $e->getMessage());
         }
     }
 
