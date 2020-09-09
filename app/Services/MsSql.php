@@ -18,10 +18,10 @@ class MsSql extends BaseService
         ],
     ];
 
-    protected $dockerRunTemplate = '-p "$port":1433 \
+    protected $dockerRunTemplate = '-p "${:port}":1433 \
         -e ACCEPT_EULA=Y \
-        -e SA_PASSWORD="$sa_password" \
-        "$organization"/"$image_name":"$tag"';
+        -e SA_PASSWORD="${:sa_password}" \
+        "${:organization}"/"${:image_name}":"${:tag}"';
 
     protected static $displayName = 'MS SQL Server';
 }

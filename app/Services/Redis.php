@@ -14,7 +14,7 @@ class Redis extends BaseService
         ],
     ];
 
-    protected $dockerRunTemplate = '-p "$port":6379 \
-        -v "$volume":/data \
-        "$organization"/"$image_name":"$tag"';
+    protected $dockerRunTemplate = '-p "${:port}":6379 \
+        -v "${:volume}":/data \
+        "${:organization}"/"${:image_name}":"${:tag}"';
 }

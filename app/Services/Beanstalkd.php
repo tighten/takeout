@@ -8,6 +8,6 @@ class Beanstalkd extends BaseService
     protected $imageName = 'beanstalkd';
     protected $defaultPort = 11300;
 
-    protected $dockerRunTemplate = '-p "$port":11300 \
-        "$organization"/"$image_name":"$tag"';
+    protected $dockerRunTemplate = '-p "${:port}":11300 \
+        "${:organization}"/"${:image_name}":"${:tag}"';
 }

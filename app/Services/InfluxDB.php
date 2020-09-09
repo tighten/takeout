@@ -24,8 +24,8 @@ class InfluxDB extends BaseService
         ],
     ];
 
-    protected $dockerRunTemplate = '-p "$port":8086 \
-        -e INFLUXDB_ADMIN_USER="$admin_user" -e INFLUXDB_ADMIN_PASSWORD="$admin_password" \
-        -v "$volume":/var/lib/influxdb \
-        "$organization"/"$image_name":"$tag"';
+    protected $dockerRunTemplate = '-p "${:port}":8086 \
+        -e INFLUXDB_ADMIN_USER="${:admin_user}" -e INFLUXDB_ADMIN_PASSWORD="${:admin_password}" \
+        -v "${:volume}":/var/lib/influxdb \
+        "${:organization}"/"${:image_name}":"${:tag}"';
 }

@@ -15,9 +15,9 @@ class DynamoDB extends BaseService
         ],
     ];
 
-    protected $dockerRunTemplate = '-p "$port":8000 \
+    protected $dockerRunTemplate = '-p "${:port}":8000 \
         -u root \
-        -v "$volume":/dynamodb_local_db \
-        "$organization"/"$image_name":"$tag" \
+        -v "${:volume}":/dynamodb_local_db \
+        "${:organization}"/"${:image_name}":"${:tag}" \
         -jar DynamoDBLocal.jar --sharedDb -dbPath /dynamodb_local_db';
 }

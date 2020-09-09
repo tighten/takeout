@@ -19,10 +19,10 @@ class MariaDb extends BaseService
         ],
     ];
 
-    protected $dockerRunTemplate = '-p "$port":3306 \
-        -e MYSQL_ROOT_PASSWORD="$root_password" \
-        -v "$volume":/var/lib/mysql \
-        "$organization"/"$image_name":"$tag"';
+    protected $dockerRunTemplate = '-p "${:port}":3306 \
+        -e MYSQL_ROOT_PASSWORD="${:root_password}" \
+        -v "${:volume}":/var/lib/mysql \
+        "${:organization}"/"${:image_name}":"${:tag}"';
 
     protected static $displayName = 'MariaDB';
 }
