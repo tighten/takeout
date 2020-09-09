@@ -29,5 +29,5 @@ class Minio extends BaseService
         -e MINIO_ACCESS_KEY="${:access_key}" \
         -e MINIO_SECRET_KEY="${:secret_key}" \
         -v "${:volume}":/data \
-        "${:organization}"/"${:image_name}":"${:tag}"';
+        "${:organization}"/"${:image_name}":"${:tag}" server /data';
 }
