@@ -16,16 +16,21 @@ class Shell
 
     public function exec(string $command, array $parameters = [], bool $quiet = false): Process
     {
+        $didAnything = false;
+
         $process = $this->buildProcess($command);
-        $process->run(function ($type, $buffer) use ($quiet) {
+        $process->run(function ($type, $buffer) use ($quiet, $didAnything) {
             if (empty($buffer) || $buffer === PHP_EOL || $quiet) {
                 return;
             }
 
             $this->output->writeLn($this->formatMessage($buffer, $type === process::ERR));
+            $didAnything = true;
         }, $parameters);
 
-        $this->output->writeLn("\n");
+        if ($didAnything) {
+            $this->output->writeLn("\n");
+        }
 
         return $process;
     }
