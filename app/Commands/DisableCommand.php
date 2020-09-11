@@ -31,8 +31,8 @@ class DisableCommand extends Command
 
     public function disableableServices(): array
     {
-        return collect($this->docker->takeoutContainers())->skip(1)->mapWithKeys(function ($line) {
-            return [$line[0] => str_replace('TO--', '', $line[1])];
+        return $this->docker->takeoutContainers()->mapWithKeys(function ($container) {
+            return [$container['container_id'] => str_replace('TO--', '', $container['names'])];
         })->toArray();
     }
 
@@ -86,12 +86,12 @@ class DisableCommand extends Command
                 $this->info("\n docker volume rm {$volumeName}");
             }
 
-            if (count($this->docker->allContainers()) === 1) {
+            if (count($this->docker->allContainers()) === 0) {
                 $option = $this->menu('No containers are running. Turn off Docker for Mac?', [
                     'Yes',
                     'No',
-                
                 ])->disableDefaultItems()->open();
+
                 if ($option === 0) {
                     $this->task('Stopping Docker service ', $this->docker->stopDockerService());
                 }

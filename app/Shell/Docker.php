@@ -3,6 +3,7 @@
 namespace App\Shell;
 
 use Exception;
+use Illuminate\Support\Collection;
 use Symfony\Component\Process\Process;
 
 class Docker
@@ -50,21 +51,34 @@ class Docker
         return $process->isSuccessful();
     }
 
-    public function takeoutContainers(): array
+    public function takeoutContainers(): Collection
     {
-        return $this->containerRawOutputToArray($this->takeoutContainersRawOutput());
+        return $this->containerRawOutputToCollection($this->takeoutContainersRawOutput());
     }
 
-    public function allContainers(): array
+    public function allContainers(): Collection
     {
-        return $this->containerRawOutputToArray($this->allContainersRawOutput());
+        return $this->containerRawOutputToCollection($this->allContainersRawOutput());
     }
 
-    protected function containerRawOutputToArray($output): array
+    /**
+     * Given the raw string of output from Docker, return a collection of
+     * associative arrays, with the keys lowercased and slugged using underscores
+     *
+     * @param  string $output Docker command output
+     * @return Collection     Collection of associative arrays
+     */
+    protected function containerRawOutputToCollection($output): Collection
     {
-        return array_filter(array_map(function ($line) {
+        $containers = collect(explode("\n", $output))->map(function ($line) {
             return explode('|', $line);
-        }, explode("\n", $output)));
+        })->filter();
+
+        $keys = array_map('App\underscore_slug', $containers->shift());
+
+        return $containers->map(function ($container) use ($keys) {
+            return array_combine($keys, $container);
+        });
     }
 
     protected function takeoutContainersRawOutput(): string
