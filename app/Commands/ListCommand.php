@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Shell\Docker;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
@@ -18,23 +19,15 @@ class ListCommand extends Command
     {
         $this->initializeCommand();
 
-        $containers = app(Docker::class)->takeoutContainers();
-
         if ($this->option('json')) {
-            $keys = collect(array_shift($containers))->map(function ($key) {
-                return Str::slug($key, '_');
-            })->toArray();
-
-            $containers = collect($containers)->map(function ($container) use ($keys) {
-                return array_combine($keys, $container);
-            });
-
-            $this->line(json_encode($containers));
-
+            $this->line(app(Docker::class)->takeoutContainers()->toJson());
             return;
         }
 
+        $containers = app(Docker::class)->takeoutContainers()->toArray();
+        $columns = array_map('App\title_from_slug', array_keys(reset($containers)));
+
         $this->line("\n");
-        $this->table(array_shift($containers), $containers);
+        $this->table($columns, $containers);
     }
 }

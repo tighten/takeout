@@ -35,14 +35,16 @@ class StartCommand extends Command
 
     public function startableContainers(): array
     {
-        return collect(app(Docker::class)->takeoutContainers())->skip(1)->reject(function($container) {
-            return Str::contains($container[2], 'Up');
+        return app(Docker::class)->takeoutContainers()->reject(function ($container) {
+            return Str::contains($container['status'], 'Up');
         })->map(function ($container) {
-            return ["$container[0] - $container[1]", function(CliMenu $menu) use ($container) {
+            $label = sprintf('%s - %s', $container['container_id'], $container['names']);
+
+            return [$label, function (CliMenu $menu) use ($container, $label) {
                 $this->start($menu->getSelectedItem()->getText());
 
-                foreach($menu->getItems() as $item) {
-                    if($item->getText() === "$container[0] - $container[1]") {
+                foreach ($menu->getItems() as $item) {
+                    if ($item->getText() === $label) {
                         $menu->removeItem($item);
                     }
                 }
@@ -54,7 +56,7 @@ class StartCommand extends Command
 
     public function start(string $container): void
     {
-        if(Str::contains($container, ' -')) {
+        if (Str::contains($container, ' -')) {
             $container = Str::before($container, ' -');
         }
 
