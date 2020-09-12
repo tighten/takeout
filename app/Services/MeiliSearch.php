@@ -15,7 +15,7 @@ class MeiliSearch extends BaseService
         ],
     ];
 
-    protected $dockerRunTemplate = '-p "$port":7700 \
-        -v "$volume":/data.ms \
-        "$organization"/"$image_name":"$tag"';
+    protected $dockerRunTemplate = '-p "${:port}":7700 \
+        -v "${:volume}":/data.ms \
+        "${:organization}"/"${:image_name}":"${:tag}"';
 }

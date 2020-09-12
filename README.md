@@ -22,6 +22,8 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Redis, and more
 - MariaDB
 - Minio
 - InfluxDB
+- DynamoDB
+- Beanstalkd
 
 ## Requirements
 
@@ -79,6 +81,38 @@ Passed the short name of a service, disable the enabled service which matches it
 takeout disable mysql
 ```
 
+### Start a stopped container
+
+Show a list of all stopped containers you can start.
+
+```bash
+takeout start
+```
+
+### Start a specific stopped container
+
+Passed the container ID of stopped container, start the stopped container which matches it.
+ 
+```bash
+takeout start {container_id}
+```
+
+### Stop a running container
+
+Show a list of all running containers you can stop.
+
+```bash
+takeout stop
+```
+
+### Stop a specific running container
+
+Passed the container ID of running container, stop the running container which matches it.
+ 
+```bash
+takeout stop {container_id}
+```
+
 ## Running multiple versions of a dependency
 
 Another of Takeout's benefits is that it allows you to have multiple versions of a dependency installed and running at the same time. That means, for example, that you can run both MySQL 5.7 and 8.0 at the same time, on different ports.
@@ -118,12 +152,19 @@ The solution is to just close your database GUI, and then it should be released.
 <details>
 <summary><strong>Why would you use this instead of `docker-compose`?</strong></summary>
 
-Why would you use this instead of compiling your dependencies from scratch? Better yet, why not write your own database engine? It's the only way to know there's not an NSA backdoor in it.
+Using `docker-compose` sets up your dependencies on a project-by-project basis, which is a perfectly fine way to do things. If it makes more sense to you to have a single copy of each of your dependencies for your entire global environment, Takeout makes more sense.
+</details>
+<details>
+<summary><strong>Will disabling a service permenantly delete my databases?</strong></summary>
+
+Nope! Your data will stick around! By default almost all of our services use a "volume" to attach your data to for exactly this reason.
+
+So, when you disable the MySQL service, for example, that volume--with all your data in it--will just sit there quietly. And when you re-enable, as long as you attach it to the same volume, all your data will still be there.
 </details>
 
 ## Future plans
 
-The best way to see our future plans is to check out the [Projects Board](https://github.com/tightenco/takeout/projects/1), but here are a few plans for the future:
+The best way to see our future plans is to check out the [Projects Board](https://github.com/tighten/takeout/projects/1), but here are a few plans for the future:
 
 - Electron-based GUI
 - `self-remove` command: Deletes all enabled services and then maybe self-uninstalls?
@@ -131,3 +172,20 @@ The best way to see our future plans is to check out the [Projects Board](https:
 - `pt/passthrough`: proxy commands through to docker (`./takeout pt mysql stop`)
 - Deliver package in a way that's friendly to non-PHP developers (Homebrew? NPM?)
 - Allow other people to extend Takeout by adding their own plugins (thanks to @angrybrad for the idea!)
+
+## Process for release
+
+If you're working with us and are assigned to push a release, here's the easiest process:
+
+
+1. Visit the [Takeout Releases page](https://github.com/tighten/takeout/releases); figure out what your next tag will be (increase the third number if it's a patch or fix; increase the second number if it's adding features)
+2. On your local machine, pull down the latest version of `main` (`git checkout main && git pull`)
+3. Build for the version you're targeting (`./takeout app:build`)
+4. Run the build once to make sure it works (`./builds/takeout list`)
+5. Commit your build and push it up
+6. [Draft a new release](https://github.com/tighten/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
+7. Set the body to be a bullet-point list with simple descriptions for each of the PRs merged, as well as the PR link in parentheses at the end. For example:
+
+    `- Fix internal Memcached port (#92)`
+8. Hit `Publish release`
+9. Profit

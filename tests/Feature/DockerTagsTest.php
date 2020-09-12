@@ -30,4 +30,13 @@ class DockerTagsTest extends TestCase
 
         $this->assertEquals('next latest tag', $dockerTags->getLatestTag());
     }
+
+    /** @test */
+    function if_latest_is_the_only_tag_it_returns_latest()
+    {
+        $dockerTags = M::mock(DockerTags::class, [app(Client::class), app(Mysql::class)])->makePartial();
+        $dockerTags->shouldReceive('getTags')->andReturn(collect(['latest']));
+
+        $this->assertEquals('latest', $dockerTags->getLatestTag());
+    }
 }

@@ -7,6 +7,7 @@ use App\Shell\DockerTags;
 use App\Shell\Environment;
 use App\Shell\Shell;
 use App\WritesToConsole;
+use Illuminate\Support\Str;
 use Throwable;
 
 abstract class BaseService
@@ -31,11 +32,12 @@ abstract class BaseService
             'default' => 'latest',
         ],
     ];
-    protected $prompts;
+    protected $prompts = [];
     protected $promptResponses = [];
     protected $shell;
     protected $environment;
     protected $docker;
+    protected static $displayName;
 
     public function __construct(Shell $shell, Environment $environment, Docker $docker)
     {
@@ -56,6 +58,11 @@ abstract class BaseService
         ];
     }
 
+    public static function name(): string
+    {
+        return static::$displayName ?? Str::afterLast(static::class, '\\');
+    }
+
     public function enable(): void
     {
         $this->prompts();
@@ -71,7 +78,7 @@ abstract class BaseService
 
             $this->info("\nService enabled!");
         } catch (Throwable $e) {
-            $this->error("\nService failed to enable!!");
+            $this->error("\n" . $e->getMessage());
         }
     }
 

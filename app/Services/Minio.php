@@ -4,6 +4,7 @@ namespace App\Services;
 
 class Minio extends BaseService
 {
+    protected $organization = 'minio';
     protected $imageName = 'minio';
     protected $defaultPort = 9000;
     protected $prompts = [
@@ -15,18 +16,18 @@ class Minio extends BaseService
         [
             'shortname' => 'access_key',
             'prompt' => 'What will the access key for Minio be?',
-            'default' => 'minio',
+            'default' => 'minioadmin',
         ],
         [
             'shortname' => 'secret_key',
             'prompt' => 'What will the secret key for Minio be?',
-            'default' => 'minio',
+            'default' => 'minioadmin',
         ],
     ];
 
-    protected $dockerRunTemplate = '-p "$port":9000 \
-        -e MINIO_ACCESS_KEY=$access_key
-        -e MINIO_SECRET_KEY=$secret_key
-        -v "$volume":/data \
-        "$organization"/"$image_name":"$tag"';
+    protected $dockerRunTemplate = '-p "${:port}":9000 \
+        -e MINIO_ACCESS_KEY="${:access_key}" \
+        -e MINIO_SECRET_KEY="${:secret_key}" \
+        -v "${:volume}":/data \
+        "${:organization}"/"${:image_name}":"${:tag}" server /data';
 }
