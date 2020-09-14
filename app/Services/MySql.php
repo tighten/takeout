@@ -14,7 +14,7 @@ class MySql extends BaseService
         ],
         [
             'shortname' => 'root_password',
-            'prompt' => 'What will the root password be?',
+            'prompt' => 'What will the root password be? (null by default)',
             'default' => '',
         ],
     ];
