@@ -22,6 +22,11 @@ class DisableCommand extends Command
         $this->initializeCommand();
         $this->disableableServices = $this->disableableServices();
 
+        if (empty($this->disableableServices)) {
+            $this->info("There are no containers to disable.\n");
+            return;
+        }
+
         if ($this->argument('serviceName')) {
             return $this->disableByServiceName($this->argument('serviceName'));
         }
