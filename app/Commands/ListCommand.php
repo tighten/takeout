@@ -21,13 +21,13 @@ class ListCommand extends Command
 
         $containersCollection = app(Docker::class)->takeoutContainers();
 
-        if ($containersCollection->isEmpty()) {
-            $this->info("No Takeout containers are enabled.\n");
+        if ($this->option('json')) {
+            $this->line($containersCollection->toJson());
             return;
         }
 
-        if ($this->option('json')) {
-            $this->line($containersCollection->toJson());
+        if ($containersCollection->isEmpty()) {
+            $this->info("No Takeout containers are enabled.\n");
             return;
         }
 
