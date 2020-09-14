@@ -19,12 +19,19 @@ class ListCommand extends Command
     {
         $this->initializeCommand();
 
-        if ($this->option('json')) {
-            $this->line(app(Docker::class)->takeoutContainers()->toJson());
+        $containersCollection = app(Docker::class)->takeoutContainers();
+
+        if ($containersCollection->isEmpty()) {
+            $this->info("No Takeout containers are enabled.\n");
             return;
         }
 
-        $containers = app(Docker::class)->takeoutContainers()->toArray();
+        if ($this->option('json')) {
+            $this->line($containersCollection->toJson());
+            return;
+        }
+
+        $containers = $containersCollection->toArray();
         $columns = array_map('App\title_from_slug', array_keys(reset($containers)));
 
         $this->line("\n");
