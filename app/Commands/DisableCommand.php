@@ -11,7 +11,7 @@ class DisableCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'disable {serviceNames*}';
+    protected $signature = 'disable {serviceNames?*}';
     protected $description = 'Disable services.';
     protected $disableableServices;
     protected $docker;

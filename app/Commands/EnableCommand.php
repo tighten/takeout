@@ -11,7 +11,7 @@ class EnableCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'enable {serviceNames*}';
+    protected $signature = 'enable {serviceNames?*}';
     protected $description = 'Enable services.';
 
     public function handle(): void
