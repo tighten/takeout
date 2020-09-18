@@ -61,6 +61,16 @@ class Docker
         return $this->containerRawOutputToCollection($this->allContainersRawOutput());
     }
 
+    public function volumeIsAvailable(string $volumeName): bool
+    {
+        return $this->containerRawOutputToCollection($this->isVolumeUsedRawOutput($volumeName))->count() === 0;
+    }
+
+    public function usedVolumes(string $volumeName): Collection
+    {
+        return $this->containerRawOutputToCollection($this->isVolumeUsedRawOutput($volumeName));
+    }
+
     /**
      * Given the raw string of output from Docker, return a collection of
      * associative arrays, with the keys lowercased and slugged using underscores
@@ -90,6 +100,12 @@ class Docker
     protected function allContainersRawOutput(): string
     {
         $dockerProcessStatusString = 'docker ps -a --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
+        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
+    }
+
+    protected function isVolumeUsedRawOutput(string $volumeName): string
+    {
+        $dockerProcessStatusString = "docker ps -a --filter volume={$volumeName} --format 'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}'";
         return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 

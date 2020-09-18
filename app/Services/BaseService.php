@@ -125,6 +125,11 @@ abstract class BaseService
 
         foreach ($this->prompts as $prompt) {
             $this->askQuestion($prompt);
+
+            while ($prompt['shortname'] === 'volume' && !$this->docker->volumeIsAvailable($this->promptResponses['volume'])) {
+                app('console')->error("Volume {$this->promptResponses['volume']} is already in use. Please select a different volume.");
+                $this->askQuestion($prompt);
+            }
         }
 
         $this->tag = $this->resolveTag($this->promptResponses['tag']);
