@@ -26,6 +26,7 @@ class BaseServiceTest extends TestCase
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $defaultPort = app(MeiliSearch::class)->defaultPort();
             $mock->shouldReceive('ask')->with('Which host port would you like this service to use?', $defaultPort)->andReturn(7700);
+            $mock->shouldReceive('ask')->with('What is the Docker volume name?', 'meili_data')->andReturn('meili_data');
             $mock->shouldReceive('ask')->with('Which tag (version) of this service would you like to use?', 'latest')->andReturn('v1.1.1');
             $mock->shouldIgnoreMissing();
         }));
@@ -40,6 +41,7 @@ class BaseServiceTest extends TestCase
         $this->mock(Docker::class, function ($mock) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('imageIsDownloaded')->andReturn(true);
+            $mock->shouldReceive('volumeIsAvailable')->andReturn(true);
 
             // This is the actual assertion
             $mock->shouldReceive('bootContainer')->with(['getmeili/meilisearch']);
