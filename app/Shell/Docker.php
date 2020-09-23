@@ -99,7 +99,7 @@ class Docker
 
     protected function allContainersRawOutput(): string
     {
-        $dockerProcessStatusString = 'docker ps -a --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
+        $dockerProcessStatusString = 'docker ps --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
         return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 
