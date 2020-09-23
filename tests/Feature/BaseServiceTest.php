@@ -2,26 +2,26 @@
 
 namespace Tests\Feature;
 
-use App\Services\MeiliSearch;
-use App\Shell\Docker;
-use App\Shell\Shell;
-use LaravelZero\Framework\Commands\Command;
-use Mockery as M;
-use Symfony\Component\Process\Process;
-use Tests\TestCase;
 use function app;
+use Mockery as M;
+use Tests\TestCase;
+use App\Shell\Shell;
+use App\Shell\Docker;
+use App\Services\MeiliSearch;
+use Symfony\Component\Process\Process;
+use LaravelZero\Framework\Commands\Command;
 
 class BaseServiceTest extends TestCase
 {
     /** @test */
-    function it_generates_shortname()
+    public function it_generates_shortname()
     {
         $meilisearch = app(MeiliSearch::class);
         $this->assertEquals('meilisearch', $meilisearch->shortName());
     }
 
     /** @test */
-    function it_enables_services()
+    public function it_enables_services()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $defaultPort = app(MeiliSearch::class)->defaultPort();
@@ -33,6 +33,7 @@ class BaseServiceTest extends TestCase
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
             $process->shouldReceive('isSuccessful')->andReturn(false);
+            $process->shouldReceive('getOutput')->andReturn('');
 
             $mock->shouldReceive('execQuietly')->andReturn($process);
         });
@@ -45,7 +46,7 @@ class BaseServiceTest extends TestCase
             $mock->shouldReceive('bootContainer')->with(['getmeili/meilisearch']);
         });
 
-        $service = app(MeiliSearch::Class); // Extends BaseService
+        $service = app(MeiliSearch::class); // Extends BaseService
         $service->enable();
     }
 }

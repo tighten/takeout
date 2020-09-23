@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use Throwable;
+use App\Shell\Shell;
 use App\Shell\Docker;
+use App\WritesToConsole;
 use App\Shell\DockerTags;
 use App\Shell\Environment;
-use App\Shell\Shell;
-use App\WritesToConsole;
 use Illuminate\Support\Str;
-use Throwable;
 
 abstract class BaseService
 {
@@ -38,6 +38,7 @@ abstract class BaseService
     protected $environment;
     protected $docker;
     protected static $displayName;
+    protected $useDefaults = false;
 
     public function __construct(Shell $shell, Environment $environment, Docker $docker)
     {
@@ -49,6 +50,7 @@ abstract class BaseService
             if ($prompt['shortname'] === 'port') {
                 $prompt['default'] = $this->defaultPort;
             }
+
             return $prompt;
         }, $this->defaultPrompts);
 
@@ -63,9 +65,12 @@ abstract class BaseService
         return static::$displayName ?? Str::afterLast(static::class, '\\');
     }
 
-    public function enable(): void
+    public function enable(bool $useDefaults = false): void
     {
+        $this->useDefaults = $useDefaults;
+
         $this->prompts();
+
         $this->ensureImageIsDownloaded();
 
         $this->info("Enabling {$this->shortName()}...\n");
@@ -114,8 +119,10 @@ abstract class BaseService
 
     protected function prompts(): void
     {
+        $items = [];
+
         foreach ($this->defaultPrompts as $prompt) {
-            $this->askQuestion($prompt);
+            $this->askQuestion($prompt, $this->useDefaults);
 
             while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
                 app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.");
@@ -124,15 +131,26 @@ abstract class BaseService
         }
 
         foreach ($this->prompts as $prompt) {
-            $this->askQuestion($prompt);
+            $this->askQuestion($prompt, $this->useDefaults);
+
+            while (Str::contains($prompt['shortname'], 'port') && ! $this->environment->portIsAvailable($this->promptResponses[$prompt['shortname']])) {
+                app('console')->error("Port {$this->promptResponses[$prompt['shortname']]} is already in use. Please select a different port.");
+                $this->askQuestion($prompt);
+            }
+
+            $items[] = $prompt;
         }
 
         $this->tag = $this->resolveTag($this->promptResponses['tag']);
     }
 
-    protected function askQuestion(array $prompt): void
+    protected function askQuestion(array $prompt, $useDefaults = false): void
     {
-        $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
+        $this->promptResponses[$prompt['shortname']] = $prompt['default'] ?? null;
+
+        if (! $useDefaults) {
+            $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
+        }
     }
 
     protected function resolveTag($responseTag): string
@@ -155,6 +173,13 @@ abstract class BaseService
 
     protected function containerName(): string
     {
-        return 'TO--' . $this->shortName() . '--' . $this->tag;
+        $portTag = '';
+        foreach ($this->promptResponses as $key => $value) {
+            if (Str::contains($key, 'port')) {
+                $portTag .= "--{$value}";
+            }
+        }
+
+        return 'TO--' . $this->shortName() . '--' . $this->tag . '--' . $portTag;
     }
 }

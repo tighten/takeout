@@ -2,16 +2,15 @@
 
 namespace App\Commands;
 
-use App\InitializesCommands;
 use App\Services;
-use Illuminate\Support\Str;
+use App\InitializesCommands;
 use LaravelZero\Framework\Commands\Command;
 
 class EnableCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'enable {serviceName?}';
+    protected $signature = 'enable {serviceName?} {--default}';
     protected $description = 'Enable a service.';
 
     public function handle(): void
@@ -20,8 +19,11 @@ class EnableCommand extends Command
 
         $service = $this->argument('serviceName');
 
+        $useDefaults = $this->option('default');
+
         if ($service) {
-            $this->enable($service);
+            $this->enable($service, $useDefaults);
+
             return;
         }
 
@@ -44,9 +46,9 @@ class EnableCommand extends Command
         })->toArray();
     }
 
-    public function enable(string $service): void
+    public function enable(string $service, bool $useDefaults = false): void
     {
         $fqcn = (new Services)->get($service);
-        app($fqcn)->enable();
+        app($fqcn)->enable($useDefaults);
     }
 }
