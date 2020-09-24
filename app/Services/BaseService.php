@@ -16,6 +16,7 @@ abstract class BaseService
 
     protected $organization = 'library'; // Official repositories use `library` as the organization name.
     protected $imageName;
+    protected static $category;
     protected $dockerTagsClass = DockerTags::class;
     protected $tag;
     protected $dockerRunTemplate;
@@ -90,6 +91,11 @@ abstract class BaseService
     public function imageName(): string
     {
         return $this->imageName;
+    }
+
+    public static function category(): string
+    {
+        return Str::title(static::$category) ?? 'Other';
     }
 
     public function shortName(): string

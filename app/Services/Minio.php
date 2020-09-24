@@ -6,6 +6,7 @@ class Minio extends BaseService
 {
     protected $organization = 'minio';
     protected $imageName = 'minio';
+    protected static $category = 'storage';
     protected $defaultPort = 9000;
     protected $prompts = [
         [

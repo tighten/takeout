@@ -6,6 +6,7 @@ class MailHog extends BaseService
 {
     protected $organization = 'mailhog';
     protected $imageName = 'mailhog';
+    protected static $category = 'mail';
     protected $defaultPort = 1025;
     protected $prompts = [
         [

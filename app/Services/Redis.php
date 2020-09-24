@@ -5,6 +5,7 @@ namespace App\Services;
 class Redis extends BaseService
 {
     protected $imageName = 'redis';
+    protected static $category = 'cache';
     protected $defaultPort = 6379;
     protected $prompts = [
         [

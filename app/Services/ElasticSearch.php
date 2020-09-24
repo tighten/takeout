@@ -5,6 +5,7 @@ namespace App\Services;
 class ElasticSearch extends BaseService
 {
     protected $imageName = 'elasticsearch';
+    protected static $category = 'search';
     protected $defaultPort = 9200;
     protected $prompts = [
         [

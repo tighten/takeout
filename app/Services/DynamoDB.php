@@ -6,6 +6,7 @@ class DynamoDB extends BaseService
 {
     protected $organization = 'amazon';
     protected $imageName = 'dynamodb-local';
+    protected static $category = 'cache';
     protected $defaultPort = 8000;
     protected $prompts = [
         [

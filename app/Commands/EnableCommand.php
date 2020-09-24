@@ -4,7 +4,6 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Services;
-use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 class EnableCommand extends Command
@@ -25,16 +24,24 @@ class EnableCommand extends Command
             return;
         }
 
-        $option = $this->menu('Services to enable', $this->enableableServices())
-            ->addLineBreak('', 1)
-            ->setPadding(2, 5)
-            ->open();
+        $option = $this->menu('Services to enable:')->setTitleSeparator('=');
 
-        if (! $option) {
+        foreach ($this->enableableServicesByCategory() as $category => $services) {
+            $menuItems = collect($services)->mapWithKeys(function ($service) {
+                return [$service['shortName'] => $service['name']];
+            })->toArray();
+
+            $option->addStaticItem("{$category}:")
+                ->addStaticItem('---------')
+                ->addOptions($menuItems)
+                ->addLineBreak('', 1);
+        }
+
+        if (!$option) {
             return;
         }
 
-        $this->enable($option);
+        $this->enable($option->open());
     }
 
     public function enableableServices(): array
@@ -44,7 +51,20 @@ class EnableCommand extends Command
         })->toArray();
     }
 
-    public function enable(string $service): void
+    public function enableableServicesByCategory(): array
+    {
+        return collect((new Services)->all())
+            ->mapToGroups(function ($fqcn, $shortName) {
+                return [
+                    $fqcn::category() => [
+                        'shortName' => $shortName,
+                        'name' => $fqcn::name(),
+                    ]
+                ];
+            })->toArray();
+    }
+
+    public function enable($service): void
     {
         $fqcn = (new Services)->get($service);
         app($fqcn)->enable();

@@ -5,6 +5,7 @@ namespace App\Services;
 class Memcached extends BaseService
 {
     protected $imageName = 'memcached';
+    protected static $category = 'cache';
     protected $defaultPort = 11211;
     protected $prompts = [];
 
