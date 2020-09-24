@@ -10,24 +10,22 @@ jobs:
     tests:
         strategy:
             matrix:
-                os: [macOS]
-                #os: [macOS, Ubuntu, Windows]
+                os: [macOS, Ubuntu, Windows]
                 php: [7.2, 7.3, 7.4]
-                dependency: [prefer-stable]
-                #dependency: [prefer-lowest, prefer-stable]
+                dependency: [prefer-lowest, prefer-stable]
 
                 include:
                   - os: macOS
                     experimental: false
                     os-version: macos-latest
 
-                  # - os: Ubuntu
-                  #   experimental: true
-                  #   os-version: ubuntu-latest
+                   - os: Ubuntu
+                     experimental: true
+                     os-version: ubuntu-latest
 
-                  # - os: Windows
-                  #   experimental: true
-                  #   os-version: windows-latest
+                   - os: Windows
+                     experimental: true
+                     os-version: windows-latest
 
         name: ${{ matrix.os }} - PHP ${{ matrix.php }} --${{ matrix.dependency }}
 
