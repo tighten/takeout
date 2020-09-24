@@ -136,9 +136,7 @@ class Docker
         $process = $this->shell->exec('docker run -d --name "${:container_name}" ' . $dockerRunTemplate, $parameters);
 
         if (! $process->isSuccessful()) {
-            $containerName = array_key_exists('container_name', $parameters) ? $parameters['container_name'] : '';
-            $imageName = $parameters['image_name'];
-            throw new Exception("Failed installing {$imageName}. The container {$containerName} is already in use.");
+            throw new Exception("Failed installing " .  $parameters['image_name']);
         }
     }
 
