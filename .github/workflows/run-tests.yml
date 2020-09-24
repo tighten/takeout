@@ -52,7 +52,7 @@ jobs:
                   coverage: none
 
             - name: Install dependencies
-              run: composer update --${{ matrix.dependency }} --prefer-dist --no-interaction --no-suggest
+              run: composer update --${{ matrix.dependency }} --prefer-dist --no-interaction --no-suggest --ignore-platform-reqs
 
             - name: Run tests
               run: vendor/bin/phpunit
