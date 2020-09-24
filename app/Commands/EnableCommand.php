@@ -37,11 +37,13 @@ class EnableCommand extends Command
                 ->addLineBreak('', 1);
         }
 
-        if (!$option) {
+        $option = $option->open();
+
+        if (! $option) {
             return;
         }
 
-        $this->enable($option->open());
+        $this->enable($option);
     }
 
     public function enableableServices(): array
