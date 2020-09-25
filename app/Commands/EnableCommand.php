@@ -11,17 +11,20 @@ class EnableCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'enable {serviceName?}';
-    protected $description = 'Enable a service.';
+    protected $signature = 'enable {serviceNames?*}';
+    protected $description = 'Enable services.';
 
     public function handle(): void
     {
         $this->initializeCommand();
 
-        $service = $this->argument('serviceName');
+        $services = $this->argument('serviceNames');
 
-        if ($service) {
-            $this->enable($service);
+        if (filled($services)) {
+            foreach ($services as $service) {
+                $this->enable($service);
+            }
+
             return;
         }
 
