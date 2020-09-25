@@ -23,12 +23,12 @@ abstract class BaseService
     protected $defaultPrompts = [
         [
             'shortname' => 'port',
-            'prompt' => 'Which host port would you like this service to use?',
+            'prompt' => 'Which host port would you like %s to use?',
             // Default is set in the constructor
         ],
         [
             'shortname' => 'tag',
-            'prompt' => 'Which tag (version) of this service would you like to use?',
+            'prompt' => 'Which tag (version) of %s would you like to use?',
             'default' => 'latest',
         ],
     ];
@@ -149,7 +149,7 @@ abstract class BaseService
         $this->promptResponses[$prompt['shortname']] = $prompt['default'] ?? null;
 
         if (! $useDefaults) {
-            $this->promptResponses[$prompt['shortname']] = app('console')->ask($prompt['prompt'], $prompt['default'] ?? null);
+            $this->promptResponses[$prompt['shortname']] = app('console')->ask(sprintf($prompt['prompt'], $this->imageName), $prompt['default'] ?? null);
         }
     }
 
