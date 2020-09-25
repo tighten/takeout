@@ -11,6 +11,11 @@ use LaravelZero\Framework\Commands\Command;
 
 class EnvironmentTest extends TestCase
 {
+    private function isLinux()
+    {
+        return PHP_OS_FAMILY === 'Linux';
+    }
+
     /** @test **/
     public function it_detects_a_port_conflict()
     {
@@ -23,7 +28,12 @@ class EnvironmentTest extends TestCase
             $process->shouldReceive('isSuccessful')->once()->andReturn(true);
             $process->shouldReceive('getOutput')->andReturn('');
 
-            $mock->shouldReceive('execQuietly')->twice()->andReturn($process);
+            $times = 1;
+            if ($this->isLinux()) {
+                $times = 2;
+            }
+
+            $mock->shouldReceive('execQuietly')->times($times)->andReturn($process);
         });
 
         $environment = app(Environment::class);
@@ -40,9 +50,14 @@ class EnvironmentTest extends TestCase
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
             $process->shouldReceive('isSuccessful')->once()->andReturn(false);
-            $process->shouldReceive('getOutput')->andReturn('microsoft');
+            $process->shouldReceive('getOutput')->andReturn('');
 
-            $mock->shouldReceive('execQuietly')->twice()->andReturn($process);
+            $times = 1;
+            if ($this->isLinux()) {
+                $times = 2;
+            }
+
+            $mock->shouldReceive('execQuietly')->times($times)->andReturn($process);
         });
 
         $environment = app(Environment::class);
