@@ -66,11 +66,6 @@ class Docker
         return $this->containerRawOutputToCollection($this->isVolumeUsedRawOutput($volumeName))->count() === 0;
     }
 
-    public function usedVolumes(string $volumeName): Collection
-    {
-        return $this->containerRawOutputToCollection($this->isVolumeUsedRawOutput($volumeName));
-    }
-
     /**
      * Given the raw string of output from Docker, return a collection of
      * associative arrays, with the keys lowercased and slugged using underscores
