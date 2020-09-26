@@ -63,7 +63,7 @@ class Docker
 
     public function volumeIsAvailable(string $volumeName): bool
     {
-        return $this->containerRawOutputToCollection($this->isVolumeUsedRawOutput($volumeName))->count() === 0;
+        return $this->containerRawOutputToCollection($this->listMatchingVolumesRawOutput($volumeName))->count() === 0;
     }
 
     /**
@@ -98,7 +98,7 @@ class Docker
         return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 
-    protected function isVolumeUsedRawOutput(string $volumeName): string
+    protected function listMatchingVolumesRawOutput(string $volumeName): string
     {
         $dockerProcessStatusString = "docker ps -a --filter volume={$volumeName} --format 'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}'";
         return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
