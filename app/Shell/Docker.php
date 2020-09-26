@@ -89,7 +89,7 @@ class Docker
 
     protected function allContainersRawOutput(): string
     {
-        $dockerProcessStatusString = 'docker ps -a --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
+        $dockerProcessStatusString = 'docker ps --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
         return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 
@@ -120,7 +120,7 @@ class Docker
         $process = $this->shell->exec('docker run -d --name "${:container_name}" ' . $dockerRunTemplate, $parameters);
 
         if (! $process->isSuccessful()) {
-            throw new Exception("Failed installing {$containerName}");
+            throw new Exception("Failed installing " .  $parameters['image_name']);
         }
     }
 
