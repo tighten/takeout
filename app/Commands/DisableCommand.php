@@ -11,8 +11,8 @@ class DisableCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'disable {serviceName?}';
-    protected $description = 'Disable a service.';
+    protected $signature = 'disable {serviceNames?*}';
+    protected $description = 'Disable services.';
     protected $disableableServices;
     protected $docker;
 
@@ -27,8 +27,12 @@ class DisableCommand extends Command
             return;
         }
 
-        if ($this->argument('serviceName')) {
-            return $this->disableByServiceName($this->argument('serviceName'));
+        if (filled($services = $this->argument('serviceNames'))) {
+            foreach ($services as $service) {
+                $this->disableByServiceName($service);
+            }
+
+            return;
         }
 
         $this->showDisableServiceMenu();
