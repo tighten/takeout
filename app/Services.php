@@ -25,7 +25,7 @@ class Services
     public function classesInServicesNamespace(): array
     {
         return collect(scandir(base_path('app/Services')))->reject(function ($file) {
-            return in_array($file, ['.', '..', 'BaseService.php']);
+            return in_array($file, ['.', '..', 'BaseService.php', 'Category.php']);
         })->map(function ($file) {
             return 'App\Services\\' . substr($file, 0, -4);
         })->toArray();

@@ -5,7 +5,7 @@ namespace App\Services;
 class MySql extends BaseService
 {
     protected $imageName = 'mysql';
-    protected static $category = 'database';
+    protected static $category = Category::DATABASE;
     protected $defaultPort = 3306;
     protected $prompts = [
         [

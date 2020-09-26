@@ -95,7 +95,7 @@ abstract class BaseService
 
     public static function category(): string
     {
-        return Str::title(static::$category) ?? 'Other';
+        return static::$category ?? 'Other';
     }
 
     public function shortName(): string

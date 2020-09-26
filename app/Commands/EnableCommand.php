@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Services;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 class EnableCommand extends Command
@@ -31,8 +32,10 @@ class EnableCommand extends Command
                 return [$service['shortName'] => $service['name']];
             })->toArray();
 
+            $separator = str_repeat('-', 1 + Str::length($category));
+
             $option->addStaticItem("{$category}:")
-                ->addStaticItem('---------')
+                ->addStaticItem($separator)
                 ->addOptions($menuItems)
                 ->addLineBreak('', 1);
         }

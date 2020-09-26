@@ -6,7 +6,7 @@ class MeiliSearch extends BaseService
 {
     protected $organization = 'getmeili';
     protected $imageName = 'meilisearch';
-    protected static $category = 'search';
+    protected static $category = Category::SEARCH;
     protected $defaultPort = 7700;
     protected $prompts = [
         [
