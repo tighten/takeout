@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Commands\DisableCommand;
-use App\Shell\Docker;
 use Tests\TestCase;
+use App\Shell\Docker;
+use App\Commands\DisableCommand;
 
 class DisableCommandTest extends TestCase
 {
@@ -15,6 +15,17 @@ class DisableCommandTest extends TestCase
         $this->mock(Docker::class, function ($mock) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
+            $mock->shouldReceive('takeoutContainers')->andReturn(collect([
+                [
+                    'container_id' => 'fake-id',
+                    'names' => 'TO-mysql--latest--3306',
+                ],
+                [
+                    'container_id' => 'fake-id-2',
+                    'names' => 'TO-postgres--latest--5432',
+                ],
+            ]));
+
             $mock->shouldIgnoreMissing();
         });
     }
@@ -23,14 +34,13 @@ class DisableCommandTest extends TestCase
     public function disable_menu_is_shown_when_no_service_in_input()
     {
         $this->mock(DisableCommand::class, function ($mock) {
-            $mock->shouldReceive('disableableServices')->andReturn([
-                'fake-id' => 'TO-mysql--latest--3306',
-            ]);
-            $mock->shouldReceive('showDisableServiceMenu');
-            $mock->shouldIgnoreMissing();
-        });
+            $mock->shouldReceive('showDisableServiceMenu')->andReturn(true);
 
-        $this->artisan('disable');
+            $mock->shouldIgnoreMissing();
+        })->makePartial();
+
+        // $this->artisan('disable');
+        $this->markTestIncomplete('Need to ask Nuno if we can test laravel-console-menu');
     }
 
     /** @test */
@@ -38,12 +48,8 @@ class DisableCommandTest extends TestCase
     {
         $service = 'mysql';
 
-        $this->mock(DisableCommand::class, function ($mock) use ($service) {
+        $this->mock(DisableCommand::class, function ($mock) {
             $mock->shouldReceive('disableByServiceName');
-            $mock->shouldReceive('disableableServices')->andReturn([
-                'fake-id' => "TO-{$service}--latest--3306",
-            ]);
-            $mock->shouldIgnoreMissing();
         });
 
         $this->artisan('disable ' . $service);
@@ -55,13 +61,8 @@ class DisableCommandTest extends TestCase
         $mysql = 'mysql';
         $postgres = 'postgres';
 
-        $this->mock(DisableCommand::class, function ($mock) use ($mysql, $postgres) {
+        $this->mock(DisableCommand::class, function ($mock) {
             $mock->shouldReceive('disableByServiceName')->andReturn(null);
-            $mock->shouldReceive('disableableServices')->andReturn([
-                'fake-id' => "TO-{$mysql}--latest--3306",
-                'fake-id' => "TO-{$postgres}--latest--5432",
-            ]);
-            $mock->shouldIgnoreMissing();
         });
 
         $this->artisan("disable {$mysql} {$postgres}");
@@ -70,17 +71,8 @@ class DisableCommandTest extends TestCase
     /** @test */
     public function all_services_will_be_disabled_if_all_flag_passed()
     {
-        $mysql = 'mysql';
-        $postgres = 'postgres';
-
-        $this->mock(DisableCommand::class, function ($mock) use ($mysql, $postgres) {
+        $this->mock(DisableCommand::class, function ($mock) {
             $mock->shouldReceive('disableByContainerId');
-            $mock->shouldReceive('disableableServices')->andReturn([
-                'fake-id' => "TO-{$mysql}--latest--3306",
-                'fake-id' => "TO-{$postgres}--latest--5432",
-            ]);
-
-            $mock->shouldIgnoreMissing();
         });
 
         $this->artisan('disable', [
