@@ -2,16 +2,16 @@
 
 namespace App\Commands;
 
-use App\InitializesCommands;
-use App\Shell\Docker;
-use LaravelZero\Framework\Commands\Command;
 use Throwable;
+use App\Shell\Docker;
+use App\InitializesCommands;
+use LaravelZero\Framework\Commands\Command;
 
 class DisableCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'disable {serviceNames?*}';
+    protected $signature = 'disable {serviceNames?*} {--all}';
     protected $description = 'Disable services.';
     protected $disableableServices;
     protected $docker;
@@ -22,8 +22,19 @@ class DisableCommand extends Command
         $this->initializeCommand();
         $this->disableableServices = $this->disableableServices();
 
+        $disableAll = $this->option('all');
+
+        if ($disableAll) {
+            foreach ($this->disableableServices as $containerId => $name) {
+                $this->disableByContainerId($containerId);
+            }
+
+            return;
+        }
+
         if (empty($this->disableableServices)) {
             $this->info("There are no containers to disable.\n");
+
             return;
         }
 
@@ -47,6 +58,7 @@ class DisableCommand extends Command
 
     public function disableByServiceName(string $service): void
     {
+        dd($service);
         $serviceMatches = collect($this->disableableServices)
             ->filter(function ($containerName) use ($service) {
                 return substr($containerName, 0, strlen($service)) === $service;
@@ -55,6 +67,7 @@ class DisableCommand extends Command
         switch ($serviceMatches->count()) {
             case 0:
                 $this->error("\nCannot find a Takeout-managed instance of {$service}.");
+
                 return;
             case 1:
                 $serviceContainerId = $serviceMatches->flip()->first();
@@ -95,7 +108,7 @@ class DisableCommand extends Command
                 $this->info("\n docker volume rm {$volumeName}");
             }
 
-            if (count($this->docker->allContainers()) === 0 && in_array(PHP_OS_FAMILY, ['Darwin','Windows'])) {
+            if (count($this->docker->allContainers()) === 0 && in_array(PHP_OS_FAMILY, ['Darwin', 'Windows'])) {
                 $option = $this->menu('No containers are running. Turn off Docker for Mac?', [
                     'Yes',
                     'No',
