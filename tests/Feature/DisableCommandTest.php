@@ -2,11 +2,23 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Commands\DisableCommand;
+use App\Shell\Docker;
+use Tests\TestCase;
 
 class DisableCommandTest extends TestCase
 {
+    protected function setup(): void
+    {
+        parent::setUp();
+
+        $this->mock(Docker::class, function ($mock) {
+            $mock->shouldReceive('isInstalled')->andReturn(true);
+            $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
+            $mock->shouldIgnoreMissing();
+        });
+    }
+
     /** @test */
     public function disable_menu_is_shown_when_no_service_in_input()
     {
@@ -15,6 +27,7 @@ class DisableCommandTest extends TestCase
                 'fake-id' => 'TO-mysql--latest--3306',
             ]);
             $mock->shouldReceive('showDisableServiceMenu');
+            $mock->shouldIgnoreMissing();
         });
 
         $this->artisan('disable');
@@ -30,6 +43,7 @@ class DisableCommandTest extends TestCase
             $mock->shouldReceive('disableableServices')->andReturn([
                 'fake-id' => "TO-{$service}--latest--3306",
             ]);
+            $mock->shouldIgnoreMissing();
         });
 
         $this->artisan('disable ' . $service);
@@ -47,13 +61,14 @@ class DisableCommandTest extends TestCase
                 'fake-id' => "TO-{$mysql}--latest--3306",
                 'fake-id' => "TO-{$postgres}--latest--5432",
             ]);
+            $mock->shouldIgnoreMissing();
         });
 
         $this->artisan("disable {$mysql} {$postgres}");
     }
 
     /** @test */
-    public function all_services_will_be_disabled_if_all_flag_passwd()
+    public function all_services_will_be_disabled_if_all_flag_passed()
     {
         $mysql = 'mysql';
         $postgres = 'postgres';

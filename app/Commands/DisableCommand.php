@@ -58,7 +58,6 @@ class DisableCommand extends Command
 
     public function disableByServiceName(string $service): void
     {
-        dd($service);
         $serviceMatches = collect($this->disableableServices)
             ->filter(function ($containerName) use ($service) {
                 return substr($containerName, 0, strlen($service)) === $service;
