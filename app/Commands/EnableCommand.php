@@ -25,6 +25,7 @@ class EnableCommand extends Command
             foreach ($services as $service) {
                 $this->enable($service, $useDefaults);
             }
+
             return;
         }
 
@@ -37,7 +38,7 @@ class EnableCommand extends Command
             return;
         }
 
-        $this->enable($option);
+        $this->enable($option, $useDefaults);
     }
 
     public function enableableServices(): array

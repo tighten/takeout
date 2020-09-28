@@ -120,7 +120,7 @@ class Docker
         $process = $this->shell->exec('docker run -d --name "${:container_name}" ' . $dockerRunTemplate, $parameters);
 
         if (! $process->isSuccessful()) {
-            throw new Exception("Failed installing {$containerName}");
+            throw new Exception("Failed installing " .  $parameters['image_name']);
         }
     }
 
