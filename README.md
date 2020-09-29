@@ -159,7 +159,7 @@ The solution is to just close your database GUI, and then it should be released.
 Using `docker-compose` sets up your dependencies on a project-by-project basis, which is a perfectly fine way to do things. If it makes more sense to you to have a single copy of each of your dependencies for your entire global environment, Takeout makes more sense.
 </details>
 <details>
-<summary><strong>Will disabling a service permenantly delete my databases?</strong></summary>
+<summary><strong>Will disabling a service permanently delete my databases?</strong></summary>
 
 Nope! Your data will stick around! By default almost all of our services use a "volume" to attach your data to for exactly this reason.
 
