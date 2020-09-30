@@ -4,7 +4,6 @@ namespace App\Shell;
 
 use Exception;
 use Illuminate\Support\Collection;
-use Symfony\Component\Process\Process;
 
 class Docker
 {
@@ -49,6 +48,32 @@ class Docker
         $process = $this->shell->execQuietly('docker --version 2>&1');
 
         return $process->isSuccessful();
+    }
+
+    public function diskUsage(): Collection
+    {
+        return $this->rawDiskUsageOutputToCollection($this->rawDiskUsageOutput());
+    }
+
+
+    protected function rawDiskUsageOutputToCollection($output): Collection
+    {
+        $info = collect(explode("\n", $output))->map(
+            function ($line) {
+                return explode('|', $line);
+            }
+        );
+        $keys = $info->shift();
+
+        return $info->map(function ($container) use ($keys) {
+            return array_combine($keys, $container);
+        });
+    }
+
+    protected function rawDiskUsageOutput(): string
+    {
+        $dockerDiskUsage = 'docker system df --format "table {{.Type}}|{{.TotalCount}}|{{.Active}}|{{.Size}}|{{.Reclaimable}}"';
+        return trim($this->shell->execQuietly($dockerDiskUsage)->getOutput());
     }
 
     public function takeoutContainers(): Collection
