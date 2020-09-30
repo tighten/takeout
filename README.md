@@ -5,9 +5,9 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 [![Downloads on Packagist](https://img.shields.io/packagist/dt/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 
-Takeout is a Mac-based CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
+Takeout is a CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
 
-It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/docs/valet).
+It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/docs/valet). It's currently compatible with macOS, Linux, and WSL2.
 
 With `takeout enable mysql` you're running MySQL, and never have to worry about managing or fixing Homebrew MySQL again.
 
@@ -31,9 +31,9 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 ## Requirements
 
-- macOS
+- macOS, Linux, or WSL2
 - [Composer](https://getcomposer.org/) installed
-- [Docker for Mac](https://docs.docker.com/docker-for-mac/) installed
+- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/)) 
 
 ## Installation
 
