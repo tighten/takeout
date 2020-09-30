@@ -69,7 +69,9 @@ class EnableCommand extends Command
                         'name' => $fqcn::name(),
                     ]
                 ];
-            })->toArray();
+            })
+            ->sortKeys()
+            ->toArray();
     }
 
     public function enable($service): void
