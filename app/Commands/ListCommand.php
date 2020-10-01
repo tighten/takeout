@@ -3,9 +3,8 @@
 namespace App\Commands;
 
 use App\InitializesCommands;
+use App\Services\Category;
 use App\Shell\Docker;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 class ListCommand extends Command
@@ -22,7 +21,10 @@ class ListCommand extends Command
         $containersCollection = app(Docker::class)->takeoutContainers();
 
         if ($this->option('json')) {
-            $this->line($containersCollection->toJson());
+            $this->line(
+                $containersCollection->mapToGroups(function ($item) {
+                return [Category::fromContainerName($item['names']) => [$item]];
+            })->sortKeys()->toJson());
             return;
         }
 
