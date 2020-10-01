@@ -8,6 +8,7 @@ class MsSql extends BaseService
 {
     protected $organization = 'mcr.microsoft.com';
     protected $imageName = 'mssql/server';
+    protected static $category = Category::DATABASE;
     protected $dockerTagsClass = MicrosoftDockerTags::class;
     protected $defaultPort = 1433;
     protected $prompts = [
