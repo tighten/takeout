@@ -5,9 +5,9 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 [![Downloads on Packagist](https://img.shields.io/packagist/dt/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 
-Takeout is a Mac-based CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
+Takeout is a CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
 
-It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/docs/valet).
+It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/docs/valet). It's currently compatible with macOS, Linux, and WSL2.
 
 With `takeout enable mysql` you're running MySQL, and never have to worry about managing or fixing Homebrew MySQL again.
 
@@ -31,9 +31,9 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 ## Requirements
 
-- macOS
+- macOS, Linux, or WSL2
 - [Composer](https://getcomposer.org/) installed
-- [Docker for Mac](https://docs.docker.com/docker-for-mac/) installed
+- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/)) 
 
 ## Installation
 
@@ -47,7 +47,7 @@ Make sure the `~/.composer/vendor/bin` directory is in your system's "PATH".
 
 ## Usage
 
-Run `takeout` and then a command name from anywhere in your terminal. 
+Run `takeout` and then a command name from anywhere in your terminal.
 
 One of Takeout's primary benefits is that it boots ("enables") or deletes ("disables") Docker containers for your various dependencies quickly and easily.
 
@@ -80,7 +80,7 @@ takeout disable
 ### Disable a specific service
 
 Passed the short name of a service, disable the enabled service which matches it most closely.
- 
+
 ```bash
 takeout disable mysql
 ```
@@ -96,7 +96,7 @@ takeout start
 ### Start a specific stopped container
 
 Passed the container ID of stopped container, start the stopped container which matches it.
- 
+
 ```bash
 takeout start {container_id}
 ```
@@ -112,7 +112,7 @@ takeout stop
 ### Stop a specific running container
 
 Passed the container ID of running container, stop the running container which matches it.
- 
+
 ```bash
 takeout stop {container_id}
 ```
@@ -123,7 +123,7 @@ Another of Takeout's benefits is that it allows you to have multiple versions of
 
 Run `takeout enable mysql` twice; the first time, you'll want to choose the default port (`3306`) and the first version (`5.7`), and the second time, you'll want to choose a second port (`3307`), the second version (`8.0`) and a different volume name (so that they don't share the same `mysql_data`).
 
-Now, if you run `takeout list`, you'll see both services running at the same time.  
+Now, if you run `takeout list`, you'll see both services running at the same time.
 
 ```bash
 +--------------+----------------+---------------+-----------------------------------+
@@ -143,14 +143,14 @@ Sadly, no.
 </details>
 <details>
 <summary><strong>If I disable a service but Takeout still shows the port as taken, how do I proceed?</strong></summary>
-    
+
 First, run `lsof -i :3306` (where 3306 is the port that's unavailable.)
-    
+
 If you see output like this:
-    
+
     com.docke   936 mattstauffer   52u  IPv6 0xc0d6f0b06d5c4efb      0t0  TCP localhost:mysql->localhost:62919 (FIN_WAIT_2)
     TablePlus 96155 mattstauffer   16u  IPv4 0xc0d6f0b0b6dccf6b      0t0  TCP localhost:62919->localhost:mysql (CLOSE_WAIT)
-    
+
 The solution is to just close your database GUI, and then it should be released.
 </details>
 <details>
@@ -159,7 +159,7 @@ The solution is to just close your database GUI, and then it should be released.
 Using `docker-compose` sets up your dependencies on a project-by-project basis, which is a perfectly fine way to do things. If it makes more sense to you to have a single copy of each of your dependencies for your entire global environment, Takeout makes more sense.
 </details>
 <details>
-<summary><strong>Will disabling a service permenantly delete my databases?</strong></summary>
+<summary><strong>Will disabling a service permanently delete my databases?</strong></summary>
 
 Nope! Your data will stick around! By default almost all of our services use a "volume" to attach your data to for exactly this reason.
 
@@ -184,8 +184,8 @@ If you're working with us and are assigned to push a release, here's the easiest
 
 1. Visit the [Takeout Releases page](https://github.com/tighten/takeout/releases); figure out what your next tag will be (increase the third number if it's a patch or fix; increase the second number if it's adding features)
 2. On your local machine, pull down the latest version of `main` (`git checkout main && git pull`)
-3. Build for the version you're targeting (`./takeout app:build`)
-4. Run the build once to make sure it works (`./builds/takeout list`)
+3. Build for the version you're targeting (`php ./takeout app:build`)
+4. Run the build once to make sure it works (`php ./builds/takeout list`)
 5. Commit your build and push it up
 6. [Draft a new release](https://github.com/tighten/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
 7. Set the body to be a bullet-point list with simple descriptions for each of the PRs merged, as well as the PR link in parentheses at the end. For example:

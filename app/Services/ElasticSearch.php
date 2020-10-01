@@ -8,6 +8,7 @@ class ElasticSearch extends BaseService
 {
     protected $imageName = 'elasticsearch/elasticsearch';
     protected $organization = 'docker.elastic.co';
+    protected static $category = Category::SEARCH;
     protected $defaultPort = 9200;
     protected $dockerTagsClass = ElasticDockerTags::class;
     protected $prompts = [
