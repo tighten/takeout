@@ -139,6 +139,11 @@ class Docker
 
     public function stopDockerService(): void
     {
-        $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
+        if (PHP_OS_FAMILY === 'Windows') {
+            $this->shell->execQuietly("wsl -t docker-desktop");
+            $this->shell->execQuietly("wsl -t docker-desktop-data");
+        } else {
+            $this->shell->execQuietly("killall Docker");
+        }
     }
 }
