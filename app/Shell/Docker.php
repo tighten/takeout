@@ -142,8 +142,10 @@ class Docker
         if (PHP_OS_FAMILY === 'Windows') {
             $this->shell->execQuietly("wsl -t docker-desktop");
             $this->shell->execQuietly("wsl -t docker-desktop-data");
+        } else if (PHP_OS_FAMILY === 'Darwin') {
+            $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
         } else {
-            $this->shell->execQuietly("killall Docker");
+            $this->shell->execQuietly("systemctl stop docker");
         }
     }
 }
