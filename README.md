@@ -11,7 +11,7 @@ It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/doc
 
 With `takeout enable mysql` you're running MySQL, and never have to worry about managing or fixing Homebrew MySQL again.
 
-But you can also easily enable ElasticSearch, EventStoreDB, PostgreSQL, MSSQL, Mongo, Redis, and more, with a simple command.
+But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, and more, with a simple command.
 
 **Current list of services:**
 - MySQL
@@ -27,6 +27,7 @@ But you can also easily enable ElasticSearch, EventStoreDB, PostgreSQL, MSSQL, M
 - Mongo
 - InfluxDB
 - DynamoDB
+- EventStoreDB
 - Beanstalkd
 
 ## Requirements
