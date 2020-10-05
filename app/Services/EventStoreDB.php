@@ -31,7 +31,7 @@ class EventStoreDB extends BaseService
 
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'tag') {
-                $prompt['default'] = '20.6.0-buster-slim';
+                $prompt['default'] = '5.0.8-xenial';
             }
             return $prompt;
         }, $this->defaultPrompts);
@@ -44,13 +44,5 @@ class EventStoreDB extends BaseService
     protected $dockerRunTemplate = '-p "${:port}":1113 \
         -p "${:web_port}":2113 \
         -v "${:volume}":/var/lib/eventstore \
-        -e EVENTSTORE_EXT_HTTP_PORT="${:web_port}" \
-        -e EVENTSTORE_HTTP_PORT="${:web_port}" \
-        -e EVENTSTORE_HTTP_PORT_ADVERTISE_AS="${:web_port}" \
-        -e EVENTSTORE_EXT_TCP_PORT="${:port}" \
-        -e EVENTSTORE_ENABLE_EXTERNAL_TCP=True \
-        -e EVENTSTORE_DISABLE_FIRST_LEVEL_HTTP_AUTHORIZATION=True \
-        -e EVENTSTORE_RUN_PROJECTIONS=All \
-        -e EVENTSTORE_DEV=True \
         "${:organization}"/"${:image_name}":"${:tag}"';
 }
