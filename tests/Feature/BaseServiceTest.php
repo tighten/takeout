@@ -42,10 +42,10 @@ class BaseServiceTest extends TestCase
             $mock->shouldReceive('imageIsDownloaded')->andReturn(true);
 
             // This is the actual assertion
-            $mock->shouldReceive('bootContainer')->with(['getmeili/meilisearch']);
+            $mock->shouldReceive('bootContainer')->once();
         });
 
-        $service = app(MeiliSearch::Class); // Extends BaseService
+        $service = app(MeiliSearch::class); // Extends BaseService
         $service->enable();
     }
 }
