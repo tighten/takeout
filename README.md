@@ -33,7 +33,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 - macOS, Linux, or WSL2
 - [Composer](https://getcomposer.org/) installed
-- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/)) 
+- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/))
 
 ## Installation
 
@@ -61,12 +61,14 @@ Show a list of all services you can enable.
 takeout enable
 ```
 
-### Enable a specific service
+### Enable specific services
 
-Passed the short name of a service, enable the given service.
+Passed the short name of one or more services, enable them.
 
 ```bash
 takeout enable mysql
+
+takeout enable redis meilisearch
 ```
 
 ### Disable a service
@@ -77,12 +79,14 @@ Show a list of all enabled services you can disable.
 takeout disable
 ```
 
-### Disable a specific service
+### Disable specific services
 
-Passed the short name of a service, disable the enabled service which matches it most closely.
+Passed the short name of one or more services, disable the enabled services that match them most closely.
 
 ```bash
 takeout disable mysql
+
+takeout disable redis meilisearch
 ```
 
 ### Start a stopped container
