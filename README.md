@@ -15,6 +15,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 **Current list of services:**
 - MySQL
+- PostGIS
 - PostgreSQL
 - MSSQL
 - ElasticSearch
