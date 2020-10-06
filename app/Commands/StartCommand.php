@@ -35,9 +35,7 @@ class StartCommand extends Command
 
     public function startableContainers(): array
     {
-        return app(Docker::class)->takeoutContainers()->reject(function ($container) {
-            return Str::contains($container['status'], 'Up');
-        })->map(function ($container) {
+        return app(Docker::class)->startableTakeoutContainers()->map(function ($container) {
             $label = sprintf('%s - %s', $container['container_id'], $container['names']);
 
             return [$label, function (CliMenu $menu) use ($container, $label) {

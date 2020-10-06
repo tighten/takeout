@@ -2,8 +2,10 @@
 
 namespace App\Shell;
 
+use App\Exceptions\DockerContainerMissingException;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
 
 class Docker
@@ -37,6 +39,10 @@ class Docker
 
     public function startContainer(string $containerId): void
     {
+        if( ! $this->startableTakeoutContainerExists($containerId)) {
+            throw new DockerContainerMissingException();
+        }
+
         $process = $this->shell->exec('docker start ' . $containerId);
 
         if (! $process->isSuccessful()) {
@@ -54,6 +60,20 @@ class Docker
     public function takeoutContainers(): Collection
     {
         return $this->containerRawOutputToCollection($this->takeoutContainersRawOutput());
+    }
+
+    public function startableTakeoutContainers(): Collection
+    {
+        return $this->containerRawOutputToCollection($this->takeoutContainersRawOutput())->reject(function ($container) {
+            return Str::contains($container['status'], 'Up');
+        });
+    }
+
+    public function startableTakeoutContainerExists(string $containerId)
+    {
+        return $this->startableTakeoutContainers()->contains(function ($container) use ($containerId){
+            return $container['container_id'] == $containerId;
+        });
     }
 
     public function allContainers(): Collection
