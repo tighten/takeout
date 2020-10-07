@@ -2,10 +2,10 @@
 
 namespace App\Commands;
 
-use Throwable;
-use App\Shell\Docker;
 use App\InitializesCommands;
+use App\Shell\Docker;
 use LaravelZero\Framework\Commands\Command;
+use Throwable;
 
 class DisableCommand extends Command
 {
@@ -22,9 +22,7 @@ class DisableCommand extends Command
         $this->initializeCommand();
         $this->disableableServices = $this->disableableServices();
 
-        $disableAll = $this->option('all');
-
-        if ($disableAll) {
+        if ($this->option('all')) {
             foreach ($this->disableableServices as $containerId => $name) {
                 $this->disableByContainerId($containerId);
             }

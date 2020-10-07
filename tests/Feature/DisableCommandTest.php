@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Shell\Docker;
 use App\Commands\DisableCommand;
+use App\Shell\Docker;
+use Tests\TestCase;
 
 class DisableCommandTest extends TestCase
 {

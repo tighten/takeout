@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use Throwable;
-use App\Shell\Shell;
 use App\Shell\Docker;
-use App\WritesToConsole;
 use App\Shell\DockerTags;
 use App\Shell\Environment;
+use App\Shell\Shell;
+use App\WritesToConsole;
 use Illuminate\Support\Str;
+use Throwable;
 
 abstract class BaseService
 {
@@ -180,6 +180,6 @@ abstract class BaseService
             }
         }
 
-        return 'TO--' . $this->shortName() . '--' . $this->tag . '--' . $portTag;
+        return 'TO--' . $this->shortName() . '--' . $this->tag . $portTag;
     }
 }
