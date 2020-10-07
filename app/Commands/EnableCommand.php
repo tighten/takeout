@@ -29,10 +29,22 @@ class EnableCommand extends Command
             return;
         }
 
-        $option = $this->menu('Services to enable', $this->enableableServices())
-            ->addLineBreak('', 1)
-            ->setPadding(2, 5)
-            ->open();
+        $option = $this->menu('Services to enable:')->setTitleSeparator('=');
+
+        foreach ($this->enableableServicesByCategory() as $category => $services) {
+            $menuItems = collect($services)->mapWithKeys(function ($service) {
+                return [$service['shortName'] => $service['name']];
+            })->toArray();
+
+            $separator = str_repeat('-', 1 + Str::length($category));
+
+            $option->addStaticItem("{$category}:")
+                ->addStaticItem($separator)
+                ->addOptions($menuItems)
+                ->addLineBreak('', 1);
+        }
+
+        $option = $option->open();
 
         if (! $option) {
             return;
@@ -46,6 +58,21 @@ class EnableCommand extends Command
         return collect((new Services)->all())->mapWithKeys(function ($fqcn, $shortName) {
             return [$shortName => $fqcn::name()];
         })->toArray();
+    }
+
+    public function enableableServicesByCategory(): array
+    {
+        return collect((new Services)->all())
+            ->mapToGroups(function ($fqcn, $shortName) {
+                return [
+                    $fqcn::category() => [
+                        'shortName' => $shortName,
+                        'name' => $fqcn::name(),
+                    ],
+                ];
+            })
+            ->sortKeys()
+            ->toArray();
     }
 
     public function enable(string $service, bool $useDefaults = false): void
