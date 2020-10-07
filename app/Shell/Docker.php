@@ -30,6 +30,13 @@ class Docker
 
     public function stopContainer(string $containerId): void
     {
+
+        if( ! $this->stopableTakeoutContainers()->contains(function ($container) use ($containerId){
+            return $container['container_id'] == $containerId;
+        })) {
+            throw new DockerContainerMissingException();
+        }
+
         $process = $this->shell->exec('docker stop ' . $containerId);
 
         if (! $process->isSuccessful()) {
@@ -39,7 +46,9 @@ class Docker
 
     public function startContainer(string $containerId): void
     {
-        if( ! $this->startableTakeoutContainerExists($containerId)) {
+        if( ! $this->startableTakeoutContainers()->contains(function ($container) use ($containerId){
+            return $container['container_id'] == $containerId;
+        })) {
             throw new DockerContainerMissingException();
         }
 
@@ -69,10 +78,10 @@ class Docker
         });
     }
 
-    public function startableTakeoutContainerExists(string $containerId)
+    public function stopableTakeoutContainers(): Collection
     {
-        return $this->startableTakeoutContainers()->contains(function ($container) use ($containerId){
-            return $container['container_id'] == $containerId;
+        return $this->containerRawOutputToCollection($this->takeoutContainersRawOutput())->filter(function ($container) {
+            return Str::contains($container['status'], 'Up');
         });
     }
 
