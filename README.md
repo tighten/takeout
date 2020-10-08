@@ -2,6 +2,7 @@
 
 # Takeout
 
+[![Actions Status](https://img.shields.io/github/workflow/status/tighten/takeout/Run%20tests)](https://github.com/tighten/takeout/actions)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 [![Downloads on Packagist](https://img.shields.io/packagist/dt/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 
@@ -33,7 +34,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 - macOS, Linux, or WSL2
 - [Composer](https://getcomposer.org/) installed
-- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/)) 
+- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/))
 
 ## Installation
 
@@ -61,12 +62,24 @@ Show a list of all services you can enable.
 takeout enable
 ```
 
-### Enable a specific service
+### Enable specific services
 
-Passed the short name of a service, enable the given service.
+Passed the short name of one or more services, enable them.
 
 ```bash
 takeout enable mysql
+
+takeout enable redis meilisearch
+```
+
+### Enable services with default parameters
+
+If you want to skip over being asked for each parameter and just accept the defaults. This also works with multiple services in one command.
+
+```bash
+takeout enable mysql --default
+
+takeout enable redis meilisearch --default
 ```
 
 ### Disable a service
@@ -77,12 +90,21 @@ Show a list of all enabled services you can disable.
 takeout disable
 ```
 
-### Disable a specific service
+### Disable specific services
 
-Passed the short name of a service, disable the enabled service which matches it most closely.
+Passed the short name of one or more services, disable the enabled services that match them most closely.
 
 ```bash
 takeout disable mysql
+
+takeout disable redis meilisearch
+```
+
+
+### Disable all services
+
+```bash
+takeout disable --all
 ```
 
 ### Start a stopped container
