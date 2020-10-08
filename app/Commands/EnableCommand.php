@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Services;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 class EnableCommand extends Command
