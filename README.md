@@ -2,6 +2,7 @@
 
 # Takeout
 
+[![Actions Status](https://img.shields.io/github/workflow/status/tighten/takeout/Run%20tests)](https://github.com/tighten/takeout/actions)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 [![Downloads on Packagist](https://img.shields.io/packagist/dt/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 
