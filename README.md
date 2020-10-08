@@ -72,6 +72,16 @@ takeout enable mysql
 takeout enable redis meilisearch
 ```
 
+### Enable services with default parameters
+
+If you want to skip over being asked for each parameter and just accept the defaults. This also works with multiple services in one command.
+
+```bash
+takeout enable mysql --default
+
+takeout enable redis meilisearch --default
+```
+
 ### Disable a service
 
 Show a list of all enabled services you can disable.
@@ -88,6 +98,13 @@ Passed the short name of one or more services, disable the enabled services that
 takeout disable mysql
 
 takeout disable redis meilisearch
+```
+
+
+### Disable all services
+
+```bash
+takeout disable --all
 ```
 
 ### Start a stopped container
