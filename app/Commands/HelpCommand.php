@@ -11,8 +11,8 @@ class HelpCommand extends Command
     protected $indent = 22;
     protected $commands = [
         'enable' => 'Enable a service from a list of options',
-        'enable {service}' => 'Enable the provided service',
-        'disable' => 'Disable a service from a list of options',
+        'enable {service}' => 'Enable the provided service (optionally pass --default flag)',
+        'disable' => 'Disable a service from a list of options (optionally pass --all flag)',
         'disable {service}' => 'Disable the provided service',
         'start' => 'Start a stopped container from a list of options',
         'start {container}' => 'Start the provided stopped container (by ID)',
