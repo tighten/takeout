@@ -6,7 +6,7 @@ use Exception;
 
 use App\Shell\Shell;
 
-class DockerContainerMissingException extends \Exception
+class DockerContainerMissingException extends Exception
 {
     public function render($request = null): void
     {
