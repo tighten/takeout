@@ -31,10 +31,10 @@ class Docker
     public function stopContainer(string $containerId): void
     {
 
-        if(! $this->stopableTakeoutContainers()->contains(function ($container) use ($containerId) {
+        if (! $this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] === $containerId;
         })) {
-            throw new DockerContainerMissingException("Docker container $containerId not found");
+            throw new DockerContainerMissingException($containerId);
         }
 
         $process = $this->shell->exec('docker stop ' . $containerId);
@@ -46,10 +46,10 @@ class Docker
 
     public function startContainer(string $containerId): void
     {
-        if(! $this->startableTakeoutContainers()->contains(function ($container) use ($containerId) {
+        if (! $this->startableTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] === $containerId;
         })) {
-            throw new DockerContainerMissingException("Docker container $containerId not found");
+            throw new DockerContainerMissingException($containerId);
         }
 
         $process = $this->shell->exec('docker start ' . $containerId);
@@ -78,7 +78,7 @@ class Docker
         });
     }
 
-    public function stopableTakeoutContainers(): Collection
+    public function stoppableTakeoutContainers(): Collection
     {
         return $this->containerRawOutputToCollection($this->takeoutContainersRawOutput())->filter(function ($container) {
             return Str::contains($container['status'], 'Up');

@@ -35,7 +35,7 @@ class StopCommand extends Command
 
     public function stoppableContainers(): array
     {
-        return app(Docker::class)->stopableTakeoutContainers()->map(function ($container) {
+        return app(Docker::class)->stoppableTakeoutContainers()->map(function ($container) {
             $label = sprintf('%s - %s', $container['container_id'], $container['names']);
 
             return [$label, function(CliMenu $menu) use ($container, $label) {
