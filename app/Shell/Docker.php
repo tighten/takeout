@@ -31,7 +31,7 @@ class Docker
     public function stopContainer(string $containerId): void
     {
 
-        if( ! $this->stopableTakeoutContainers()->contains(function ($container) use ($containerId){
+        if(! $this->stopableTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] == $containerId;
         })) {
             throw new DockerContainerMissingException();
