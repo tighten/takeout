@@ -2,7 +2,7 @@
 
 
 namespace App\Exceptions;
-
+use Exception;
 
 use App\Shell\Shell;
 
