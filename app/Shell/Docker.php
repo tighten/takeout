@@ -47,7 +47,7 @@ class Docker
     public function startContainer(string $containerId): void
     {
         if(! $this->startableTakeoutContainers()->contains(function ($container) use ($containerId) {
-            return $container['container_id'] == $containerId;
+            return $container['container_id'] === $containerId;
         })) {
             throw new DockerContainerMissingException();
         }
