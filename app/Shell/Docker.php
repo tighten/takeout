@@ -34,7 +34,7 @@ class Docker
         if(! $this->stopableTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] === $containerId;
         })) {
-            throw new DockerContainerMissingException($containerId);
+            throw new DockerContainerMissingException("Docker container $containerId not found");
         }
 
         $process = $this->shell->exec('docker stop ' . $containerId);
@@ -49,7 +49,7 @@ class Docker
         if(! $this->startableTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] === $containerId;
         })) {
-            throw new DockerContainerMissingException();
+            throw new DockerContainerMissingException("Docker container $containerId not found");
         }
 
         $process = $this->shell->exec('docker start ' . $containerId);

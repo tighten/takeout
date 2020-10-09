@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Exception;
 
 use App\Shell\Shell;
+use Throwable;
 
 class DockerContainerMissingException extends Exception
 {
@@ -14,6 +15,6 @@ class DockerContainerMissingException extends Exception
         $shell = app(Shell::class);
 
         $console->line('');
-        $console->line($shell->formatErrorMessage('Docker container not found.'));
+        $console->line($shell->formatErrorMessage($this->getMessage()));
     }
 }
