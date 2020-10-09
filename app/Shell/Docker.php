@@ -32,7 +32,7 @@ class Docker
     {
 
         if(! $this->stopableTakeoutContainers()->contains(function ($container) use ($containerId) {
-            return $container['container_id'] == $containerId;
+            return $container['container_id'] === $containerId;
         })) {
             throw new DockerContainerMissingException();
         }
