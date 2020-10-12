@@ -139,6 +139,11 @@ abstract class BaseService
         foreach ($this->prompts as $prompt) {
             $this->askQuestion($prompt, $this->useDefaults);
 
+            while ($prompt['shortname'] === 'volume' && !$this->docker->volumeIsAvailable($this->promptResponses['volume'])) {
+                app('console')->error("Volume {$this->promptResponses['volume']} is already in use. Please select a different volume.");
+                $this->askQuestion($prompt);
+            }
+
             while (Str::contains($prompt['shortname'], 'port') && ! $this->environment->portIsAvailable($this->promptResponses[$prompt['shortname']])) {
                 app('console')->error("Port {$this->promptResponses[$prompt['shortname']]} is already in use. Please select a different port.");
                 $this->askQuestion($prompt);
