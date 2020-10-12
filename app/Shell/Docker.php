@@ -4,7 +4,6 @@ namespace App\Shell;
 
 use Exception;
 use Illuminate\Support\Collection;
-use Symfony\Component\Process\Process;
 
 class Docker
 {
@@ -131,7 +130,7 @@ class Docker
         $process = $this->shell->exec('docker run -d --name "${:container_name}" ' . $dockerRunTemplate, $parameters);
 
         if (! $process->isSuccessful()) {
-            throw new Exception("Failed installing " .  $parameters['image_name']);
+            throw new Exception("Failed installing " . $parameters['image_name']);
         }
     }
 

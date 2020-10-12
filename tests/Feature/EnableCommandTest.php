@@ -11,7 +11,7 @@ use Tests\TestCase;
 class EnableCommandTest extends TestCase
 {
     /** @test */
-    public function it_finds_services_by_shortname()
+    function it_finds_services_by_shortname()
     {
         $service = 'meilisearch';
 
@@ -29,7 +29,7 @@ class EnableCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_finds_multiple_services()
+    function it_finds_multiple_services()
     {
         $meilisearch = 'meilisearch';
         $postgres = 'postgres';
@@ -53,7 +53,7 @@ class EnableCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_displays_error_if_invalid_shortname_passed()
+    function it_displays_error_if_invalid_shortname_passed()
     {
         $this->mock(Docker::class, function ($mock) {
             $mock->shouldReceive('isInstalled')->andReturn(true);

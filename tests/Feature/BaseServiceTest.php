@@ -2,26 +2,25 @@
 
 namespace Tests\Feature;
 
-use function app;
-use Mockery as M;
-use Tests\TestCase;
-use App\Shell\Shell;
-use App\Shell\Docker;
 use App\Services\MeiliSearch;
-use Symfony\Component\Process\Process;
+use App\Shell\Docker;
+use App\Shell\Shell;
 use LaravelZero\Framework\Commands\Command;
+use Mockery as M;
+use Symfony\Component\Process\Process;
+use Tests\TestCase;
 
 class BaseServiceTest extends TestCase
 {
     /** @test */
-    public function it_generates_shortname()
+    function it_generates_shortname()
     {
         $meilisearch = app(MeiliSearch::class);
         $this->assertEquals('meilisearch', $meilisearch->shortName());
     }
 
     /** @test */
-    public function it_enables_services()
+    function it_enables_services()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $defaultPort = app(MeiliSearch::class)->defaultPort();
