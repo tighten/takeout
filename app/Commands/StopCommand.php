@@ -3,7 +3,6 @@
 namespace App\Commands;
 
 use App\InitializesCommands;
-use App\Services;
 use App\Shell\Docker;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -40,17 +39,20 @@ class StopCommand extends Command
         })->map(function ($container) {
             $label = sprintf('%s - %s', $container['container_id'], $container['names']);
 
-            return [$label, function(CliMenu $menu) use ($container, $label) {
-                $this->stop($menu->getSelectedItem()->getText());
+            return [
+                $label,
+                function(CliMenu $menu) use ($container, $label) {
+                    $this->stop($menu->getSelectedItem()->getText());
 
-                foreach ($menu->getItems() as $item) {
-                    if ($item->getText() === $label) {
-                        $menu->removeItem($item);
+                    foreach ($menu->getItems() as $item) {
+                        if ($item->getText() === $label) {
+                            $menu->removeItem($item);
+                        }
                     }
-                }
 
-                $menu->redraw();
-            }];
+                    $menu->redraw();
+                },
+            ];
         }, collect())->toArray();
     }
 

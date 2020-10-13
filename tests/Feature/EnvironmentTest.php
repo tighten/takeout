@@ -2,22 +2,22 @@
 
 namespace Tests\Feature;
 
-use Mockery as M;
-use Tests\TestCase;
-use App\Shell\Shell;
 use App\Shell\Environment;
-use Symfony\Component\Process\Process;
+use App\Shell\Shell;
 use LaravelZero\Framework\Commands\Command;
+use Mockery as M;
+use Symfony\Component\Process\Process;
+use Tests\TestCase;
 
 class EnvironmentTest extends TestCase
 {
-    private function isLinux()
+    function isLinux()
     {
         return PHP_OS_FAMILY === 'Linux';
     }
 
     /** @test **/
-    public function it_detects_a_port_conflict()
+    function it_detects_a_port_conflict()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $mock->shouldIgnoreMissing();
@@ -41,7 +41,7 @@ class EnvironmentTest extends TestCase
     }
 
     /** @test **/
-    public function it_detects_a_port_is_available()
+    function it_detects_a_port_is_available()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $mock->shouldIgnoreMissing();

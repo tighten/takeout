@@ -5,9 +5,9 @@ namespace Tests\Feature;
 use App\Services\MsSql;
 use App\Shell\MicrosoftDockerTags;
 use GuzzleHttp\Client;
-use Illuminate\Support\Str;
+use GuzzleHttp\Psr7\Stream as Psr7Stream;
 use Mockery as M;
-use Tests\Testcase;
+use Tests\TestCase;
 
 class MicrosoftDockerTagsTest extends TestCase
 {
@@ -48,7 +48,7 @@ class MicrosoftDockerTagsTest extends TestCase
     }
 }
 
-class MicrosoftDockerTagsFakestream extends \GuzzleHttp\Psr7\Stream
+class MicrosoftDockerTagsFakestream extends Psr7Stream
 {
     public function __construct($stream, $options = [])
     {

@@ -6,9 +6,10 @@ use App\Shell\MicrosoftDockerTags;
 
 class MsSql extends BaseService
 {
+    protected static $category = Category::DATABASE;
+
     protected $organization = 'mcr.microsoft.com';
     protected $imageName = 'mssql/server';
-    protected static $category = Category::DATABASE;
     protected $dockerTagsClass = MicrosoftDockerTags::class;
     protected $defaultPort = 1433;
     protected $prompts = [

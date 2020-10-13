@@ -6,11 +6,12 @@ use App\Shell\ElasticDockerTags;
 
 class ElasticSearch extends BaseService
 {
-    protected $imageName = 'elasticsearch/elasticsearch';
-    protected $organization = 'docker.elastic.co';
     protected static $category = Category::SEARCH;
-    protected $defaultPort = 9200;
+
+    protected $organization = 'docker.elastic.co';
+    protected $imageName = 'elasticsearch/elasticsearch';
     protected $dockerTagsClass = ElasticDockerTags::class;
+    protected $defaultPort = 9200;
     protected $prompts = [
         [
             'shortname' => 'volume',
