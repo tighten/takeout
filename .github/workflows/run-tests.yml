@@ -7,25 +7,20 @@ jobs:
     tests:
         strategy:
             matrix:
-                os: [macOS, Ubuntu, Windows]
+                os: [Ubuntu, Windows, macOS]
                 php: [7.2, 7.3, 7.4]
 
                 include:
-                  - os: macOS
-                    experimental: false
-                    os-version: macos-latest
-
                   - os: Ubuntu
-                    experimental: true
                     os-version: ubuntu-latest
 
                   - os: Windows
-                    experimental: true
                     os-version: windows-latest
 
-        name: ${{ matrix.os }} - PHP ${{ matrix.php }}
+                  - os: macOS
+                    os-version: macos-latest
 
-        continue-on-error: ${{ matrix.experimental }}
+        name: ${{ matrix.os }} - PHP ${{ matrix.php }}
 
         runs-on: ${{ matrix.os-version }}
 
