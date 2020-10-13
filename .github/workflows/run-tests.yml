@@ -9,7 +9,6 @@ jobs:
             matrix:
                 os: [macOS, Ubuntu, Windows]
                 php: [7.2, 7.3, 7.4]
-                dependency: [prefer-lowest, prefer-stable]
 
                 include:
                   - os: macOS
@@ -24,7 +23,7 @@ jobs:
                     experimental: true
                     os-version: windows-latest
 
-        name: ${{ matrix.os }} - PHP ${{ matrix.php }} --${{ matrix.dependency }}
+        name: ${{ matrix.os }} - PHP ${{ matrix.php }}
 
         continue-on-error: ${{ matrix.experimental }}
 
@@ -49,7 +48,7 @@ jobs:
                   coverage: none
 
             - name: Install dependencies
-              run: composer update --${{ matrix.dependency }} --prefer-dist --no-interaction --no-suggest --ignore-platform-reqs
+              run: composer update --prefer-stable --prefer-dist --no-interaction --no-suggest --ignore-platform-reqs
 
             - name: Run tests
               run: vendor/bin/phpunit
