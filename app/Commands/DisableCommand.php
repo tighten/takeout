@@ -67,29 +67,45 @@ class DisableCommand extends Command
 
                 return;
             case 1:
-                $serviceContainerId = $serviceMatches->flip()->first();
+                $this->disableByContainerId($serviceMatches->flip()->first());
                 break;
             default: // > 1
-                $serviceContainerId = $this->menu('Select which service to disable.', $serviceMatches->toArray())->open();
-
-                if (! $serviceContainerId) {
-                    return;
-                }
+                $this->showDisableServiceMenu($serviceMatches);
         }
-
-        $this->disableByContainerId($serviceContainerId);
     }
 
-    public function showDisableServiceMenu(): void
+    public function showDisableServiceMenu($disableableServices = null): void
     {
-        $serviceContainerId = $this->menu('Services to disable', $this->disableableServices)
+        if ($serviceContainerId = $this->selectMenu($disableableServices ?? $this->disableableServices)) {
+            dd($serviceContainerId);
+            $this->disableByContainerId($serviceContainerId);
+        }
+    }
+
+    private function selectMenu($disableableServices): ?string
+    {
+        if (in_array(PHP_OS_FAMILY, ['Windows'])) {
+            return $this->windowsMenu($disableableServices);
+        }
+
+        return $this->defaultMenu($disableableServices);
+    }
+
+    private function defaultMenu($disableableServices): ?string
+    {
+        return $this->menu('Services to disable', $disableableServices)
             ->addLineBreak('', 1)
             ->setPadding(2, 5)
             ->open();
+    }
 
-        if ($serviceContainerId) {
-            $this->disableByContainerId($serviceContainerId);
-        }
+    private function windowsMenu($disableableServices): ?string
+    {
+        array_push($disableableServices, '<info>Exit</>');
+
+        $choice = $this->choice('What service would you like to disable?', array_values($disableableServices));
+
+        return array_search($choice, $disableableServices);
     }
 
     public function disableByContainerId(string $containerId): void

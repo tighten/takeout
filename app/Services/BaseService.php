@@ -67,6 +67,15 @@ abstract class BaseService
         return static::$displayName ?? Str::afterLast(static::class, '\\');
     }
 
+    private function validateDockerRunTemplate($dockerRunTemplate): string
+    {
+        if (in_array(PHP_OS_FAMILY, ['Windows'])) {
+            return stripslashes($dockerRunTemplate);
+        }
+
+        return $dockerRunTemplate;
+    }
+
     public function enable(bool $useDefaults = false): void
     {
         $this->useDefaults = $useDefaults;
@@ -79,13 +88,13 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                $this->dockerRunTemplate,
+                $this->validateDockerRunTemplate($this->dockerRunTemplate),
                 $this->buildParameters()
             );
 
             $this->info("\nService enabled!");
         } catch (Throwable $e) {
-            $this->error("\n" . $e->getMessage());
+            $this->error("\n".$e->getMessage());
         }
     }
 
@@ -208,6 +217,6 @@ abstract class BaseService
             }
         }
 
-        return 'TO--' . $this->shortName() . '--' . $this->tag . $portTag;
+        return 'TO--'.$this->shortName().'--'.$this->tag.$portTag;
     }
 }
