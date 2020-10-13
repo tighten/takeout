@@ -4,7 +4,6 @@ namespace App\Shell;
 
 use Exception;
 use Illuminate\Support\Collection;
-use Symfony\Component\Process\Process;
 
 class Docker
 {
@@ -61,6 +60,11 @@ class Docker
         return $this->containerRawOutputToCollection($this->allContainersRawOutput());
     }
 
+    public function volumeIsAvailable(string $volumeName): bool
+    {
+        return $this->containerRawOutputToCollection($this->listMatchingVolumesRawOutput($volumeName))->count() === 0;
+    }
+
     /**
      * Given the raw string of output from Docker, return a collection of
      * associative arrays, with the keys lowercased and slugged using underscores
@@ -93,6 +97,12 @@ class Docker
         return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 
+    protected function listMatchingVolumesRawOutput(string $volumeName): string
+    {
+        $dockerProcessStatusString = "docker ps -a --filter volume={$volumeName} --format 'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}'";
+        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
+    }
+
     public function imageIsDownloaded(string $organization, string $imageName, ?string $tag): bool
     {
         $process = $this->shell->execQuietly(sprintf(
@@ -120,7 +130,7 @@ class Docker
         $process = $this->shell->exec('docker run -d --name "${:container_name}" ' . $dockerRunTemplate, $parameters);
 
         if (! $process->isSuccessful()) {
-            throw new Exception("Failed installing " .  $parameters['image_name']);
+            throw new Exception("Failed installing " . $parameters['image_name']);
         }
     }
 

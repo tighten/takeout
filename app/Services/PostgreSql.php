@@ -4,8 +4,9 @@ namespace App\Services;
 
 class PostgreSql extends BaseService
 {
-    protected $imageName = 'postgres';
     protected static $category = Category::DATABASE;
+
+    protected $imageName = 'postgres';
     protected $defaultPort = 5432;
     protected $prompts = [
         [

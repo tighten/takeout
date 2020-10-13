@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class DisableCommandTest extends TestCase
 {
-    protected function setup(): void
+    function setup(): void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class DisableCommandTest extends TestCase
     }
 
     /** @test */
-    public function disable_menu_is_shown_when_no_service_in_input()
+    function disable_menu_is_shown_when_no_service_in_input()
     {
         $this->mock(DisableCommand::class, function ($mock) {
             $mock->shouldReceive('showDisableServiceMenu')->andReturn(true);
@@ -44,7 +44,7 @@ class DisableCommandTest extends TestCase
     }
 
     /** @test */
-    public function single_service_can_be_disabled()
+    function single_service_can_be_disabled()
     {
         $service = 'mysql';
 
@@ -56,7 +56,7 @@ class DisableCommandTest extends TestCase
     }
 
     /** @test */
-    public function multiple_services_can_be_disabled()
+    function multiple_services_can_be_disabled()
     {
         $mysql = 'mysql';
         $postgres = 'postgres';
@@ -69,7 +69,7 @@ class DisableCommandTest extends TestCase
     }
 
     /** @test */
-    public function all_services_will_be_disabled_if_all_flag_passed()
+    function all_services_will_be_disabled_if_all_flag_passed()
     {
         $this->mock(DisableCommand::class, function ($mock) {
             $mock->shouldReceive('disableByContainerId');
