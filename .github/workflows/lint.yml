@@ -5,7 +5,7 @@ on:
 
 jobs:
     tests:
-        name: TLint - macOS - PHP 7.4
+        name: TLint
 
         continue-on-error: false
 
