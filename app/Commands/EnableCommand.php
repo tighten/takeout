@@ -100,8 +100,6 @@ class EnableCommand extends Command
         }
 
         if (Str::contains($choice, 'Exit')) {
-            $this->info('Action cancelled!');
-
             return null;
         }
 
