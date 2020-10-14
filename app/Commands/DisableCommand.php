@@ -77,7 +77,6 @@ class DisableCommand extends Command
     public function showDisableServiceMenu($disableableServices = null): void
     {
         if ($serviceContainerId = $this->selectMenu($disableableServices ?? $this->disableableServices)) {
-            dd($serviceContainerId);
             $this->disableByContainerId($serviceContainerId);
         }
     }

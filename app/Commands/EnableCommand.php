@@ -79,7 +79,8 @@ class EnableCommand extends Command
         }
 
         foreach ($groupedServices as $serviceCategory => $services) {
-            array_push($choices, '<fg=white;bg=blue;options=bold> '.strtoupper($serviceCategory).' </>');
+            $serviceCategoryMenuItem = '<fg=white;bg=blue;options=bold> ' . (Str::upper($serviceCategory)) . ' </>';
+            array_push($choices, $serviceCategoryMenuItem);
 
             foreach ($this->menuItemsForServices($services) as $menuItemKey => $menuItemName) {
                 array_push($choices, $menuItemName);
