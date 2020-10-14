@@ -8,6 +8,15 @@ use Psr\Http\Message\StreamInterface;
 
 class ElasticDockerTags extends DockerTags
 {
+    public function getTags(): Collection
+    {
+        return collect(json_decode($this->getTagsResponse(), true)['tags'])
+            ->reverse()
+            ->filter(function ($tag) {
+                return ! Str::contains($tag, 'SNAPSHOT');
+            });
+    }
+
     protected function getAuthResponse(): StreamInterface
     {
         return $this->guzzle
@@ -24,19 +33,10 @@ class ElasticDockerTags extends DockerTags
                 $this->buildTagsUrl(),
                 [
                     'headers' => [
-                        'Authorization' => 'Bearer '.$auth['access_token']
-                    ]
+                        'Authorization' => 'Bearer ' . $auth['access_token'],
+                    ],
                 ]
             )->getBody();
-    }
-
-    public function getTags(): Collection
-    {
-        return collect(json_decode($this->getTagsResponse(), true)['tags'])
-            ->reverse()
-            ->filter(function ($tag) {
-                return ! Str::contains($tag, 'SNAPSHOT');
-            });
     }
 
     protected function buildAuthUrl(): string
