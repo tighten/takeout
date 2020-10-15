@@ -13,6 +13,8 @@ class StartCommand extends Command
 {
     use InitializesCommands;
 
+    const MENU_TITLE = 'Takeout containers to start';
+
     protected $signature = 'start {containerId?}';
     protected $description = 'Start a stopped container.';
     protected $docker;
@@ -73,7 +75,7 @@ class StartCommand extends Command
 
     private function defaultMenu($startableContainers)
     {
-        $this->menu('Takeout containers to start')
+        $this->menu(self::MENU_TITLE)
             ->addItems($startableContainers)
             ->addLineBreak('', 1)
             ->open();
@@ -91,7 +93,7 @@ class StartCommand extends Command
         });
         array_push($choices, '<info>Exit</>');
 
-        $choice = $this->choice('Takeout containers to start', array_values($choices));
+        $choice = $this->choice(self::MENU_TITLE, array_values($choices));
 
         if (Str::contains($choice, 'Exit')) {
             return;

@@ -11,6 +11,8 @@ class DisableCommand extends Command
 {
     use InitializesCommands;
 
+    const MENU_TITLE = 'Takeout containers to disable';
+
     protected $signature = 'disable {serviceNames?*} {--all}';
     protected $description = 'Disable services.';
     protected $disableableServices;
@@ -92,7 +94,7 @@ class DisableCommand extends Command
 
     private function defaultMenu($disableableServices): ?string
     {
-        return $this->menu('Services to disable', $disableableServices)
+        return $this->menu(self::MENU_TITLE, $disableableServices)
             ->addLineBreak('', 1)
             ->setPadding(2, 5)
             ->open();
@@ -102,7 +104,7 @@ class DisableCommand extends Command
     {
         array_push($disableableServices, '<info>Exit</>');
 
-        $choice = $this->choice('What service would you like to disable?', array_values($disableableServices));
+        $choice = $this->choice(self::MENU_TITLE, array_values($disableableServices));
 
         return array_search($choice, $disableableServices);
     }

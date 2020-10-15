@@ -13,6 +13,8 @@ class StopCommand extends Command
 {
     use InitializesCommands;
 
+    const MENU_TITLE = 'Takeout containers to stop';
+
     protected $signature = 'stop {containerId?}';
     protected $description = 'Stop a service.';
     protected $docker;
@@ -73,7 +75,7 @@ class StopCommand extends Command
 
     private function defaultMenu($stoppableContainers)
     {
-        $this->menu('Takeout containers to stop')
+        $this->menu(self::MENU_TITLE)
             ->addItems($stoppableContainers)
             ->addLineBreak('', 1)
             ->open();
@@ -91,7 +93,7 @@ class StopCommand extends Command
         });
         array_push($choices, '<info>Exit</>');
 
-        $choice = $this->choice('Takeout containers to stop', array_values($choices));
+        $choice = $this->choice(self::MENU_TITLE, array_values($choices));
 
         if (Str::contains($choice, 'Exit')) {
             return;

@@ -12,6 +12,8 @@ class EnableCommand extends Command
 {
     use InitializesCommands;
 
+    const MENU_TITLE = 'Takeout containers to enable';
+
     protected $signature = 'enable {serviceNames?*} {--default}';
     protected $description = 'Enable services.';
     protected $services;
@@ -53,7 +55,7 @@ class EnableCommand extends Command
 
     private function defaultMenu(): ?string
     {
-        $option = $this->menu('Services to enable:')->setTitleSeparator('=');
+        $option = $this->menu(self::MENU_TITLE)->setTitleSeparator('=');
 
         foreach ($this->enableableServicesByCategory() as $category => $services) {
             $separator = str_repeat('-', 1 + Str::length($category));
@@ -93,7 +95,7 @@ class EnableCommand extends Command
 
         array_push($choices, '<info>Exit</>');
 
-        $choice = $this->choice('What service would you like to enable?', $choices);
+        $choice = $this->choice(self::MENU_TITLE, $choices);
 
         if (Str::contains($choice, 'Back')) {
             return $this->windowsMenu();
