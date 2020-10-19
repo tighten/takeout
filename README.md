@@ -2,7 +2,8 @@
 
 # Takeout
 
-[![Actions Status](https://img.shields.io/github/workflow/status/tighten/takeout/Run%20tests)](https://github.com/tighten/takeout/actions)
+[![Run tests](https://github.com/tighten/takeout/workflows/Run%20tests/badge.svg?branch=main)](https://github.com/tighten/takeout/actions?query=workflow%3A%22Run+tests%22)
+[![Lint](https://github.com/tighten/takeout/workflows/Lint/badge.svg?branch=main)](https://github.com/tighten/takeout/actions?query=workflow%3ALint)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 [![Downloads on Packagist](https://img.shields.io/packagist/dt/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 
