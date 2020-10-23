@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Shell\Shell;
-use App\Shell\Docker;
-use App\Services\Category;
-use App\Shell\Environment;
 use App\Services\BaseService;
+use App\Services\Category;
+use App\Shell\Docker;
+use App\Shell\Environment;
+use App\Shell\Shell;
 
 class Sftp extends BaseService
 {
@@ -36,7 +36,7 @@ class Sftp extends BaseService
             'shortname' => 'mapped_directory',
             'prompt' => 'Which local directory should be mapped inside? (nothing if null)',
             'default' => '',
-        ]
+        ],
     ];
 
     protected $dockerRunTemplate = '-p "${:port}":22 \
