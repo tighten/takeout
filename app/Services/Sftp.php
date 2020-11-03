@@ -57,7 +57,8 @@ class Sftp extends BaseService
         }, $this->defaultPrompts);
     }
 
-    protected function prompts(): void {
+    protected function prompts(): void
+    {
         parent::prompts();
 
         if($this->promptResponses['mapped_directory'] !== "") {
