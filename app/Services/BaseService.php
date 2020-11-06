@@ -178,10 +178,16 @@ abstract class BaseService
     {
         $parameters = $this->promptResponses;
         $parameters['container_name'] = $this->containerName();
-        $parameters['alias'] = $this->shortName();
+        $parameters['alias'] = $this->shortNameWithVersion();
         $parameters['tag'] = $this->tag; // Overwrite "latest" with actual latest tag
 
         return $parameters;
+    }
+
+    // @todo: make this even smarter to get to something like "mysql80" or "mysql8.0"
+    protected function shortNameWithVersion(): string
+    {
+        return $this->shortName() . trim($this->tag, 'v');
     }
 
     protected function containerName(): string
