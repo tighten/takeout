@@ -37,7 +37,7 @@ class DockerNetworking
         }
     }
 
-    protected function baseAliasExists(string $name): bool
+    public function baseAliasExists(string $name): bool
     {
         // @todo: This was never hit in our tests
         $output = $this->shell->execQuietly('docker ps --filter "label=com.tighten.takeout.Base_Alias=' . $name . '" --format "table {{.ID}}|{{.Names}}"')->getOutput();

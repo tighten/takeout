@@ -13,7 +13,6 @@ class DockerFormatter
      * @param string $output Docker command output
      * @return Collection     Collection of associative arrays
      */
-    // @todo test this
     public function rawTableOutputToCollection($output): Collection
     {
         $containers = collect(explode("\n", trim($output)))->map(function ($line) {
