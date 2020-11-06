@@ -127,11 +127,26 @@ class Docker
 
     public function bootContainer(string $dockerRunTemplate, array $parameters): void
     {
-        $process = $this->shell->exec('docker run -d --name "${:container_name}" ' . $dockerRunTemplate, $parameters);
+        $this->ensureNetworkCreated();
+        $process = $this->shell->exec('docker run -d --name "${:container_name}" --network=takeout --network-alias="${:alias}" ' . $dockerRunTemplate, $parameters);
 
         if (! $process->isSuccessful()) {
             throw new Exception("Failed installing " . $parameters['image_name']);
         }
+    }
+
+    public function ensureNetworkCreated($name = 'takeout')
+    {
+        // @todo test this
+        if ($this->containerRawOutputToCollection($this->listMatchingNetworksRawOutput())->isEmpty()) {
+            $this->shell->exec('docker network create -d bridge ' . $name);
+        }
+    }
+
+    protected function listMatchingNetworksRawOutput(string $networkName = 'takeout'): string
+    {
+        $dockerProcessStatusString = "docker network ls --filter name={$networkName} --format 'table {{.ID}}|{{.Name}}'";
+        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
     }
 
     public function attachedVolumeName(string $containerId)

@@ -178,6 +178,7 @@ abstract class BaseService
     {
         $parameters = $this->promptResponses;
         $parameters['container_name'] = $this->containerName();
+        $parameters['alias'] = $this->shortName();
         $parameters['tag'] = $this->tag; // Overwrite "latest" with actual latest tag
 
         return $parameters;
