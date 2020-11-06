@@ -33,14 +33,14 @@ class DockerNetworking
     {
         // @todo test this
         if ($this->formatter->rawTableOutputToCollection($this->listMatchingNetworksRawOutput())->isEmpty()) {
-            $this->shell->exec('docker network create -d bridge ' . $name);
+            $this->shell->execQuietly('docker network create -d bridge ' . $name);
         }
     }
 
     protected function baseAliasExists(string $name): bool
     {
         // @todo: This was never hit in our tests
-        $output = $this->shell->exec('docker ps --filter "label=com.tighten.takeout.Base_Alias=' . $name . '" --format "table {{.ID}}|{{.Names}}"')->getOutput();
+        $output = $this->shell->execQuietly('docker ps --filter "label=com.tighten.takeout.Base_Alias=' . $name . '" --format "table {{.ID}}|{{.Names}}"')->getOutput();
         $collection = $this->formatter->rawTableOutputToCollection($output);
 
         return $collection->isNotEmpty();
