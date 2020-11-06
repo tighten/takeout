@@ -180,10 +180,12 @@ abstract class BaseService
         return $parameters;
     }
 
-    // @todo: make this even smarter to get to something like "mysql80" or "mysql8.0"
     protected function shortNameWithVersion(): string
     {
-        return $this->shortName() . trim($this->tag, 'v');
+        $version = trim($this->tag, 'v');
+        [$major, $minor] = explode('.', $version);
+
+        return $this->shortName() . "{$major}.{$minor}";
     }
 
     protected function containerName(): string
