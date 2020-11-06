@@ -74,7 +74,7 @@ class Docker
      */
     protected function rawTableOutputToCollection($output): Collection
     {
-        $containers = collect(explode("\n", $output))->map(function ($line) {
+        $containers = collect(explode("\n", trim($output)))->map(function ($line) {
             return explode('|', $line);
         })->filter();
 
@@ -92,19 +92,19 @@ class Docker
     protected function takeoutContainersRawOutput(): string
     {
         $dockerProcessStatusString = 'docker ps -a --filter "name=TO-" --format \'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}|{{.Label "com.tighten.takeout.Base_Alias"}}|{{.Label "com.tighten.takeout.Full_Alias"}}\'';
-        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
+        return $this->shell->execQuietly($dockerProcessStatusString)->getOutput();
     }
 
     protected function allContainersRawOutput(): string
     {
         $dockerProcessStatusString = 'docker ps --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
-        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
+        return $this->shell->execQuietly($dockerProcessStatusString)->getOutput();
     }
 
     protected function listMatchingVolumesRawOutput(string $volumeName): string
     {
         $dockerProcessStatusString = "docker ps -a --filter volume={$volumeName} --format 'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}'";
-        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
+        return $this->shell->execQuietly($dockerProcessStatusString)->getOutput();
     }
 
     public function imageIsDownloaded(string $organization, string $imageName, ?string $tag): bool
@@ -151,14 +151,13 @@ class Docker
             $networkSettings[] = '--network-alias="' . $parameters['image_name'] . '"';
             $networkSettings[] = '--label=com.tighten.takeout.Base_Alias=' . $parameters['image_name'];
         }
-//        dd($networkSettings);
 
         return implode(' ' , $networkSettings);
     }
 
     public function baseAliasExists(string $name): bool
     {
-        $output = trim($this->shell->exec('docker ps --filter "label=com.tighten.takeout.Base_Alias=' . $name . '" --format "table {{.ID}}|{{.Names}}"')->getOutput());
+        $output = $this->shell->exec('docker ps --filter "label=com.tighten.takeout.Base_Alias=' . $name . '" --format "table {{.ID}}|{{.Names}}"')->getOutput();
         $collection = $this->rawTableOutputToCollection($output);
 
         return $collection->isNotEmpty();
@@ -175,7 +174,7 @@ class Docker
     protected function listMatchingNetworksRawOutput(string $networkName = 'takeout'): string
     {
         $dockerProcessStatusString = "docker network ls --filter name={$networkName} --format 'table {{.ID}}|{{.Name}}'";
-        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
+        return $this->shell->execQuietly($dockerProcessStatusString)->getOutput();
     }
 
     public function attachedVolumeName(string $containerId)
