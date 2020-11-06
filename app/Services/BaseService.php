@@ -167,11 +167,7 @@ abstract class BaseService
 
     protected function resolveTag($responseTag): string
     {
-        if ($responseTag === 'latest') {
-            return app()->make($this->dockerTagsClass, ['service' => $this])->getLatestTag();
-        }
-
-        return $responseTag;
+        return app()->make($this->dockerTagsClass, ['service' => $this])->resolveTag($responseTag);
     }
 
     protected function buildParameters(): array
