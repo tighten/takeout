@@ -11,6 +11,30 @@ use Tests\TestCase;
 class DockerNetworkingTest extends TestCase
 {
     /** @test */
+    function it_can_tell_whether_network_exists()
+    {
+        $this->mock(Shell::class, function ($mock) {
+            $process = M::mock(Process::class);
+            $process->shouldReceive('getOutput')->andReturn("NETWORK ID|NAME\n");
+            $mock->shouldReceive('execQuietly')->andReturn($process);
+        });
+
+        $this->assertTrue(app(DockerNetworking::class)->listMatchingNetworks('takeout')->isEmpty());
+    }
+
+    /** @test */
+    function it_can_tell_whether_network_doesnt_exist()
+    {
+        $this->mock(Shell::class, function ($mock) {
+            $process = M::mock(Process::class);
+            $process->shouldReceive('getOutput')->andReturn("NETWORK ID|NAME\nb632c40d845a|takeout");
+            $mock->shouldReceive('execQuietly')->andReturn($process);
+        });
+
+        $this->assertTrue(app(DockerNetworking::class)->listMatchingNetworks('takeout')->isNotEmpty());
+    }
+
+    /** @test */
     function it_can_tell_whether_a_base_alias_exists()
     {
         $this->mock(Shell::class, function ($mock) {

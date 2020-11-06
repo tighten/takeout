@@ -2,6 +2,8 @@
 
 namespace App\Shell;
 
+use Illuminate\Support\Collection;
+
 class DockerNetworking
 {
     protected $shell;
@@ -31,24 +33,24 @@ class DockerNetworking
 
     public function ensureNetworkCreated($name = 'takeout'): void
     {
-        // @todo test this
-        if ($this->formatter->rawTableOutputToCollection($this->listMatchingNetworksRawOutput())->isEmpty()) {
+        if ($this->listMatchingNetworks()->isEmpty()) {
             $this->shell->execQuietly('docker network create -d bridge ' . $name);
         }
     }
 
     public function baseAliasExists(string $name): bool
     {
-        // @todo: This was never hit in our tests
         $output = $this->shell->execQuietly('docker ps --filter "label=com.tighten.takeout.Base_Alias=' . $name . '" --format "table {{.ID}}|{{.Names}}"')->getOutput();
         $collection = $this->formatter->rawTableOutputToCollection($output);
 
         return $collection->isNotEmpty();
     }
 
-    protected function listMatchingNetworksRawOutput(string $networkName = 'takeout'): string
+    public function listMatchingNetworks(string $networkName = 'takeout'): Collection
     {
         $command = "docker network ls --filter name={$networkName} --format 'table {{.ID}}|{{.Name}}'";
-        return $this->shell->execQuietly($command)->getOutput();
+        $output = $this->shell->execQuietly($command)->getOutput();
+
+        return $this->formatter->rawTableOutputToCollection($output);
     }
 }
