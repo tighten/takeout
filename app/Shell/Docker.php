@@ -54,9 +54,15 @@ class Docker
 
     public function takeoutContainers(): Collection
     {
-        $process = 'docker ps -a --filter "name=TO-" --format \'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}|{{.Label "com.tighten.takeout.Base_Alias"}}|{{.Label "com.tighten.takeout.Full_Alias"}}\'';
-        $output = $this->shell->execQuietly($process)->getOutput();
-        return $this->formatter->rawTableOutputToCollection($output);
+        $process = sprintf(
+            'docker ps -a --filter "name=TO-" --format \'table %s|%s\'',
+            '{{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}',
+            '{{.Label "com.tighten.takeout.Base_Alias"}}|{{.Label "com.tighten.takeout.Full_Alias"}}'
+        );
+
+        return $this->formatter->rawTableOutputToCollection(
+            $this->shell->execQuietly($process)->getOutput()
+        );
     }
 
     public function allContainers(): Collection
