@@ -60,16 +60,14 @@ class Docker
             '{{.Label "com.tighten.takeout.Base_Alias"}}|{{.Label "com.tighten.takeout.Full_Alias"}}'
         );
 
-        return $this->formatter->rawTableOutputToCollection(
-            $this->shell->execQuietly($process)->getOutput()
-        );
+        return $this->runAndParseTable($process);
     }
 
     public function allContainers(): Collection
     {
-        $process = 'docker ps --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
-        $output = $this->shell->execQuietly($process)->getOutput();
-        return $this->formatter->rawTableOutputToCollection($output);
+        return $this->runAndParseTable(
+            'docker ps --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"'
+        );
     }
 
     public function volumeIsAvailable(string $volumeName): bool
@@ -79,21 +77,19 @@ class Docker
 
     public function listMatchingVolumes(string $volumeName): Collection
     {
-        $process = "docker ps -a --filter volume={$volumeName} --format 'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}'";
-        $output = $this->shell->execQuietly($process)->getOutput();
-        return $this->formatter->rawTableOutputToCollection($output);
+        return $this->runAndParseTable(
+            "docker ps -a --filter volume={$volumeName} --format 'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}'"
+        );
     }
 
     public function imageIsDownloaded(string $organization, string $imageName, ?string $tag): bool
     {
-        $process = $this->shell->execQuietly(sprintf(
+        return $this->shell->execQuietly(sprintf(
             'docker image inspect %s/%s:%s',
             $organization,
             $imageName,
             $tag
-        ));
-
-        return $process->isSuccessful();
+        ))->isSuccessful();
     }
 
     public function downloadImage(string $organization, string $imageName, ?string $tag): void
@@ -126,8 +122,8 @@ class Docker
     public function attachedVolumeName(string $containerId)
     {
         $response = $this->shell->execQuietly("docker inspect --format='{{json .Mounts}}' {$containerId}");
-        $jsonResponse = json_decode($response->getOutput());
-        return optional($jsonResponse)[0]->Name ?? null;
+
+        return optional(json_decode($response->getOutput()))[0]->Name ?? null;
     }
 
     public function isDockerServiceRunning(): bool
@@ -138,5 +134,12 @@ class Docker
     public function stopDockerService(): void
     {
         $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
+    }
+
+    protected function runAndParseTable(string $command): Collection
+    {
+        return $this->formatter->rawTableOutputToCollection(
+            $this->shell->execQuietly($command)->getOutput(),
+        );
     }
 }
