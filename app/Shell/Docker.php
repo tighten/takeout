@@ -167,7 +167,7 @@ class Docker
     protected function runAndParseTable(string $command): Collection
     {
         return $this->formatter->rawTableOutputToCollection(
-            $this->shell->execQuietly($command)->getOutput(),
+            $this->shell->execQuietly($command)->getOutput()
         );
     }
 }
