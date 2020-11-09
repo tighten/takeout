@@ -28,7 +28,7 @@ class ServicesTest extends TestCase
         $filtered = collect($services->all())->filter(function ($fqcn, $shortname) {
             return Str::contains($fqcn, 'App\Services');
         })->filter(function ($fqcn, $shortname) {
-            return !! preg_match('/^[a-z]+$/', $shortname);
+            return !! preg_match('/^[a-z0-9]+$/', $shortname);
         });
 
         $this->assertEquals($all->count(), $filtered->count());
