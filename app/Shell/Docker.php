@@ -67,6 +67,13 @@ class Docker
         return $this->shell->execQuietly('docker --version 2>&1')->isSuccessful();
     }
 
+    public function allContainers(): Collection
+    {
+        return $this->runAndParseTable(
+            'docker ps --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"'
+        );
+    }
+
     public function takeoutContainers(): Collection
     {
         $process = sprintf(
@@ -75,30 +82,21 @@ class Docker
             '{{.Label "com.tighten.takeout.Base_Alias"}}|{{.Label "com.tighten.takeout.Full_Alias"}}'
         );
 
+        return $this->runAndParseTable($process);
+    }
+
     public function startableTakeoutContainers(): Collection
     {
-        return $this->allContainers()->reject(function ($container) {
+        return $this->takeoutContainers()->reject(function ($container) {
             return Str::contains($container['status'], 'Up');
         });
     }
 
     public function stoppableTakeoutContainers(): Collection
     {
-        return $this->allContainers()->filter(function ($container) {
+        return $this->takeoutContainers()->filter(function ($container) {
             return Str::contains($container['status'], 'Up');
         });
-    }
-
-    public function allContainers(): Collection
-    {
-        return $this->runAndParseTable($process);
-    }
-
-    public function allContainers(): Collection
-    {
-        return $this->runAndParseTable(
-            'docker ps --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"'
-        );
     }
 
     public function volumeIsAvailable(string $volumeName): bool
