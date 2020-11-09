@@ -2,8 +2,11 @@
 
 namespace App\Shell;
 
+use App\Exceptions\DockerContainerMissingException;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Symfony\Component\Process\Process;
 
 class Docker
 {
@@ -31,6 +34,12 @@ class Docker
 
     public function stopContainer(string $containerId): void
     {
+        if (! $this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
+            return $container['container_id'] === $containerId;
+        })) {
+            throw new DockerContainerMissingException($containerId);
+        }
+
         $process = $this->shell->exec('docker stop ' . $containerId);
 
         if (! $process->isSuccessful()) {
@@ -40,6 +49,12 @@ class Docker
 
     public function startContainer(string $containerId): void
     {
+        if (! $this->startableTakeoutContainers()->contains(function ($container) use ($containerId) {
+            return $container['container_id'] === $containerId;
+        })) {
+            throw new DockerContainerMissingException($containerId);
+        }
+
         $process = $this->shell->exec('docker start ' . $containerId);
 
         if (! $process->isSuccessful()) {
@@ -60,6 +75,22 @@ class Docker
             '{{.Label "com.tighten.takeout.Base_Alias"}}|{{.Label "com.tighten.takeout.Full_Alias"}}'
         );
 
+    public function startableTakeoutContainers(): Collection
+    {
+        return $this->allContainers()->reject(function ($container) {
+            return Str::contains($container['status'], 'Up');
+        });
+    }
+
+    public function stoppableTakeoutContainers(): Collection
+    {
+        return $this->allContainers()->filter(function ($container) {
+            return Str::contains($container['status'], 'Up');
+        });
+    }
+
+    public function allContainers(): Collection
+    {
         return $this->runAndParseTable($process);
     }
 
