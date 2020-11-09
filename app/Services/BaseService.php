@@ -182,6 +182,10 @@ abstract class BaseService
 
     protected function shortNameWithVersion(): string
     {
+        if (! preg_match('/v?(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?)/', $this->tag)) {
+            return $this->shortName() . "-{$this->tag}";
+        }
+
         $version = trim($this->tag, 'v');
         [$major, $minor] = explode('.', $version);
 
