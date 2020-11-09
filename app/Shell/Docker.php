@@ -8,10 +8,14 @@ use Illuminate\Support\Collection;
 class Docker
 {
     protected $shell;
+    protected $formatter;
+    protected $networking;
 
-    public function __construct(Shell $shell)
+    public function __construct(Shell $shell, DockerFormatter $formatter, DockerNetworking $networking)
     {
         $this->shell = $shell;
+        $this->formatter = $formatter;
+        $this->networking = $networking;
     }
 
     public function removeContainer(string $containerId): void
@@ -45,74 +49,47 @@ class Docker
 
     public function isInstalled(): bool
     {
-        $process = $this->shell->execQuietly('docker --version 2>&1');
-
-        return $process->isSuccessful();
+        return $this->shell->execQuietly('docker --version 2>&1')->isSuccessful();
     }
 
     public function takeoutContainers(): Collection
     {
-        return $this->containerRawOutputToCollection($this->takeoutContainersRawOutput());
+        $process = sprintf(
+            "docker ps -a --filter 'name=TO-' --format 'table %s|%s'",
+            '{{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}',
+            '{{.Label "com.tighten.takeout.Base_Alias"}}|{{.Label "com.tighten.takeout.Full_Alias"}}'
+        );
+
+        return $this->runAndParseTable($process);
     }
 
     public function allContainers(): Collection
     {
-        return $this->containerRawOutputToCollection($this->allContainersRawOutput());
+        return $this->runAndParseTable(
+            'docker ps --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"'
+        );
     }
 
     public function volumeIsAvailable(string $volumeName): bool
     {
-        return $this->containerRawOutputToCollection($this->listMatchingVolumesRawOutput($volumeName))->count() === 0;
+        return $this->listMatchingVolumes($volumeName)->isEmpty();
     }
 
-    /**
-     * Given the raw string of output from Docker, return a collection of
-     * associative arrays, with the keys lowercased and slugged using underscores
-     *
-     * @param  string $output Docker command output
-     * @return Collection     Collection of associative arrays
-     */
-    protected function containerRawOutputToCollection($output): Collection
+    public function listMatchingVolumes(string $volumeName): Collection
     {
-        $containers = collect(explode("\n", $output))->map(function ($line) {
-            return explode('|', $line);
-        })->filter();
-
-        $keys = array_map('App\underscore_slug', $containers->shift());
-
-        return $containers->map(function ($container) use ($keys) {
-            return array_combine($keys, $container);
-        });
-    }
-
-    protected function takeoutContainersRawOutput(): string
-    {
-        $dockerProcessStatusString = 'docker ps -a --filter "name=TO-" --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
-        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
-    }
-
-    protected function allContainersRawOutput(): string
-    {
-        $dockerProcessStatusString = 'docker ps --format "table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}"';
-        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
-    }
-
-    protected function listMatchingVolumesRawOutput(string $volumeName): string
-    {
-        $dockerProcessStatusString = "docker ps -a --filter volume={$volumeName} --format 'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}'";
-        return trim($this->shell->execQuietly($dockerProcessStatusString)->getOutput());
+        return $this->runAndParseTable(
+            "docker ps -a --filter volume={$volumeName} --format 'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}'"
+        );
     }
 
     public function imageIsDownloaded(string $organization, string $imageName, ?string $tag): bool
     {
-        $process = $this->shell->execQuietly(sprintf(
+        return $this->shell->execQuietly(sprintf(
             'docker image inspect %s/%s:%s',
             $organization,
             $imageName,
             $tag
-        ));
-
-        return $process->isSuccessful();
+        ))->isSuccessful();
     }
 
     public function downloadImage(string $organization, string $imageName, ?string $tag): void
@@ -127,7 +104,15 @@ class Docker
 
     public function bootContainer(string $dockerRunTemplate, array $parameters): void
     {
-        $process = $this->shell->exec('docker run -d --name "${:container_name}" ' . $dockerRunTemplate, $parameters);
+        $this->networking->ensureNetworkCreated();
+
+        $command = sprintf(
+            'docker run -d --name "${:container_name}" %s %s',
+             $this->networking->networkSettings($parameters['alias'], $parameters['image_name']),
+             $dockerRunTemplate
+        );
+
+        $process = $this->shell->exec($command, $parameters);
 
         if (! $process->isSuccessful()) {
             throw new Exception("Failed installing " . $parameters['image_name']);
@@ -137,18 +122,24 @@ class Docker
     public function attachedVolumeName(string $containerId)
     {
         $response = $this->shell->execQuietly("docker inspect --format='{{json .Mounts}}' {$containerId}");
-        $jsonResponse = json_decode($response->getOutput());
-        return optional($jsonResponse)[0]->Name ?? null;
+
+        return optional(json_decode($response->getOutput()))[0]->Name ?? null;
     }
 
     public function isDockerServiceRunning(): bool
     {
-        $response = $this->shell->execQuietly('docker info');
-        return $response->isSuccessful();
+        return $this->shell->execQuietly('docker info')->isSuccessful();
     }
 
     public function stopDockerService(): void
     {
         $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
+    }
+
+    protected function runAndParseTable(string $command): Collection
+    {
+        return $this->formatter->rawTableOutputToCollection(
+            $this->shell->execQuietly($command)->getOutput(),
+        );
     }
 }

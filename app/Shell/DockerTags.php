@@ -18,6 +18,15 @@ class DockerTags
         $this->service = $service;
     }
 
+    public function resolveTag($tag): string
+    {
+        if ($tag === 'latest') {
+            return $this->getLatestTag();
+        }
+
+        return $tag;
+    }
+
     public function getLatestTag(): string
     {
         $nonLatestTags = $this->getTags()->reject(function ($tag) {
