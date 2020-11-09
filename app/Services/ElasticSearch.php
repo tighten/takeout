@@ -2,10 +2,15 @@
 
 namespace App\Services;
 
+use App\Shell\ElasticDockerTags;
+
 class ElasticSearch extends BaseService
 {
-    protected $imageName = 'elasticsearch';
     protected static $category = Category::SEARCH;
+
+    protected $organization = 'docker.elastic.co';
+    protected $imageName = 'elasticsearch/elasticsearch';
+    protected $dockerTagsClass = ElasticDockerTags::class;
     protected $defaultPort = 9200;
     protected $prompts = [
         [
@@ -18,5 +23,7 @@ class ElasticSearch extends BaseService
     protected $dockerRunTemplate = '-p "${:port}":9200 \
         -e "discovery.type=single-node"  \
         -v "${:volume}":/usr/share/elasticsearch/data \
-        "${:organization}"/"${:image_name}":"${:tag}"';
+         "${:organization}"/"${:image_name}":"${:tag}"';
+
+    protected static $displayName = 'elasticsearch';
 }

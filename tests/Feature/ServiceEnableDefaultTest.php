@@ -2,15 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Services\MailHog;
+use App\Shell\Docker;
 use Mockery as M;
 use Tests\TestCase;
-use App\Shell\Docker;
-use App\Services\MailHog;
 
 class ServiceEnableDefaultTest extends TestCase
 {
     /** @test */
-    public function it_enables_service_when_default_flag_is_provided()
+    function it_enables_service_when_default_flag_is_provided()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $defaultPort = app(MailHog::class)->defaultPort();

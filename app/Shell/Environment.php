@@ -13,24 +13,30 @@ class Environment
         $this->shell = $shell;
     }
 
-    private function isLinuxOs()
+    public function isLinuxOs(): bool
     {
         return PHP_OS_FAMILY === 'Linux';
     }
 
     public function portIsAvailable($port): bool
     {
-        $isLinux = $this->isLinuxOs();
+        // E.g. Win/Linux: 127.0.0.1:3306 , macOS: 127.0.0.1.3306
+        $portText = $this->isLinuxOs() ? "\:{$port}\s" : "\.{$port}\s";
+
+        $netstatCmd = $this->netstatCmd();
+
+        // Check to see if the system is running a service with the desired port
+        $process = $this->shell->execQuietly("{$netstatCmd} -vanp tcp | grep '{$portText}' | grep -v 'TIME_WAIT' | grep -v 'CLOSE_WAIT' | grep -v 'FIN_WAIT'");
+
+        // A successful netstat command means a port in use was found
+        return ! $process->isSuccessful();
+    }
+
+    public function netstatCmd(): string
+    {
         $netstatCmd = 'netstat';
-        $portText = "\.{$port}\s"; // mac default port behavior 127.0.0.1.3306 for mysql
 
-        // if its linux we need to check WSL also,
-        // because WSL runs docker from Windows host
-        // and it uses netstat.exe from Windows
-        // if we don't use this, WSL won't find ports conflict
-        if ($isLinux) {
-            $portText = "\:{$port}\s"; // win/linux default port behavior 127.0.0.1:3306 for mysql
-
+        if ($this->isLinuxOs()) {
             $linuxVersion = $this->shell->execQuietly('cat /proc/version');
             $isWSL = Str::contains($linuxVersion->getOutput(), 'microsoft');
 
@@ -39,10 +45,6 @@ class Environment
             }
         }
 
-        // Check to see if the system is running a service with the desired port
-        $process = $this->shell->execQuietly("{$netstatCmd} -vanp tcp | grep '{$portText}' | grep -v 'TIME_WAIT' | grep -v 'CLOSE_WAIT' | grep -v 'FIN_WAIT'");
-
-        // A successful netstat command means a port in use was found
-        return ! $process->isSuccessful();
+        return $netstatCmd;
     }
 }
