@@ -6,7 +6,6 @@ use App\Exceptions\DockerContainerMissingException;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Symfony\Component\Process\Process;
 
 class Docker
 {
