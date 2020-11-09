@@ -32,7 +32,6 @@ class Expose extends BaseService
         ],
     ];
 
-
     protected $dockerRunTemplate = '-p "${:port}":8080 \
         -v "${:volume}":/root/.expose \
         -e username="${:username}" \
