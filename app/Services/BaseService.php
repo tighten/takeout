@@ -167,20 +167,25 @@ abstract class BaseService
 
     protected function resolveTag($responseTag): string
     {
-        if ($responseTag === 'latest') {
-            return app()->make($this->dockerTagsClass, ['service' => $this])->getLatestTag();
-        }
-
-        return $responseTag;
+        return app()->make($this->dockerTagsClass, ['service' => $this])->resolveTag($responseTag);
     }
 
     protected function buildParameters(): array
     {
         $parameters = $this->promptResponses;
         $parameters['container_name'] = $this->containerName();
+        $parameters['alias'] = $this->shortNameWithVersion();
         $parameters['tag'] = $this->tag; // Overwrite "latest" with actual latest tag
 
         return $parameters;
+    }
+
+    protected function shortNameWithVersion(): string
+    {
+        $version = trim($this->tag, 'v');
+        [$major, $minor] = explode('.', $version);
+
+        return $this->shortName() . "{$major}.{$minor}";
     }
 
     protected function containerName(): string

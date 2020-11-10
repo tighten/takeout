@@ -30,6 +30,8 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 - InfluxDB
 - DynamoDB
 - Beanstalkd
+- Sqs
+- Neo4j
 
 ## Requirements
 
