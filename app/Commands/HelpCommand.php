@@ -19,6 +19,7 @@ class HelpCommand extends Command
         'stop' => 'Stop a running container from a list of options',
         'stop {container}' => 'Stop the provided running container (by ID)',
         'list' => 'List all enabled services (optionally pass --json flag)',
+        'logs {container}' => 'Display container logs (by ID)',
     ];
 
     public function handle(): void
