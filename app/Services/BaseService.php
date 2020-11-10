@@ -182,6 +182,8 @@ abstract class BaseService
 
     protected function shortNameWithVersion(): string
     {
+        // Check if tag represents semantic version (v5.6.0, 5.7.4, or 8.0) and return major.minor
+        // (eg mysql5.7) or return the actual tag prefixed by a dash (eg redis-buster)
         if (! preg_match('/v?(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?)/', $this->tag)) {
             return $this->shortName() . "-{$this->tag}";
         }
