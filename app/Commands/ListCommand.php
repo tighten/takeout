@@ -21,10 +21,10 @@ class ListCommand extends Command
         $containersCollection = app(Docker::class)->takeoutContainers();
 
         if ($this->option('json')) {
-            $this->line(
-                $containersCollection->mapToGroups(function ($item) {
-                return [Category::fromContainerName($item['names']) => [$item]];
-            })->sortKeys()->toJson());
+            $this->line($containersCollection->map(function ($item) {
+                $item['category'] = Category::fromContainerName($item['names']);
+                return $item;
+            })->toJson());
             return;
         }
 
