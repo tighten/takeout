@@ -32,6 +32,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 - Beanstalkd
 - Sqs
 - Neo4j
+- Sftp
 
 ## Requirements
 
