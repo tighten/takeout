@@ -16,23 +16,23 @@ With `takeout enable mysql` you're running MySQL, and never have to worry about 
 But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, and more, with a simple command.
 
 **Current list of services:**
-- MySQL
-- PostgreSQL
-- MSSQL
+- Beanstalkd
+- DynamoDB
 - ElasticSearch
-- MeiliSearch
-- Redis
-- Memcached
+- InfluxDB
+- MSSQL
 - MailHog
 - MariaDB
+- MeiliSearch
+- Memcached
 - Minio
 - Mongo
-- InfluxDB
-- DynamoDB
-- Beanstalkd
-- Sqs
+- MySQL
 - Neo4j
+- PostgreSQL
+- Redis
 - Sftp
+- Sqs
 
 ## Requirements
 
