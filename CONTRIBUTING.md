@@ -27,14 +27,14 @@ Before submitting a pull request:
 
 ## Tests
 
-Please write tests for any fixes or new features you contribute. We use PHPUnit.
+Please write tests for any fixes or new features you contribute. We use @todo
 
-You can run PHP tests with `vendor/bin/phpunit`.
+You can run Node tests with @todo
 
 If you need any help with this please don't hesitate to ask.
 
 ## Requirements
 
-- **[PSR-2 Coding Standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md)** - The easiest way to apply the conventions is to install [PHP Code Sniffer](https://github.com/squizlabs/PHP_CodeSniffer).
-- **Tlint styles** - Tighten-specific styles. Tlint is built for apps, so there are some settings that might not make sense in a package, but [download Tlint](https://github.com/tightenco/tlint) and run it on your pull requests to see if it suggests any reasonable changes.
+- @todo Coding standard
+- @todo Linting
 - **One pull request per feature** - If you want to do more than one thing, send multiple pull requests.

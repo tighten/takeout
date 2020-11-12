@@ -4,8 +4,8 @@
 
 [![Run tests](https://github.com/tighten/takeout/workflows/Run%20tests/badge.svg?branch=main)](https://github.com/tighten/takeout/actions?query=workflow%3A%22Run+tests%22)
 [![Lint](https://github.com/tighten/takeout/workflows/Lint/badge.svg?branch=main)](https://github.com/tighten/takeout/actions?query=workflow%3ALint)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
-[![Downloads on Packagist](https://img.shields.io/packagist/dt/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
+
+> NOTE: This branch is for the Node port. We've never written Node CLI apps. It's gonna take a while.
 
 Takeout is a CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
 
@@ -37,18 +37,12 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 ## Requirements
 
 - macOS, Linux, or WSL2
-- [Composer](https://getcomposer.org/) installed
+- Node installed
 - Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/))
 
 ## Installation
 
-Install Takeout with Composer by running:
-
-```bash
-composer global require tightenco/takeout
-```
-
-Make sure the `~/.composer/vendor/bin` directory is in your system's "PATH".
+@todo
 
 ## Usage
 
@@ -163,11 +157,6 @@ Now, if you run `takeout list`, you'll see both services running at the same tim
 ## FAQs
 
 <details>
-<summary><strong>Will this enable the PHP drivers for me via PECL?</strong></summary>
-
-Sadly, no.
-</details>
-<details>
 <summary><strong>If I disable a service but Takeout still shows the port as taken, how do I proceed?</strong></summary>
 
 First, run `lsof -i :3306` (where 3306 is the port that's unavailable.)
@@ -194,24 +183,16 @@ So, when you disable the MySQL service, for example, that volume--with all your 
 
 ## Future plans
 
-The best way to see our future plans is to check out the [Projects Board](https://github.com/tighten/takeout/projects/1), but here are a few plans for the future:
-
-- Electron-based GUI
-- `self-remove` command: Deletes all enabled services and then maybe self-uninstalls?
-- `upgrade`: destroys the old container, brings up a new one with a newly-specified tag (prompt user for it, default `latest`) and keeps all other parameters (e.g. port, volume) exactly the same as the old one
-- `pt/passthrough`: proxy commands through to docker (`./takeout pt mysql stop`)
-- Deliver package in a way that's friendly to non-PHP developers (Homebrew? NPM?)
-- Allow other people to extend Takeout by adding their own plugins (thanks to @angrybrad for the idea!)
+The best way to see our future plans is to check out the [Port to Node](https://github.com/tighten/takeout/projects/2), but here are a few plans for the future:
 
 ## Process for release
 
 If you're working with us and are assigned to push a release, here's the easiest process:
 
-
 1. Visit the [Takeout Releases page](https://github.com/tighten/takeout/releases); figure out what your next tag will be (increase the third number if it's a patch or fix; increase the second number if it's adding features)
 2. On your local machine, pull down the latest version of `main` (`git checkout main && git pull`)
-3. Build for the version you're targeting (`php ./takeout app:build`)
-4. Run the build once to make sure it works (`php ./builds/takeout list`)
+3. @todo
+4. @todo
 5. Commit your build and push it up
 6. [Draft a new release](https://github.com/tighten/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
 7. Set the body to be a bullet-point list with simple descriptions for each of the PRs merged, as well as the PR link in parentheses at the end. For example:
