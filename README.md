@@ -1,4 +1,4 @@
-![Takeout - Docker-based dependency management for macOS](takeout-banner.png?version=1)
+![Takeout - Docker-based dependency management](takeout-banner.png?version=1)
 
 # Takeout
 
