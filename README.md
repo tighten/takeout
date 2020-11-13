@@ -19,6 +19,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 - Beanstalkd
 - DynamoDB
 - ElasticSearch
+- EventStoreDB
 - InfluxDB
 - MSSQL
 - MailHog
@@ -32,8 +33,8 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 - PostGIS
 - PostgreSQL
 - Redis
-- Sftp
-- Sqs
+- SFTP
+- SQS
 
 ## Requirements
 

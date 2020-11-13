@@ -44,7 +44,16 @@ class BaseServiceTest extends TestCase
             $mock->shouldReceive('volumeIsAvailable')->andReturn(true);
 
             // This is the actual assertion
-            $mock->shouldReceive('bootContainer')->with(['getmeili/meilisearch']);
+            $mock->shouldReceive('bootContainer')->with('-p "${:port}":7700 \
+        -v "${:volume}":/data.ms \
+        "${:organization}"/"${:image_name}":"${:tag}"', [
+                'organization' => 'getmeili',
+                'image_name' => 'meilisearch',
+                'port' => 7700,
+                'tag' => 'v1.1.1',
+                'volume' => null,
+                'container_name' => 'TO--meilisearch--v1.1.1',
+            ])->once();
         });
 
         $service = app(MeiliSearch::class); // Extends BaseService
