@@ -4,9 +4,10 @@ namespace App\Services;
 
 class DynamoDB extends BaseService
 {
+    protected static $category = Category::CACHE;
+
     protected $organization = 'amazon';
     protected $imageName = 'dynamodb-local';
-    protected static $category = Category::CACHE;
     protected $defaultPort = 8000;
     protected $prompts = [
         [

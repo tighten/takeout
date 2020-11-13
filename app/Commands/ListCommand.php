@@ -4,8 +4,6 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Shell\Docker;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 class ListCommand extends Command

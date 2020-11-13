@@ -3,7 +3,6 @@
 namespace App\Commands;
 
 use App\InitializesCommands;
-use App\Services;
 use App\Shell\Docker;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -35,22 +34,23 @@ class StartCommand extends Command
 
     public function startableContainers(): array
     {
-        return app(Docker::class)->takeoutContainers()->reject(function ($container) {
-            return Str::contains($container['status'], 'Up');
-        })->map(function ($container) {
+        return app(Docker::class)->startableTakeoutContainers()->map(function ($container) {
             $label = sprintf('%s - %s', $container['container_id'], $container['names']);
 
-            return [$label, function (CliMenu $menu) use ($container, $label) {
-                $this->start($menu->getSelectedItem()->getText());
+            return [
+                $label,
+                function (CliMenu $menu) use ($container, $label) {
+                    $this->start($menu->getSelectedItem()->getText());
 
-                foreach ($menu->getItems() as $item) {
-                    if ($item->getText() === $label) {
-                        $menu->removeItem($item);
+                    foreach ($menu->getItems() as $item) {
+                        if ($item->getText() === $label) {
+                            $menu->removeItem($item);
+                        }
                     }
-                }
 
-                $menu->redraw();
-            }];
+                    $menu->redraw();
+                },
+            ];
         }, collect())->toArray();
     }
 

@@ -29,9 +29,12 @@ EOD;
 
         $output = app(Docker::class)->takeoutContainers();
 
-        $expectedTable = [
-            ['container_id' => '123456789abc', 'names' => 'TO-meilisearch', 'status' => 'Up 15 Minutes', 'ports' => '7700:7700'],
-        ];
+        $expectedTable = [[
+            'container_id' => '123456789abc',
+            'names' => 'TO-meilisearch',
+            'status' => 'Up 15 Minutes',
+            'ports' => '7700:7700',
+        ],];
 
         $this->assertEquals($expectedTable, $output->toArray());
     }

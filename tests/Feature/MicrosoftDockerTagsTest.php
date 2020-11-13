@@ -5,9 +5,8 @@ namespace Tests\Feature;
 use App\Services\MsSql;
 use App\Shell\MicrosoftDockerTags;
 use GuzzleHttp\Client;
-use Illuminate\Support\Str;
 use Mockery as M;
-use Tests\Testcase;
+use Tests\TestCase;
 
 class MicrosoftDockerTagsTest extends TestCase
 {
@@ -46,27 +45,11 @@ class MicrosoftDockerTagsTest extends TestCase
 
         $this->assertEquals('2024-GA-ubuntu-18.04', $dockerTags->getLatestTag());
     }
-}
 
-class MicrosoftDockerTagsFakestream extends \GuzzleHttp\Psr7\Stream
-{
-    public function __construct($stream, $options = [])
+    protected function setUp(): void
     {
-        // Do nothing
-    }
+        parent::setUp();
 
-    public function __toString()
-    {
-        return json_encode([
-            'name' => 'mssql/server',
-            'tags' => [
-                '2017-CU1-ubuntu',
-                '2017-GDR3',
-                '2019-RC1',
-                '2019-GA-ubuntu-16.04',
-                '2024-GA-ubuntu-18.04',
-                'latest',
-            ],
-        ]);
+        require_once(base_path('tests/support/MicrosoftDockerTagsFakestream.php'));
     }
 }

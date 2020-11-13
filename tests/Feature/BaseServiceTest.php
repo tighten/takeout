@@ -9,7 +9,6 @@ use LaravelZero\Framework\Commands\Command;
 use Mockery as M;
 use Symfony\Component\Process\Process;
 use Tests\TestCase;
-use function app;
 
 class BaseServiceTest extends TestCase
 {
@@ -26,6 +25,7 @@ class BaseServiceTest extends TestCase
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $defaultPort = app(MeiliSearch::class)->defaultPort();
             $mock->shouldReceive('ask')->with('Which host port would you like meilisearch to use?', $defaultPort)->andReturn(7700);
+            $mock->shouldReceive('ask')->with('What is the Docker volume name?', 'meili_data')->andReturn('meili_data');
             $mock->shouldReceive('ask')->with('Which tag (version) of meilisearch would you like to use?', 'latest')->andReturn('v1.1.1');
             $mock->shouldIgnoreMissing();
         }));
@@ -33,6 +33,7 @@ class BaseServiceTest extends TestCase
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
             $process->shouldReceive('isSuccessful')->andReturn(false);
+            $process->shouldReceive('getOutput')->andReturn('');
 
             $mock->shouldReceive('execQuietly')->andReturn($process);
         });
@@ -40,12 +41,13 @@ class BaseServiceTest extends TestCase
         $this->mock(Docker::class, function ($mock) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('imageIsDownloaded')->andReturn(true);
+            $mock->shouldReceive('volumeIsAvailable')->andReturn(true);
 
             // This is the actual assertion
             $mock->shouldReceive('bootContainer')->with(['getmeili/meilisearch']);
         });
 
-        $service = app(MeiliSearch::Class); // Extends BaseService
+        $service = app(MeiliSearch::class); // Extends BaseService
         $service->enable();
     }
 }

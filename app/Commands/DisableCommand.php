@@ -11,7 +11,7 @@ class DisableCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'disable {serviceNames?*}';
+    protected $signature = 'disable {serviceNames?*} {--all}';
     protected $description = 'Disable services.';
     protected $disableableServices;
     protected $docker;
@@ -22,8 +22,17 @@ class DisableCommand extends Command
         $this->initializeCommand();
         $this->disableableServices = $this->disableableServices();
 
+        if ($this->option('all')) {
+            foreach ($this->disableableServices as $containerId => $name) {
+                $this->disableByContainerId($containerId);
+            }
+
+            return;
+        }
+
         if (empty($this->disableableServices)) {
             $this->info("There are no containers to disable.\n");
+
             return;
         }
 
@@ -55,6 +64,7 @@ class DisableCommand extends Command
         switch ($serviceMatches->count()) {
             case 0:
                 $this->error("\nCannot find a Takeout-managed instance of {$service}.");
+
                 return;
             case 1:
                 $serviceContainerId = $serviceMatches->flip()->first();
@@ -95,7 +105,7 @@ class DisableCommand extends Command
                 $this->info("\n docker volume rm {$volumeName}");
             }
 
-            if (count($this->docker->allContainers()) === 0 && in_array(PHP_OS_FAMILY, ['Darwin','Windows'])) {
+            if (count($this->docker->allContainers()) === 0 && in_array(PHP_OS_FAMILY, ['Darwin', 'Windows'])) {
                 $option = $this->menu('No containers are running. Turn off Docker for Mac?', [
                     'Yes',
                     'No',
@@ -106,7 +116,7 @@ class DisableCommand extends Command
                 }
             }
         } catch (Throwable $e) {
-            $this->error('Disabling failed!');
+            $this->error('Disabling failed! Error: ' . $e->getMessage());
         }
     }
 }

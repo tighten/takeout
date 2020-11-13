@@ -14,9 +14,11 @@ abstract class BaseService
 {
     use WritesToConsole;
 
+    protected static $category;
+    protected static $displayName;
+
     protected $organization = 'library'; // Official repositories use `library` as the organization name.
     protected $imageName;
-    protected static $category;
     protected $dockerTagsClass = DockerTags::class;
     protected $tag;
     protected $dockerRunTemplate;
@@ -38,7 +40,7 @@ abstract class BaseService
     protected $shell;
     protected $environment;
     protected $docker;
-    protected static $displayName;
+    protected $useDefaults = false;
 
     public function __construct(Shell $shell, Environment $environment, Docker $docker)
     {
@@ -50,6 +52,7 @@ abstract class BaseService
             if ($prompt['shortname'] === 'port') {
                 $prompt['default'] = $this->defaultPort;
             }
+
             return $prompt;
         }, $this->defaultPrompts);
 
@@ -64,9 +67,12 @@ abstract class BaseService
         return static::$displayName ?? Str::afterLast(static::class, '\\');
     }
 
-    public function enable(): void
+    public function enable(bool $useDefaults = false): void
     {
+        $this->useDefaults = $useDefaults;
+
         $this->prompts();
+
         $this->ensureImageIsDownloaded();
 
         $this->info("Enabling {$this->shortName()}...\n");
@@ -120,8 +126,10 @@ abstract class BaseService
 
     protected function prompts(): void
     {
+        $items = [];
+
         foreach ($this->defaultPrompts as $prompt) {
-            $this->askQuestion($prompt);
+            $this->askQuestion($prompt, $this->useDefaults);
 
             while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
                 app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.");
@@ -130,37 +138,71 @@ abstract class BaseService
         }
 
         foreach ($this->prompts as $prompt) {
-            $this->askQuestion($prompt);
+            $this->askQuestion($prompt, $this->useDefaults);
+
+            while ($prompt['shortname'] === 'volume' && ! $this->docker->volumeIsAvailable($this->promptResponses['volume'])) {
+                app('console')->error("Volume {$this->promptResponses['volume']} is already in use. Please select a different volume.");
+                $this->askQuestion($prompt);
+            }
+
+            while (Str::contains($prompt['shortname'], 'port') && ! $this->environment->portIsAvailable($this->promptResponses[$prompt['shortname']])) {
+                app('console')->error("Port {$this->promptResponses[$prompt['shortname']]} is already in use. Please select a different port.");
+                $this->askQuestion($prompt);
+            }
+
+            $items[] = $prompt;
         }
 
         $this->tag = $this->resolveTag($this->promptResponses['tag']);
     }
 
-    protected function askQuestion(array $prompt): void
+    protected function askQuestion(array $prompt, $useDefaults = false): void
     {
-        $this->promptResponses[$prompt['shortname']] = app('console')->ask(sprintf($prompt['prompt'], $this->imageName), $prompt['default'] ?? null);
+        $this->promptResponses[$prompt['shortname']] = $prompt['default'] ?? null;
+
+        if (! $useDefaults) {
+            $this->promptResponses[$prompt['shortname']] = app('console')->ask(sprintf($prompt['prompt'], $this->imageName), $prompt['default'] ?? null);
+        }
     }
 
     protected function resolveTag($responseTag): string
     {
-        if ($responseTag === 'latest') {
-            return app()->make($this->dockerTagsClass, ['service' => $this])->getLatestTag();
-        }
-
-        return $responseTag;
+        return app()->make($this->dockerTagsClass, ['service' => $this])->resolveTag($responseTag);
     }
 
     protected function buildParameters(): array
     {
         $parameters = $this->promptResponses;
         $parameters['container_name'] = $this->containerName();
+        $parameters['alias'] = $this->shortNameWithVersion();
         $parameters['tag'] = $this->tag; // Overwrite "latest" with actual latest tag
 
         return $parameters;
     }
 
+    protected function shortNameWithVersion(): string
+    {
+        // Check if tag represents semantic version (v5.6.0, 5.7.4, or 8.0) and return major.minor
+        // (eg mysql5.7) or return the actual tag prefixed by a dash (eg redis-buster)
+        if (! preg_match('/v?(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?)/', $this->tag)) {
+            return $this->shortName() . "-{$this->tag}";
+        }
+
+        $version = trim($this->tag, 'v');
+        [$major, $minor] = explode('.', $version);
+
+        return $this->shortName() . "{$major}.{$minor}";
+    }
+
     protected function containerName(): string
     {
-        return 'TO--' . $this->shortName() . '--' . $this->tag;
+        $portTag = '';
+        foreach ($this->promptResponses as $key => $value) {
+            if (Str::contains($key, 'port')) {
+                $portTag .= "--{$value}";
+            }
+        }
+
+        return 'TO--' . $this->shortName() . '--' . $this->tag . $portTag;
     }
 }
