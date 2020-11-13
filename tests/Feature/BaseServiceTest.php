@@ -51,8 +51,9 @@ class BaseServiceTest extends TestCase
                 "image_name" => "meilisearch",
                 "port" => 7700,
                 "tag" => "v1.1.1",
-                "volume" => null,
-                "container_name" => "TO--meilisearch--v1.1.1",
+                "volume" => 'meili_data',
+                "container_name" => "TO--meilisearch--v1.1.1--7700",
+                'alias' => 'meilisearch1.1',
             ])->once();
         });
 
