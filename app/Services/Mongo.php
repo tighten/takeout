@@ -6,8 +6,9 @@ use App\Shell\MongoDockerTags;
 
 class Mongo extends BaseService
 {
-    protected $imageName = 'mongo';
     protected static $category = Category::DATABASE;
+
+    protected $imageName = 'mongo';
     protected $defaultPort = 27017;
     protected $dockerTagsClass = MongoDockerTags::class;
     protected $prompts = [

@@ -4,8 +4,9 @@ namespace App\Services;
 
 class MariaDb extends BaseService
 {
-    protected $imageName = 'mariadb';
     protected static $category = Category::DATABASE;
+
+    protected $imageName = 'mariadb';
     protected $defaultPort = 3306;
     protected $prompts = [
         [

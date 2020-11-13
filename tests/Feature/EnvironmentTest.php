@@ -11,6 +11,11 @@ use Tests\TestCase;
 
 class EnvironmentTest extends TestCase
 {
+    function isLinux()
+    {
+        return PHP_OS_FAMILY === 'Linux';
+    }
+
     /** @test **/
     function it_detects_a_port_conflict()
     {
@@ -21,11 +26,17 @@ class EnvironmentTest extends TestCase
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
             $process->shouldReceive('isSuccessful')->once()->andReturn(true);
+            $process->shouldReceive('getOutput')->andReturn('');
 
-            $mock->shouldReceive('execQuietly')->once()->andReturn($process);
+            $times = 1;
+            if ($this->isLinux()) {
+                $times = 2;
+            }
+
+            $mock->shouldReceive('execQuietly')->times($times)->andReturn($process);
         });
 
-        $environment = app(Environment::Class);
+        $environment = app(Environment::class);
         $this->assertFalse($environment->portIsAvailable(1234));
     }
 
@@ -39,11 +50,17 @@ class EnvironmentTest extends TestCase
         $this->mock(Shell::class, function ($mock) {
             $process = M::mock(Process::class);
             $process->shouldReceive('isSuccessful')->once()->andReturn(false);
+            $process->shouldReceive('getOutput')->andReturn('');
 
-            $mock->shouldReceive('execQuietly')->once()->andReturn($process);
+            $times = 1;
+            if ($this->isLinux()) {
+                $times = 2;
+            }
+
+            $mock->shouldReceive('execQuietly')->times($times)->andReturn($process);
         });
 
-        $environment = app(Environment::Class);
+        $environment = app(Environment::class);
         $this->assertTrue($environment->portIsAvailable(1234));
     }
 }
