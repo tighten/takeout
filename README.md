@@ -29,6 +29,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 - Mongo
 - MySQL
 - Neo4j
+- PostGIS
 - PostgreSQL
 - Redis
 - Sftp
