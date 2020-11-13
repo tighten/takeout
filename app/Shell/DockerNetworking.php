@@ -40,7 +40,10 @@ class DockerNetworking
 
     public function baseAliasExists(string $name): bool
     {
-        $output = $this->shell->execQuietly('docker ps --filter "label=com.tighten.takeout.Base_Alias=' . $name . '" --format "table {{.ID}}|{{.Names}}"')->getOutput();
+        $output = $this->shell->execQuietly(
+            'docker ps --filter "label=com.tighten.takeout.Base_Alias=' . $name . '" --format "table {{.ID}}|{{.Names}}"'
+        )->getOutput();
+
         $collection = $this->formatter->rawTableOutputToCollection($output);
 
         return $collection->isNotEmpty();
