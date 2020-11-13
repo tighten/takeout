@@ -10,13 +10,6 @@ use Tests\TestCase;
 
 class MicrosoftDockerTagsTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        require_once(base_path('tests/support/MicrosoftDockerTagsFakestream.php'));
-    }
-
     /** @test */
     function it_gets_a_general_availability_release()
     {
@@ -51,5 +44,12 @@ class MicrosoftDockerTagsTest extends TestCase
         $dockerTags->shouldReceive('getTagsResponse')->andReturn(new MicrosoftDockerTagsFakestream('abc'));
 
         $this->assertEquals('2024-GA-ubuntu-18.04', $dockerTags->getLatestTag());
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        require_once(base_path('tests/support/MicrosoftDockerTagsFakestream.php'));
     }
 }
