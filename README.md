@@ -56,6 +56,7 @@ USAGE
 <!-- commands -->
 * [`takeout hello [FILE]`](#takeout-hello-file)
 * [`takeout help [COMMAND]`](#takeout-help-command)
+* [`takeout list [FILE]`](#takeout-list-file)
 
 ## `takeout hello [FILE]`
 
@@ -93,6 +94,22 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
+
+## `takeout list [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ takeout list [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/list.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.0/src/commands/list.ts)_
 <!-- commandsstop -->
 
 
