@@ -20,6 +20,7 @@
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.0",
+    "cross-spawn": "^7.0.3",
     "tslib": "^1.14.1"
   },
   "devDependencies": {
