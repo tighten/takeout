@@ -1,9 +1,11 @@
-![Takeout - Docker-based dependency management for macOS](takeout-banner.png?version=1)
+![Takeout - Docker-based dependency management](takeout-banner.png?version=1)
 
-# Takeout
+Docker-based development-only dependency management.
 
-[![Run tests](https://github.com/tighten/takeout/workflows/Run%20tests/badge.svg?branch=main)](https://github.com/tighten/takeout/actions?query=workflow%3A%22Run+tests%22)
-[![Lint](https://github.com/tighten/takeout/workflows/Lint/badge.svg?branch=main)](https://github.com/tighten/takeout/actions?query=workflow%3ALint)
+[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
+[![Version](https://img.shields.io/npm/v/takeout.svg)](https://npmjs.org/package/takeout)
+[![Downloads/week](https://img.shields.io/npm/dw/takeout.svg)](https://npmjs.org/package/takeout)
+[![License](https://img.shields.io/npm/l/takeout.svg)](https://github.com/tighten/takeout/blob/master/package.json)
 
 > NOTE: This branch is for the Node port. We've never written Node CLI apps. It's gonna take a while.
 
@@ -13,44 +15,87 @@ It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/doc
 
 With `takeout enable mysql` you're running MySQL, and never have to worry about managing or fixing Homebrew MySQL again.
 
-But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, and more, with a simple command.
+But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, and more, with a simple command. See the full list here: TODO
 
-**Current list of services:**
-- Beanstalkd
-- DynamoDB
-- ElasticSearch
-- InfluxDB
-- MSSQL
-- MailHog
-- MariaDB
-- MeiliSearch
-- Memcached
-- Minio
-- Mongo
-- MySQL
-- Neo4j
-- PostgreSQL
-- Redis
-- Sftp
-- Sqs
+<!-- toc -->
+* [Requirements](#requirements)
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 
-## Requirements
+# Requirements
 
 - macOS, Linux, or WSL2
-- Node installed
+- Node installed or whatever
 - Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/))
 
-## Installation
-
-@todo
-
-## Usage
+# Usage
+<!-- usage -->
+```sh-session
+$ npm install -g takeout
+$ takeout COMMAND
+running command...
+$ takeout (-v|--version|version)
+takeout/2.0.0-beta.0 darwin-x64 node-v11.6.0
+$ takeout --help [COMMAND]
+USAGE
+  $ takeout COMMAND
+...
+```
 
 Run `takeout` and then a command name from anywhere in your terminal.
 
 One of Takeout's primary benefits is that it boots ("enables") or deletes ("disables") Docker containers for your various dependencies quickly and easily.
 
 Because Docker offers persistent volume storage, deleting a container (which we call "disabling" it) doesn't actually delete its data. That means you can enable and disable services with reckless abandon.
+<!-- usagestop -->
+
+# Commands
+<!-- commands -->
+* [`takeout hello [FILE]`](#takeout-hello-file)
+* [`takeout help [COMMAND]`](#takeout-help-command)
+
+## `takeout hello [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ takeout hello [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+
+EXAMPLE
+  $ takeout hello
+  hello world from ./src/hello.ts!
+```
+
+_See code: [src/commands/hello.ts](https://github.com/tighten/takeout/blob/v2.0.0alpha1/src/commands/hello.ts)_
+
+## `takeout help [COMMAND]`
+
+display help for takeout
+
+```
+USAGE
+  $ takeout help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
+<!-- commandsstop -->
+
+
+
+# Goal docs (from original PHP) that don't work yet
 
 ### Enable a service
 
@@ -154,49 +199,3 @@ Now, if you run `takeout list`, you'll see both services running at the same tim
 +--------------+----------------+---------------+-----------------------------------+
 ```
 
-## FAQs
-
-<details>
-<summary><strong>If I disable a service but Takeout still shows the port as taken, how do I proceed?</strong></summary>
-
-First, run `lsof -i :3306` (where 3306 is the port that's unavailable.)
-
-If you see output like this:
-
-    com.docke   936 mattstauffer   52u  IPv6 0xc0d6f0b06d5c4efb      0t0  TCP localhost:mysql->localhost:62919 (FIN_WAIT_2)
-    TablePlus 96155 mattstauffer   16u  IPv4 0xc0d6f0b0b6dccf6b      0t0  TCP localhost:62919->localhost:mysql (CLOSE_WAIT)
-
-The solution is to just close your database GUI, and then it should be released.
-</details>
-<details>
-<summary><strong>Why would you use this instead of `docker-compose`?</strong></summary>
-
-Using `docker-compose` sets up your dependencies on a project-by-project basis, which is a perfectly fine way to do things. If it makes more sense to you to have a single copy of each of your dependencies for your entire global environment, Takeout makes more sense.
-</details>
-<details>
-<summary><strong>Will disabling a service permanently delete my databases?</strong></summary>
-
-Nope! Your data will stick around! By default almost all of our services use a "volume" to attach your data to for exactly this reason.
-
-So, when you disable the MySQL service, for example, that volume--with all your data in it--will just sit there quietly. And when you re-enable, as long as you attach it to the same volume, all your data will still be there.
-</details>
-
-## Future plans
-
-The best way to see our future plans is to check out the [Port to Node](https://github.com/tighten/takeout/projects/2), but here are a few plans for the future:
-
-## Process for release
-
-If you're working with us and are assigned to push a release, here's the easiest process:
-
-1. Visit the [Takeout Releases page](https://github.com/tighten/takeout/releases); figure out what your next tag will be (increase the third number if it's a patch or fix; increase the second number if it's adding features)
-2. On your local machine, pull down the latest version of `main` (`git checkout main && git pull`)
-3. @todo
-4. @todo
-5. Commit your build and push it up
-6. [Draft a new release](https://github.com/tighten/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
-7. Set the body to be a bullet-point list with simple descriptions for each of the PRs merged, as well as the PR link in parentheses at the end. For example:
-
-    `- Fix internal Memcached port (#92)`
-8. Hit `Publish release`
-9. Profit
