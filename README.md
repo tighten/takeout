@@ -21,6 +21,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 * [Requirements](#requirements)
 * [Usage](#usage)
 * [Commands](#commands)
+* [Goal docs (from original PHP) that don't work yet](#goal-docs-from-original-php-that-dont-work-yet)
 <!-- tocstop -->
 
 # Requirements
@@ -30,24 +31,25 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 - Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/))
 
 # Usage
-<!-- usage -->
-```sh-session
-$ npm install -g takeout
-$ takeout COMMAND
-running command...
-$ takeout (-v|--version|version)
-takeout/2.0.0-beta.0 darwin-x64 node-v11.6.0
-$ takeout --help [COMMAND]
-USAGE
-  $ takeout COMMAND
-...
-```
 
 Run `takeout` and then a command name from anywhere in your terminal.
 
 One of Takeout's primary benefits is that it boots ("enables") or deletes ("disables") Docker containers for your various dependencies quickly and easily.
 
 Because Docker offers persistent volume storage, deleting a container (which we call "disabling" it) doesn't actually delete its data. That means you can enable and disable services with reckless abandon.
+
+<!-- usage -->
+```sh-session
+$ npm install -g @tighten/takeout
+$ takeout COMMAND
+running command...
+$ takeout (-v|--version|version)
+@tighten/takeout/2.0.0-alpha.0 darwin-x64 node-v11.6.0
+$ takeout --help [COMMAND]
+USAGE
+  $ takeout COMMAND
+...
+```
 <!-- usagestop -->
 
 # Commands
@@ -73,7 +75,7 @@ EXAMPLE
   hello world from ./src/hello.ts!
 ```
 
-_See code: [src/commands/hello.ts](https://github.com/tighten/takeout/blob/v2.0.0alpha1/src/commands/hello.ts)_
+_See code: [src/commands/hello.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.0/src/commands/hello.ts)_
 
 ## `takeout help [COMMAND]`
 
@@ -198,4 +200,3 @@ Now, if you run `takeout list`, you'll see both services running at the same tim
 | 983acf46ceef | TO--mysql--8.0 | Up 35 seconds | 33060/tcp, 0.0.0.0:3307->3306/tcp |
 +--------------+----------------+---------------+-----------------------------------+
 ```
-
