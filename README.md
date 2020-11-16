@@ -3,9 +3,9 @@
 Docker-based development-only dependency management.
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/takeout.svg)](https://npmjs.org/package/takeout)
-[![Downloads/week](https://img.shields.io/npm/dw/takeout.svg)](https://npmjs.org/package/takeout)
-[![License](https://img.shields.io/npm/l/takeout.svg)](https://github.com/tighten/takeout/blob/master/package.json)
+[![Version](https://img.shields.io/npm/v/@tighten/takeout.svg)](https://npmjs.org/package/@tighten/takeout)
+[![Downloads/week](https://img.shields.io/npm/dw/@tighten/takeout.svg)](https://npmjs.org/package/@tighten/takeout)
+[![License](https://img.shields.io/npm/l/@tighten/takeout.svg)](https://github.com/tighten/takeout/blob/master/package.json)
 
 > NOTE: This branch is for the Node port. We've never written Node CLI apps. It's gonna take a while.
 

@@ -1,5 +1,5 @@
 {
-  "name": "takeout",
+  "name": "@tighten/takeout",
   "description": "Docker-based development-only dependency manager.",
   "version": "2.0.0-alpha.0",
   "authors": [
