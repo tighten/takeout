@@ -39,7 +39,7 @@ class StopCommand extends Command
 
             return [
                 $label,
-                function(CliMenu $menu) use ($container, $label) {
+                function (CliMenu $menu) use ($container, $label) {
                     $this->stop($menu->getSelectedItem()->getText());
 
                     foreach ($menu->getItems() as $item) {

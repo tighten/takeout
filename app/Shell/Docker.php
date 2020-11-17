@@ -151,14 +151,14 @@ class Docker
 
         $command = sprintf(
             'docker run -d --name "${:container_name}" %s %s',
-             $this->networking->networkSettings($parameters['alias'], $parameters['image_name']),
-             $dockerRunTemplate
+            $this->networking->networkSettings($parameters['alias'], $parameters['image_name']),
+            $dockerRunTemplate
         );
 
         $process = $this->shell->exec($command, $parameters);
 
         if (! $process->isSuccessful()) {
-            throw new Exception("Failed installing " . $parameters['image_name']);
+            throw new Exception('Failed installing ' . $parameters['image_name']);
         }
     }
 

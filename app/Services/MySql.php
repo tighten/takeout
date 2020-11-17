@@ -33,7 +33,7 @@ class MySql extends BaseService
     {
         $parameters = parent::buildParameters();
 
-        $parameters["allow_empty_password"] = $parameters["root_password"] === "" ? "yes" : "no";
+        $parameters['allow_empty_password'] = $parameters['root_password'] === '' ? 'yes' : 'no';
 
         return $parameters;
     }
