@@ -1,6 +1,7 @@
 import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
 import Docker from '../shell/docker'
+import {Container} from '../misc/interfaces'
 
 export default class List extends Command {
   static description = 'List the Takeout-enabled containers.'
