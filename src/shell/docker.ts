@@ -7,9 +7,14 @@ export default class Docker {
     return runAndParseAsJson("docker ps -a --filter 'name=TO-' --format '{{ json . }}' --all")
   }
 
+  static validContainerId(id: string): boolean {
+    const matchingContainer = this.listTakeoutContainers().filter((dc: DockerContainer) => id === dc.ID)
+    return matchingContainer.length > 0
+  }
+
   static startContainer(id: string) {
-    // @todo validate that it exists in listTakeoutContainers()
+    if (!this.validContainerId(id)) throw new Error(`${id} is not a valid container ID.`)
+
     execSync(`docker start ${id}`)
-    // @todo handle errors
   }
 }

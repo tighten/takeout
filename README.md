@@ -92,7 +92,7 @@ _See code: [src/commands/list.ts](https://github.com/tighten/takeout/blob/v2.0.0
 
 ## `takeout start [CONTAINER]`
 
-Start a stopped container
+Start a stopped container.
 
 ```
 USAGE

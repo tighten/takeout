@@ -2,7 +2,7 @@ import {Command, flags} from '@oclif/command'
 import Docker from '../shell/docker'
 
 export default class Start extends Command {
-  static description = 'Start a stopped container'
+  static description = 'Start a stopped container.'
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -11,8 +11,12 @@ export default class Start extends Command {
   static args = [{name: 'container'}]
 
   startContainer(id: string) {
-    Docker.startContainer(id)
-    this.log('Container stopped.')
+    try {
+      Docker.startContainer(id)
+      this.log('Container successfully started.')
+    } catch (e) {
+      this.error(e)
+    }
   }
 
   async run() {
@@ -21,7 +25,7 @@ export default class Start extends Command {
     if (args.container) {
       this.startContainer(args.container)
     } else {
-      this.error('Sorry, no list built yet.')
+      this.error('Sorry, no list built yet. Run `takeout list` to find the container ID.')
     }
   }
 }
