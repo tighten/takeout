@@ -11,7 +11,7 @@ export default class List extends Command {
   }
 
   listAsJson() {
-    this.log(JSON.stringify(Docker.listTakeoutContainers().map(container => {
+    this.log(JSON.stringify(Docker.listTakeoutContainers().map((container: Container) => {
       return {
         id: container.ID,
         name: container.Names,
