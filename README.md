@@ -97,16 +97,15 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0
 
 ## `takeout list [FILE]`
 
-describe the command here
+List the Takeout-enabled containers.
 
 ```
 USAGE
   $ takeout list [FILE]
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
+  -j, --json  Return as JSON
 ```
 
 _See code: [src/commands/list.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.0/src/commands/list.ts)_

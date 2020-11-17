@@ -6,34 +6,33 @@ export default class List extends Command {
   static description = 'List the Takeout-enabled containers.'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    // flag with a value (-n, --name=VALUE)
-    // name: flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    // force: flags.boolean({char: 'f'}),
+    help: flags.help({char: 'h', description: 'Show CLI help'}),
+    json: flags.boolean({char: 'j', description: 'Return as JSON'}),
   }
 
-  static args = [{name: 'file'}]
-
   async run() {
-    const {args, flags} = this.parse(List)
+    const {flags} = this.parse(List)
 
-    cli.table(Docker.listTakeoutContainers(), {
-      'Container Id': {
-        header: 'Container ID',
-      },
-      Name: {
-        minWidth: 7,
-      },
-    }, {
-      printLine: this.log,
-      ...flags, // parsed flags
-    })
-
-    // const name = flags.name ?? 'world'
-    // this.log(`hello ${name} from /Users/mattstauffer/Sites/node-takeout/src/commands/list.ts`)
-    // if (args.file && flags.force) {
-    //   this.log(`you input --force and --file: ${args.file}`)
-    // }
+    if (flags.json) {
+      // @todo: Solve TS error "Property 'ID' does not exist on type 'Object'"
+      this.log(JSON.stringify(Docker.listTakeoutContainers().map(container => {
+        return {
+          id: container.ID,
+          name: container.Names,
+        }
+      })))
+    } else {
+      cli.table(Docker.listTakeoutContainers(), {
+        ID: {
+          header: 'Container ID',
+        },
+        Names: {
+          header: 'Name',
+        },
+      }, {
+        printLine: this.log,
+        ...flags,
+      })
+    }
   }
 }
