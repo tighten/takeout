@@ -56,6 +56,7 @@ USAGE
 <!-- commands -->
 * [`takeout help [COMMAND]`](#takeout-help-command)
 * [`takeout list`](#takeout-list)
+* [`takeout start [CONTAINER]`](#takeout-start-container)
 
 ## `takeout help [COMMAND]`
 
@@ -88,6 +89,20 @@ OPTIONS
 ```
 
 _See code: [src/commands/list.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.0/src/commands/list.ts)_
+
+## `takeout start [CONTAINER]`
+
+Start a stopped container
+
+```
+USAGE
+  $ takeout start [CONTAINER]
+
+OPTIONS
+  -h, --help  show CLI help
+```
+
+_See code: [src/commands/start.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.0/src/commands/start.ts)_
 <!-- commandsstop -->
 
 
