@@ -1,7 +1,7 @@
 import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
 import Docker from '../shell/docker'
-import {Container} from '../misc/interfaces'
+import {DockerContainer} from '../types'
 
 export default class List extends Command {
   static description = 'List the Takeout-enabled containers.'
@@ -12,7 +12,7 @@ export default class List extends Command {
   }
 
   listAsJson() {
-    this.log(JSON.stringify(Docker.listTakeoutContainers().map((container: Container) => {
+    this.log(JSON.stringify(Docker.listTakeoutContainers().map((container: DockerContainer) => {
       return {
         id: container.ID,
         name: container.Names,
