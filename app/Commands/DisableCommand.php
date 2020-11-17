@@ -116,7 +116,7 @@ class DisableCommand extends Command
                 }
             }
         } catch (Throwable $e) {
-            $this->error('Disabling failed!');
+            $this->error('Disabling failed! Error: ' . $e->getMessage());
         }
     }
 }

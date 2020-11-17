@@ -1,4 +1,4 @@
-![Takeout - Docker-based dependency management for macOS](takeout-banner.png?version=1)
+![Takeout - Docker-based dependency management](takeout-banner.png?version=1)
 
 # Takeout
 
@@ -13,25 +13,7 @@ It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/doc
 
 With `takeout enable mysql` you're running MySQL, and never have to worry about managing or fixing Homebrew MySQL again.
 
-But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, and more, with a simple command.
-
-**Current list of services:**
-- MySQL
-- PostgreSQL
-- MSSQL
-- ElasticSearch
-- MeiliSearch
-- Redis
-- Memcached
-- MailHog
-- MariaDB
-- Minio
-- Mongo
-- InfluxDB
-- DynamoDB
-- Beanstalkd
-- Sqs
-- Neo4j
+But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, and more, with a simple command. For a current list of services, look at the classes available in this directory: https://github.com/tighten/takeout/tree/main/app/Services
 
 ## Requirements
 

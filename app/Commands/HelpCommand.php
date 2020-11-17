@@ -23,10 +23,10 @@ class HelpCommand extends Command
 
     public function handle(): void
     {
-        $this->line("\n  <fg=white;options=bold>Takeout</>  <fg=green;options=bold>" . config('app.version') . "</>");
+        $this->line("\n  <fg=white;options=bold>Takeout</>  <fg=green;options=bold>" . config('app.version') . '</>');
         $this->line("\n  <comment>Usage:</comment>");
         $this->line("    takeout <command> [arguments]\n");
-        $this->line("  <comment>Commands:</comment>");
+        $this->line('  <comment>Commands:</comment>');
 
         foreach ($this->commands as $command => $description) {
             $spaces = $this->makeSpaces(strlen($command));
@@ -36,6 +36,6 @@ class HelpCommand extends Command
 
     public function makeSpaces($count)
     {
-        return str_repeat(" ", $this->indent - $count);
+        return str_repeat(' ', $this->indent - $count);
     }
 }
