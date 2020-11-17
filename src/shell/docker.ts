@@ -1,6 +1,6 @@
 import {runAndParseAsJson} from './shell'
 import {Container} from '../misc/interfaces'
-import { execSync } from 'child_process'
+import {execSync} from 'child_process'
 
 export default class Docker {
   static listTakeoutContainers(): Array<Container> {

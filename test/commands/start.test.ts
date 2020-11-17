@@ -1,17 +1,11 @@
-import {expect, test} from '@oclif/test'
+// import {expect, test} from '@oclif/test'
 
-describe('start', () => {
-  test
-  .stdout()
-  .command(['start'])
-  .it('runs hello', ctx => {
-    expect(ctx.stdout).to.contain('hello world')
-  })
-
-  test
-  .stdout()
-  .command(['start', '--name', 'jeff'])
-  .it('runs hello --name jeff', ctx => {
-    expect(ctx.stdout).to.contain('hello jeff')
-  })
-})
+// describe('start', () => {
+//   test
+//   .stdout()
+//   .command(['start', 'nonExistentId'])
+//   .it('runs start nonExistentId', ctx => {
+//     // @todo make this useful.. can we even read sterr?
+//     // expect(ctx.stdout).to.contain('Error')
+//   })
+// })
