@@ -10,29 +10,32 @@ export default class List extends Command {
     json: flags.boolean({char: 'j', description: 'Return as JSON'}),
   }
 
+  listAsJson() {
+    this.log(JSON.stringify(Docker.listTakeoutContainers().map(container => {
+      return {
+        id: container.ID,
+        name: container.Names,
+      }
+    })))
+  }
+
+  listAsTable() {
+    cli.table(Docker.listTakeoutContainers(), {
+      ID: {
+        header: 'Container ID',
+      },
+      Names: {
+        header: 'Name',
+      },
+    }, {
+      printLine: this.log,
+      ...flags,
+    })
+  }
+
   async run() {
     const {flags} = this.parse(List)
 
-    if (flags.json) {
-      // @todo: Solve TS error "Property 'ID' does not exist on type 'Object'"
-      this.log(JSON.stringify(Docker.listTakeoutContainers().map(container => {
-        return {
-          id: container.ID,
-          name: container.Names,
-        }
-      })))
-    } else {
-      cli.table(Docker.listTakeoutContainers(), {
-        ID: {
-          header: 'Container ID',
-        },
-        Names: {
-          header: 'Name',
-        },
-      }, {
-        printLine: this.log,
-        ...flags,
-      })
-    }
+    flags.json ? this.listAsJson() : this.listAsTable()
   }
 }
