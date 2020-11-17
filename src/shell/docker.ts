@@ -1,7 +1,7 @@
 const { execSync } = require('child_process')
 
 export default class Docker {
-  static listTakeoutContainers(): Array<Object> {
+  static listTakeoutContainers(): Array<Record<string, any>> {
     const output = execSync("docker ps -a --filter 'name=TO-' --format '{{ json . }}' --all")
     return this.dockerJsonToArrayOfObjects(output.toString())
   }
