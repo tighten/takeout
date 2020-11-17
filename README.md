@@ -44,7 +44,7 @@ $ npm install -g @tighten/takeout
 $ takeout COMMAND
 running command...
 $ takeout (-v|--version|version)
-@tighten/takeout/2.0.0-alpha.0 darwin-x64 node-v11.6.0
+@tighten/takeout/2.0.0-alpha.1 darwin-x64 node-v11.6.0
 $ takeout --help [COMMAND]
 USAGE
   $ takeout COMMAND
@@ -88,7 +88,7 @@ OPTIONS
   -j, --json  Return as JSON
 ```
 
-_See code: [src/commands/list.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.0/src/commands/list.ts)_
+_See code: [src/commands/list.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/list.ts)_
 
 ## `takeout start [CONTAINER]`
 
@@ -102,7 +102,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/start.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.0/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/start.ts)_
 <!-- commandsstop -->
 
 

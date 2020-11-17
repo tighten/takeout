@@ -1,7 +1,7 @@
 {
   "name": "@tighten/takeout",
   "description": "Docker-based development-only dependency manager.",
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.0-alpha.1",
   "authors": [
     {
       "name": "Matt Stauffer",
