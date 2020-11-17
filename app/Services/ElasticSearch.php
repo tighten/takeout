@@ -25,5 +25,5 @@ class ElasticSearch extends BaseService
         -v "${:volume}":/usr/share/elasticsearch/data \
          "${:organization}"/"${:image_name}":"${:tag}"';
 
-    protected static $displayName = 'elasticsearch';
+    protected static $displayName = 'Elasticsearch';
 }

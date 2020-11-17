@@ -62,7 +62,7 @@ class Sftp extends BaseService
     {
         parent::prompts();
 
-        if ($this->promptResponses['mapped_directory'] !== "") {
+        if ($this->promptResponses['mapped_directory'] !== '') {
             $this->dockerRunTemplate = '-v "${:local_mapping}" ' . $this->dockerRunTemplate;
         }
     }
@@ -71,13 +71,22 @@ class Sftp extends BaseService
     {
         $parameters = parent::buildParameters();
 
-        if ($parameters['mapped_directory'] !== "") {
-            $parameters['local_mapping'] = trim($parameters['mapped_directory'], ' ') . ':/home/'
-            . $parameters['user_name'] . '/' . $parameters['upload_directory'];
+        if ($parameters['mapped_directory'] !== '') {
+            $parameters['local_mapping'] = sprintf(
+                '%s:/home/%s/%s',
+                trim($parameters['mapped_directory'], ' '),
+                $parameters['user_name'],
+                $parameters['upload_directory']
+            );
+
             $parameters['user_config'] = $parameters['user_name'] . ':' . $parameters['password'] . ':1001';
         } else {
-            $parameters['user_config'] = $parameters['user_name'] . ':' . $parameters['password']
-            . ':::' . $parameters["upload_directory"];
+            $parameters['user_config'] = sprintf(
+                '%s:%s:::%s',
+                $parameters['user_name'],
+                $parameters['password'],
+                $parameters['upload_directory']
+            );
         }
 
         return $parameters;
