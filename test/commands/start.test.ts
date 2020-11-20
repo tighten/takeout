@@ -15,7 +15,7 @@ describe('start', () => {
   .stub(Docker, 'startContainer', () => null)
   .stub(Docker, 'validContainerId', () => true)
   .command(['start', 'existentId'])
-  .it('start up a container and exits successfully', ctx => {
+  .it('start up a container and exit successfully', ctx => {
     expect(ctx.stdout).to.contain('Container successfully started.')
   })
 

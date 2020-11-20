@@ -1,19 +1,32 @@
 import {expect, test} from '@oclif/test'
+import Docker from '../../src/shell/docker'
+import {DockerContainer} from '../../src/types'
+
+const fakeTakeoutContainers: DockerContainer[] = [
+  {
+    ID: 'redisId',
+    Names: 'redis',
+  },
+]
 
 describe('list', () => {
   test
   .stdout()
+  .stub(Docker, 'listTakeoutContainers', () => {
+    return fakeTakeoutContainers
+  })
   .command(['list'])
-  .it('runs list', ctx => {
-    // @todo how do we run a functional/useful assertion? Can we mock shell or something?
-    expect(ctx.stdout).to.contain('Container ID')
+  .it('displays a list of takeout containers', ctx => {
+    expect(ctx.stdout).to.contain('redisId')
   })
 
   test
   .stdout()
+  .stub(Docker, 'listTakeoutContainers', () => {
+    return fakeTakeoutContainers
+  })
   .command(['list', '--json'])
   .it('runs list --json', ctx => {
-    // @todo How do we make this actually functional? Maybe parse it as JSON and then check that it didn't error?
-    expect(ctx.stdout).to.contain('[')
+    expect(ctx.stdout).to.contain('"id":"redisId"')
   })
 })
