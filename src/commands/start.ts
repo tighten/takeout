@@ -14,8 +14,8 @@ export default class Start extends Command {
     try {
       Docker.startContainer(id)
       this.log('Container successfully started.')
-    } catch (e) {
-      this.error(e)
+    } catch (error) {
+      this.error(error)
     }
   }
 
