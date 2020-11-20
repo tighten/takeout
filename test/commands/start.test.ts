@@ -8,7 +8,7 @@ describe('start', () => {
   .catch(error => {
     expect(error.message).matches(/nonExistentId is not a valid container ID/)
   })
-  .it('should error when a non existend container id is entered.')
+  .it('should error when a non existent container id is entered.')
 
   test
   .stdout()
