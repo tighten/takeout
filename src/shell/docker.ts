@@ -21,8 +21,4 @@ export default class Docker {
   static stoppedTakeoutContainers() {
     return this.listTakeoutContainers().filter(container => container.Status.includes('Exit'))
   }
-
-  static runningTakeoutContainers() {
-    return this.listTakeoutContainers().filter(container => !container.Status.includes('Exit'))
-  }
 }
