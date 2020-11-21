@@ -17,4 +17,12 @@ export default class Docker {
 
     execSync(`docker start ${id}`)
   }
+
+  static stoppedTakeoutContainers() {
+    return this.listTakeoutContainers().filter(container => container.Status.includes('Exit'))
+  }
+
+  static runningTakeoutContainers() {
+    return this.listTakeoutContainers().filter(container => !container.Status.includes('Exit'))
+  }
 }

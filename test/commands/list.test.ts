@@ -6,6 +6,7 @@ const fakeTakeoutContainers: DockerContainer[] = [
   {
     ID: 'redisId',
     Names: 'redis',
+    Status: 'Running',
   },
 ]
 

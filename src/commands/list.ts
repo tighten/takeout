@@ -28,6 +28,9 @@ export default class List extends Command {
       Names: {
         header: 'Name',
       },
+      Status: {
+        header: 'Status',
+      },
     }, {
       printLine: this.log,
       ...flags,

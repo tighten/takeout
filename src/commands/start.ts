@@ -1,5 +1,7 @@
 import {Command, flags} from '@oclif/command'
 import Docker from '../shell/docker'
+import Transforms from '../helpers/transform'
+const inquirer = require('inquirer')
 
 export default class Start extends Command {
   static description = 'Start a stopped container.'
@@ -25,7 +27,19 @@ export default class Start extends Command {
     if (args.container) {
       this.startContainer(args.container)
     } else {
-      this.error('Sorry, no list built yet. Run `takeout list` to find the container ID.')
+      inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'containers',
+          message: 'Which container(s) would you like to start?',
+          choices: Transforms.menuOptions(Docker.stoppedTakeoutContainers()),
+        },
+      ])
+      .then((answers: any) => {
+        answers.containers.forEach((answer: string) => {
+          this.startContainer(answer)
+        })
+      })
     }
   }
 }
