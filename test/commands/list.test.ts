@@ -27,7 +27,7 @@ describe('list', () => {
     return fakeTakeoutContainers
   })
   .command(['list', '--json'])
-  .it('runs list --json', ctx => {
+  .it('displays the list in json format', ctx => {
     expect(ctx.stdout).to.contain('"id":"redisId"')
   })
 })
