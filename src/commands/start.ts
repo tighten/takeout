@@ -1,6 +1,6 @@
 import {Command, flags} from '@oclif/command'
 import Docker from '../shell/docker'
-import Transforms from '../helpers/transform'
+import {menuOptions} from '../helpers'
 const inquirer = require('inquirer')
 
 export default class Start extends Command {
@@ -32,7 +32,7 @@ export default class Start extends Command {
           type: 'checkbox',
           name: 'containers',
           message: 'Which container(s) would you like to start?',
-          choices: Transforms.menuOptions(Docker.stoppedTakeoutContainers()),
+          choices: menuOptions(Docker.stoppedTakeoutContainers()),
         },
       ])
       .then((answers: any) => {

@@ -1,4 +1,4 @@
-import {runAndParseAsJson} from './shell'
+import {runAndParseAsJson} from '../helpers'
 import {DockerContainer} from '../types'
 import {execSync} from 'child_process'
 
