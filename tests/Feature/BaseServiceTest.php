@@ -22,8 +22,10 @@ class BaseServiceTest extends TestCase
     /** @test */
     function it_enables_services()
     {
-        app()->instance('console', M::mock(Command::class, function ($mock) {
-            $defaultPort = app(MeiliSearch::class)->defaultPort();
+        $service = app(MeiliSearch::class);
+
+        app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
+            $defaultPort = $service->defaultPort();
             $mock->shouldReceive('ask')->with('Which host port would you like meilisearch to use?', $defaultPort)->andReturn(7700);
             $mock->shouldReceive('ask')->with('What is the Docker volume name?', 'meili_data')->andReturn('meili_data');
             $mock->shouldReceive('ask')->with('Which tag (version) of meilisearch would you like to use?', 'latest')->andReturn('v1.1.1');
@@ -38,23 +40,23 @@ class BaseServiceTest extends TestCase
             $mock->shouldReceive('execQuietly')->andReturn($process);
         });
 
-        $this->mock(Docker::class, function ($mock) {
+        $this->mock(Docker::class, function ($mock) use ($service) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('imageIsDownloaded')->andReturn(true);
             $mock->shouldReceive('volumeIsAvailable')->andReturn(true);
 
             // This is the actual assertion
-            $mock->shouldReceive('bootContainer')->with('-p "${:port}":7700 \
-        -v "${:volume}":/data.ms \
-        "${:organization}"/"${:image_name}":"${:tag}"', [
-                "organization" => "getmeili",
-                "image_name" => "meilisearch",
-                "port" => 7700,
-                "tag" => "v1.1.1",
-                "volume" => 'meili_data',
-                "container_name" => "TO--meilisearch--v1.1.1--7700",
-                'alias' => 'meilisearch1.1',
-            ])->once();
+            $mock->shouldReceive('bootContainer')->with(
+                $service->dockerRunTemplate(),
+                [
+                    "organization" => "getmeili",
+                    "image_name" => "meilisearch",
+                    "port" => 7700,
+                    "tag" => "v1.1.1",
+                    "volume" => 'meili_data',
+                    "container_name" => "TO--meilisearch--v1.1.1--7700",
+                    'alias' => 'meilisearch1.1',
+                ])->once();
         });
 
         $service = app(MeiliSearch::class); // Extends BaseService
