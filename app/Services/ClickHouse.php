@@ -1,14 +1,13 @@
 <?php
 
-
 namespace App\Services;
-
 
 class ClickHouse extends BaseService
 {
+    protected static $category = Category::DATABASE;
+
     protected $organization = 'yandex';
     protected $imageName = 'clickhouse-server';
-    protected static $category = Category::DATABASE;
     protected $defaultPort = 9000;
     protected $prompts = [
         [
@@ -28,5 +27,4 @@ class ClickHouse extends BaseService
         --ulimit nofile=262144:262144 \
         --volume=${volume}:/var/lib/clickhouse \
         "${:organization}"/"${:image_name}":"${:tag}"';
-
 }
