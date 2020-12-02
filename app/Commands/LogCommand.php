@@ -21,7 +21,7 @@ class LogCommand extends Command
         $container = $this->argument('containerId');
 
         if (! $container) {
-            $this->error("Please insert a valid container ID.\n");
+            $this->error("Please pass a valid container ID.\n");
 
             return;
         }
