@@ -2,81 +2,159 @@
 
 namespace Tests\Feature;
 
-use App\Commands\DisableCommand;
 use App\Shell\Docker;
+use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
+use NunoMaduro\LaravelConsoleMenu\Menu;
+use PHPUnit\Framework\Assert;
 use Tests\TestCase;
 
 class DisableCommandTest extends TestCase
 {
-    function setup(): void
+    /** @test */
+    function it_can_disable_a_service_from_menu()
     {
-        parent::setUp();
+        $services = Collection::make([
+            [
+                'container_id' => $postgressId = '1234',
+                'names' => 'postgress',
+            ],
+            [
+                'container_id' => '12345',
+                'names' => 'meilisearch',
+            ],
+        ]);
 
-        $this->mock(Docker::class, function ($mock) {
+        $this->mock(Docker::class, function ($mock) use ($services, $postgressId) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
-            $mock->shouldReceive('takeoutContainers')->andReturn(collect([
-                [
-                    'container_id' => 'fake-id',
-                    'names' => 'TO-mysql--latest--3306',
-                ],
-                [
-                    'container_id' => 'fake-id-2',
-                    'names' => 'TO-postgres--latest--5432',
-                ],
-            ]));
+            $mock->shouldReceive('takeoutContainers')->andReturn($services);
 
-            $mock->shouldIgnoreMissing();
+            $mock->shouldReceive('attachedVolumeName')
+                ->with($postgressId)->andReturnNull()->once();
+            $mock->shouldReceive('removeContainer')
+                ->with($postgressId)->once();
         });
+
+
+
+        $menuMock = $this->mock(Menu::class, function ($mock) use ($postgressId) {
+            $mock->shouldReceive('addLineBreak')->andReturnSelf();
+            $mock->shouldReceive('setPadding')->andReturnSelf();
+            $mock->shouldReceive('open')->andReturn($postgressId)->once();
+        });
+
+        Command::macro(
+            'menu',
+            function (string $title, array $options) use ($services, $menuMock) {
+                Assert::assertEquals('Services to disable', $title);
+                Assert::assertEquals(
+                    $services->mapWithKeys(function ($container) {
+                        return [$container['container_id'] => $container['names']];
+                    })->toArray(),
+                    $options
+                );
+                return $menuMock;
+            }
+        );
+
+        $this->artisan('disable');
     }
 
     /** @test */
-    function disable_menu_is_shown_when_no_service_in_input()
+    function it_can_disable_a_service_without_volume()
     {
-        $this->mock(DisableCommand::class, function ($mock) {
-            $mock->shouldReceive('showDisableServiceMenu')->andReturn(true);
-
-            $mock->shouldIgnoreMissing();
-        })->makePartial();
-
-        // $this->artisan('disable');
-        $this->markTestIncomplete('Need to ask Nuno if we can test laravel-console-menu');
-    }
-
-    /** @test */
-    function single_service_can_be_disabled()
-    {
-        $service = 'mysql';
-
-        $this->mock(DisableCommand::class, function ($mock) {
-            $mock->shouldReceive('disableByServiceName');
-        });
-
-        $this->artisan('disable ' . $service);
-    }
-
-    /** @test */
-    function multiple_services_can_be_disabled()
-    {
-        $mysql = 'mysql';
-        $postgres = 'postgres';
-
-        $this->mock(DisableCommand::class, function ($mock) {
-            $mock->shouldReceive('disableByServiceName')->andReturn(null);
-        });
-
-        $this->artisan("disable {$mysql} {$postgres}");
-    }
-
-    /** @test */
-    function all_services_will_be_disabled_if_all_flag_passed()
-    {
-        $this->mock(DisableCommand::class, function ($mock) {
-            $mock->shouldReceive('disableByContainerId');
-        });
-
-        $this->artisan('disable', [
-            '--all' => true,
+        $services = Collection::make([
+            [
+                'container_id' => $postgressId = '1234',
+                'names' => 'postgress',
+            ],
         ]);
+
+        $this->mock(Docker::class, function ($mock) use ($services, $postgressId) {
+            $mock->shouldReceive('isInstalled')->andReturn(true);
+            $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
+            $mock->shouldReceive('takeoutContainers')->andReturn($services);
+
+            $mock->shouldReceive('attachedVolumeName')
+                ->with($postgressId)->andReturnNull()->once();
+            $mock->shouldReceive('removeContainer')
+                ->with($postgressId)->once();
+
+            $mock->shouldReceive('allContainers')
+                ->andReturn(Collection::make([
+                    [
+                        'container_id' => '1111',
+                        'names' => 'someNonTakeoutContainer',
+                    ],
+                ]))->once();
+        });
+
+        $this->artisan('disable postgress');
+    }
+
+    /** @test */
+    function it_can_disable_a_service_with_volume()
+    {
+        $services = Collection::make([
+            [
+                'container_id' => $postgressId = '1234',
+                'names' => 'postgress',
+            ],
+        ]);
+
+        $this->mock(Docker::class, function ($mock) use ($services, $postgressId) {
+            $mock->shouldReceive('isInstalled')->andReturn(true);
+            $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
+            $mock->shouldReceive('takeoutContainers')->andReturn($services);
+
+            $mock->shouldReceive('attachedVolumeName')
+                ->with($postgressId)->andReturnNull()->once();
+            $mock->shouldReceive('removeContainer')
+                ->with($postgressId)->once();
+
+            $mock->shouldReceive('allContainers')
+                ->andReturn(Collection::make([
+                    [
+                        'container_id' => '1111',
+                        'names' => 'someNonTakeoutContainer',
+                    ],
+                ]))->once();
+        });
+
+        $this->artisan('disable postgress');
+    }
+
+    /** @test */
+    function it_can_disable_multiple_services()
+    {
+        $services = Collection::make([
+            [
+                'container_id' => $postgressId = '1234',
+                'names' => 'postgress',
+            ],
+            [
+                'container_id' => $meilisearchId = '12345',
+                'names' => 'meilisearch',
+            ],
+        ]);
+
+        $this->mock(Docker::class, function ($mock) use ($services, $postgressId, $meilisearchId) {
+            $mock->shouldReceive('isInstalled')->andReturn(true);
+            $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
+            $mock->shouldReceive('takeoutContainers')->andReturn($services);
+
+            $mock->shouldReceive('attachedVolumeName')
+                ->with($postgressId)->andReturnNull()->once();
+            $mock->shouldReceive('removeContainer')
+                ->with($postgressId)->once();
+
+            $mock->shouldReceive('attachedVolumeName')
+                ->with($meilisearchId)->andReturnNull()->once();
+            $mock->shouldReceive('removeContainer')
+                ->with($meilisearchId)->once();
+        });
+
+        $this->artisan('disable postgress meilisearch');
     }
 }
