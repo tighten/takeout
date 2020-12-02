@@ -25,7 +25,7 @@ abstract class Category
     public static function get(string $serviceName): string
     {
         $servicesByCategory = self::all();
-        return array_key_exists($serviceName, $servicesByCategory) ? $servicesByCategory[$serviceName] : 'Other';
+        return array_key_exists($serviceName, $servicesByCategory) ? strtolower($servicesByCategory[$serviceName]) : 'other';
     }
 
     public static function fromContainerName(string $containerName): string
