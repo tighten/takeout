@@ -11,6 +11,7 @@ abstract class Category
     const MAIL = 'Mail';
     const SEARCH = 'Search';
     const STORAGE = 'Storage';
+    const TOOLS = 'Tools';
 
     public static function all(): array
     {

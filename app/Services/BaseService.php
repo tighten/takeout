@@ -109,6 +109,11 @@ abstract class BaseService
         return strtolower(class_basename(static::class));
     }
 
+    public function dockerRunTemplate(): string
+    {
+        return $this->dockerRunTemplate;
+    }
+
     public function defaultPort(): int
     {
         return $this->defaultPort;
