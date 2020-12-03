@@ -12,7 +12,7 @@ class StartCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'start {containerId?}';
+    protected $signature = 'start {containerId?*} {--all}';
     protected $description = 'Start a stopped container.';
 
     public function handle(): void
@@ -24,6 +24,13 @@ class StartCommand extends Command
         if ($container) {
             $this->start($container);
 
+            return;
+        }
+
+        if ($this->option('all')) {
+            foreach (app(Docker::class)->startableTakeoutContainers() as $startableContainer) {
+                $this->start($startableContainer['container_id']);
+            }
             return;
         }
 
