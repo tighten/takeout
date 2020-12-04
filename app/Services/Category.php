@@ -13,20 +13,11 @@ abstract class Category
     const STORAGE = 'Storage';
     const TOOLS = 'Tools';
 
-    public static function mapByService(): array
-    {
-        return collect((new Services)->all())
-            ->mapWithKeys(function ($fqcn, $shortName) {
-                return [$shortName => $fqcn::category()];
-            })
-            ->toArray();
-    }
-
     public static function fromServiceName(string $serviceName): string
     {
-        $serviceMap = self::mapByService();
-        return array_key_exists($serviceName, $serviceMap) ?
-            strtolower($serviceMap[$serviceName]) :
+        $serviceByCategory = (new Services)->allByCategory();
+        return array_key_exists($serviceName, $serviceByCategory) ?
+            strtolower($serviceByCategory[$serviceName]) :
             'other';
     }
 
