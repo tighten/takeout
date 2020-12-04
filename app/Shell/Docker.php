@@ -46,6 +46,21 @@ class Docker
         }
     }
 
+    public function logContainer(string $containerId): void
+    {
+        if (! $this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
+            return $container['container_id'] === $containerId;
+        })) {
+            throw new DockerContainerMissingException($containerId);
+        }
+
+        $process = $this->shell->exec('docker logs -f ' . $containerId);
+
+        if (! $process->isSuccessful()) {
+            throw new Exception('Failed to log container ' . $containerId);
+        }
+    }
+
     public function startContainer(string $containerId): void
     {
         if (! $this->startableTakeoutContainers()->contains(function ($container) use ($containerId) {
