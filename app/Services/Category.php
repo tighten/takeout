@@ -22,7 +22,7 @@ abstract class Category
             ->toArray();
     }
 
-    public static function get(string $serviceName): string
+    public static function fromServiceName(string $serviceName): string
     {
         $servicesByCategory = self::all();
         return array_key_exists($serviceName, $servicesByCategory) ? strtolower($servicesByCategory[$serviceName]) : 'other';
@@ -36,6 +36,6 @@ abstract class Category
             1
         );
         $serviceName = reset($serviceName);
-        return self::get($serviceName);
+        return self::fromServiceName($serviceName);
     }
 }
