@@ -13,7 +13,7 @@ abstract class Category
     const STORAGE = 'Storage';
     const TOOLS = 'Tools';
 
-    public static function all(): array
+    public static function mapByService(): array
     {
         return collect((new Services)->all())
             ->mapWithKeys(function ($fqcn, $shortName) {
@@ -24,8 +24,10 @@ abstract class Category
 
     public static function fromServiceName(string $serviceName): string
     {
-        $servicesByCategory = self::all();
-        return array_key_exists($serviceName, $servicesByCategory) ? strtolower($servicesByCategory[$serviceName]) : 'other';
+        $serviceMap = self::mapByService();
+        return array_key_exists($serviceName, $serviceMap) ?
+            strtolower($serviceMap[$serviceName]) :
+            'other';
     }
 
     public static function fromContainerName(string $containerName): string
