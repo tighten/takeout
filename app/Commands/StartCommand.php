@@ -19,10 +19,12 @@ class StartCommand extends Command
     {
         $this->initializeCommand();
 
-        $container = $this->argument('containerId');
+        $containers = $this->argument('containerId');
 
-        if ($container) {
-            $this->start($container);
+        if ($containers) {
+            foreach ($containers as $container) {
+                $this->start($container);
+            }
 
             return;
         }
