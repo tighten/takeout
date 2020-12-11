@@ -123,7 +123,7 @@ class DisableCommand extends Command
             }
 
             if (count($this->docker->allContainers()) === 0 && in_array(PHP_OS_FAMILY, ['Darwin', 'Windows'])) {
-                $option = $this->menu('No containers are running. Turn off Docker for Mac?', [
+                $option = $this->menu('No containers are running. Turn off Docker?', [
                     'Yes',
                     'No',
                 ])->disableDefaultItems()->open();
