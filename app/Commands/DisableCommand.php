@@ -125,13 +125,19 @@ class DisableCommand extends Command
                 $this->info("\n docker volume rm {$volumeName}");
             }
 
-            if (count($this->docker->allContainers()) === 0 && in_array(PHP_OS_FAMILY, ['Darwin', 'Windows'])) {
-                $option = $this->menu('No containers are running. Turn off Docker?', [
-                    'Yes',
-                    'No',
-                ])->disableDefaultItems()->open();
+            if (count($this->docker->allContainers()) === 0 && ($this->environment->isLinuxOs() || $this->environment->isWindowsOs())) {
+                $question = 'No containers are running. Turn off Docker?';
 
-                if ($option === 0) {
+                if ($this->environment->isWindowsOs()) {
+                    $option = $this->confirm($question);
+                } else {
+                    $option = $this->menu($question, [
+                        'Yes',
+                        'No',
+                    ])->disableDefaultItems()->open();
+                }
+
+                if ($option === 0 || $option === true) {
                     $this->task('Stopping Docker service ', $this->docker->stopDockerService());
                 }
             }
