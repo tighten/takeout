@@ -11,16 +11,22 @@ use Tests\TestCase;
 
 class DisableCommandTest extends TestCase
 {
+
+    function isWindows()
+    {
+        return PHP_OS_FAMILY === 'Windows';
+    }
+
     /** @test */
     function it_can_disable_a_service_from_menu()
     {
         $services = Collection::make([
             [
-                'container_id' => $postgressId = '1234',
-                'names' => 'postgress',
+                'container_id' =>  $postgressId =  '1234',
+                'names' => $postgressName = 'postgress',
             ],
             [
-                'container_id' => '12345',
+                'container_id' =>'12345',
                 'names' => 'meilisearch',
             ],
         ]);
@@ -29,36 +35,45 @@ class DisableCommandTest extends TestCase
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
             $mock->shouldReceive('takeoutContainers')->andReturn($services);
-
             $mock->shouldReceive('attachedVolumeName')
                 ->with($postgressId)->andReturnNull()->once();
             $mock->shouldReceive('removeContainer')
                 ->with($postgressId)->once();
         });
 
+        if ($this->isWindows()) {
+            $disableableServices = $services->mapWithKeys(function ($item) {
+                return [$item['container_id'] => $item['names']];
+            })->toArray();
 
+            array_push($disableableServices, '<info>Exit</>');
 
-        $menuMock = $this->mock(Menu::class, function ($mock) use ($postgressId) {
-            $mock->shouldReceive('addLineBreak')->andReturnSelf();
-            $mock->shouldReceive('setPadding')->andReturnSelf();
-            $mock->shouldReceive('open')->andReturn($postgressId)->once();
-        });
+            $this->artisan('disable')
+                ->expectsChoice('Takeout containers to disable', $postgressName, $disableableServices)
+                ->assertExitCode(0);
+        } else {
+            $menuMock = $this->mock(Menu::class, function ($mock) use ($postgressId) {
+                $mock->shouldReceive('addLineBreak')->andReturnSelf();
+                $mock->shouldReceive('setPadding')->andReturnSelf();
+                $mock->shouldReceive('open')->andReturn($postgressId)->once();
+            });
 
-        Command::macro(
-            'menu',
-            function (string $title, array $options) use ($services, $menuMock) {
-                Assert::assertEquals('Services to disable', $title);
-                Assert::assertEquals(
-                    $services->mapWithKeys(function ($container) {
-                        return [$container['container_id'] => $container['names']];
-                    })->toArray(),
-                    $options
-                );
-                return $menuMock;
-            }
-        );
+            Command::macro(
+                'menu',
+                function (string $title, array $options) use ($services, $menuMock) {
+                    Assert::assertEquals('Services to disable', $title);
+                    Assert::assertEquals(
+                        $services->mapWithKeys(function ($container) {
+                            return [$container['container_id'] => $container['names']];
+                        })->toArray(),
+                        $options
+                    );
+                    return $menuMock;
+                }
+            );
 
-        $this->artisan('disable');
+            $this->artisan('disable');
+        }
     }
 
     /** @test */
