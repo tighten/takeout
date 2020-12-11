@@ -61,7 +61,7 @@ class DisableCommandTest extends TestCase
             Command::macro(
                 'menu',
                 function (string $title, array $options) use ($services, $menuMock) {
-                    Assert::assertEquals('Services to disable', $title);
+                    Assert::assertEquals('Takeout containers to disable', $title);
                     Assert::assertEquals(
                         $services->mapWithKeys(function ($container) {
                             return [$container['container_id'] => $container['names']];
