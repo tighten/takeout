@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Shell\Docker;
+use App\Shell\Environment;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -64,7 +65,7 @@ class StartCommand extends Command
 
     private function loadMenu($startableContainers): void
     {
-        if (in_array(PHP_OS_FAMILY, ['Windows'])) {
+        if ($this->environment->isWindowsOs()) {
             $this->windowsMenu($startableContainers);
 
             return;
@@ -108,7 +109,7 @@ class StartCommand extends Command
 
     private function loadMenuItem($container, $label): callable
     {
-        if (in_array(PHP_OS_FAMILY, ['Windows'])) {
+        if ($this->environment->isWindowsOs()) {
             return $this->windowsMenuItem($container, $label);
         }
 

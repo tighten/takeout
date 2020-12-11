@@ -213,7 +213,7 @@ abstract class BaseService
 
     public function validateDockerRunTemplate($dockerRunTemplate): string
     {
-        if (in_array(PHP_OS_FAMILY, ['Windows'])) {
+        if ($this->environment->isWindowsOs()) {
             return stripslashes($dockerRunTemplate);
         }
 

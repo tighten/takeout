@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Services;
+use App\Shell\Environment;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -46,7 +47,7 @@ class EnableCommand extends Command
 
     private function selectService(): ?string
     {
-        if (in_array(PHP_OS_FAMILY, ['Windows'])) {
+        if ($this->environment->isWindowsOs()) {
             return $this->windowsMenu();
         }
 

@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Shell\Docker;
+use App\Shell\Environment;
 use LaravelZero\Framework\Commands\Command;
 use Throwable;
 
@@ -17,10 +18,12 @@ class DisableCommand extends Command
     protected $description = 'Disable services.';
     protected $disableableServices;
     protected $docker;
+    protected $environment;
 
-    public function handle(Docker $docker)
+    public function handle(Docker $docker, Environment $environment)
     {
         $this->docker = $docker;
+        $this->environment = $environment;
         $this->initializeCommand();
         $this->disableableServices = $this->disableableServices();
 
@@ -85,7 +88,7 @@ class DisableCommand extends Command
 
     private function selectMenu($disableableServices): ?string
     {
-        if (in_array(PHP_OS_FAMILY, ['Windows'])) {
+        if ($this->environment->isWindowsOs()) {
             return $this->windowsMenu($disableableServices);
         }
 
