@@ -22,7 +22,11 @@ class Docker
 
     public function removeContainer(string $containerId): void
     {
-        $this->stopContainer($containerId);
+        if ($this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
+            return $container['container_id'] === $containerId;
+        })) {
+            $this->stopContainer($containerId);
+        }
 
         $process = $this->shell->exec('docker rm ' . $containerId);
 
