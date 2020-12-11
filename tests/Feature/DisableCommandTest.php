@@ -35,6 +35,7 @@ class DisableCommandTest extends TestCase
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
             $mock->shouldReceive('takeoutContainers')->andReturn($services);
+
             $mock->shouldReceive('attachedVolumeName')
                 ->with($postgressId)->andReturnNull()->once();
             $mock->shouldReceive('removeContainer')

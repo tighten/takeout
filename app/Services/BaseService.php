@@ -211,7 +211,7 @@ abstract class BaseService
         return 'TO--' . $this->shortName() . '--' . $this->tag . $portTag;
     }
 
-    private function validateDockerRunTemplate($dockerRunTemplate): string
+    public function validateDockerRunTemplate($dockerRunTemplate): string
     {
         if (in_array(PHP_OS_FAMILY, ['Windows'])) {
             return stripslashes($dockerRunTemplate);

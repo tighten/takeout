@@ -47,7 +47,7 @@ class BaseServiceTest extends TestCase
 
             // This is the actual assertion
             $mock->shouldReceive('bootContainer')->with(
-                $service->dockerRunTemplate(),
+                $service->validateDockerRunTemplate($service->dockerRunTemplate()),
                 [
                     'organization' => 'getmeili',
                     'image_name' => 'meilisearch',
