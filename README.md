@@ -44,7 +44,7 @@ $ npm install -g @tighten/takeout
 $ takeout COMMAND
 running command...
 $ takeout (-v|--version|version)
-@tighten/takeout/2.0.0-alpha.1 darwin-x64 node-v11.6.0
+@tighten/takeout/2.0.0-alpha.1 darwin-x64 node-v14.15.0
 $ takeout --help [COMMAND]
 USAGE
   $ takeout COMMAND
@@ -54,9 +54,26 @@ USAGE
 
 # Commands
 <!-- commands -->
+* [`takeout enable [SERVICE]`](#takeout-enable-service)
 * [`takeout help [COMMAND]`](#takeout-help-command)
 * [`takeout list`](#takeout-list)
 * [`takeout start [CONTAINER]`](#takeout-start-container)
+
+## `takeout enable [SERVICE]`
+
+Enable services.
+
+```
+USAGE
+  $ takeout enable [SERVICE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/enable.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/enable.ts)_
 
 ## `takeout help [COMMAND]`
 

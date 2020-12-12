@@ -21,4 +21,8 @@ export default class Docker {
   static stoppedTakeoutContainers() {
     return this.listTakeoutContainers().filter(container => container.Status.includes('Exit'))
   }
+
+  static enableService(shortname: string) {
+    return shortname.length > 0
+  }
 }
