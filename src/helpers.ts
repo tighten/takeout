@@ -26,7 +26,11 @@ export const getAllServices = (): any => {
 }
 
 export const convertToRow = (container: DockerodeContainer): any => {
-  return ({...container, Names: container.Names[0].substring(1)})
+  return ({
+    ...container,
+    Id: container.Id.substring(0, 12), // Truncate the Id string to 12 chars
+    Names: container.Names[0].substring(1), // Grab the first name in Names array
+  })
 }
 export default {
   jsonStringToArray,

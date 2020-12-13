@@ -1,8 +1,8 @@
 import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
 import {DockerodeContainer, ContainerTableRow} from '../types'
-const Docker = require('dockerode')
 import {convertToRow} from '../helpers'
+const Docker = require('dockerode')
 
 export default class List extends Command {
   static description = 'List the Takeout-enabled containers.'
@@ -30,19 +30,10 @@ export default class List extends Command {
         } else {
           const tableData: ContainerTableRow[] = containers.map((container: DockerodeContainer) => convertToRow(container))
           cli.table(tableData, {
-            Id: {
-              header: 'Container ID',
-            },
-            Names: {
-              header: 'Name',
-            },
-            Status: {
-              header: 'Status',
-            },
-          }, {
-            printLine: this.log,
-            ...flags,
-          })
+            Id: {header: 'Container ID'},
+            Names: {header: 'Name'},
+            Status: {header: 'Status'},
+          }, {printLine: this.log, ...flags})
         }
       }
     )
