@@ -1,6 +1,6 @@
 export interface DockerContainer {
-  ID: string;
-  Names: string;
+  Id: string;
+  Names: string[];
   Status: string;
 }
 

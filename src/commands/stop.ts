@@ -4,8 +4,8 @@ import {DockerContainer} from '../types'
 const inquirer = require('inquirer')
 const Docker = require('dockerode')
 
-export default class Start extends Command {
-  static description = 'Start a stopped container.'
+export default class Stop extends Command {
+  static description = 'Stop a started container.'
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -15,13 +15,13 @@ export default class Start extends Command {
 
   static args = [{name: 'container'}]
 
-  async startContainer(id: string) {
+  async stopContainer(id: string) {
     try {
       const container = (new Docker()).getContainer(id)
       const containerInspection = await container.inspect()
-      container.start((err: any, data: any) => {
+      container.stop((err: any, data: any) => {
         if (err) throw err
-        this.log(`Container ${containerInspection.Name.substring(1)} successfully started.`)
+        this.log(`Container ${containerInspection.Name.substring(1)} successfully stopped.`)
       })
     } catch (error) {
       this.error(error)
@@ -29,37 +29,38 @@ export default class Start extends Command {
   }
 
   async run() {
-    const {args, flags} = this.parse(Start)
+    const {args, flags} = this.parse(Stop)
+
     if (args.container) {
-      this.startContainer(args.container)
+      this.stopContainer(args.container)
     } else {
       (new Docker()).listContainers(
         {
           all: true,
           filters: {
             name: ['TO--'],
-            status: ['exited'],
+            status: ['running'],
           }},
         (err: any, containers: any) => {
           if (err) return this.error(err)
-          if (containers.length === 0) return this.log('There are no containers to start.')
+          if (containers.length === 0) return this.log('There are no containers to stop.')
 
           if (flags.all) {
             containers.forEach((container: DockerContainer) => {
-              this.startContainer(container.Id)
+              this.stopContainer(container.Id)
             })
           } else {
             inquirer.prompt([
               {
                 type: 'checkbox',
                 name: 'containers',
-                message: 'Which container(s) would you like to start?',
+                message: 'Which container(s) would you like to stop?',
                 choices: menuOptions(containers),
               },
             ])
             .then((answers: any) => {
               answers.containers.forEach((answer: string) => {
-                this.startContainer(answer)
+                this.stopContainer(answer)
               })
             })
           }

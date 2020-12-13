@@ -4,8 +4,8 @@ const fs = require('fs')
 
 export const menuOptions = (containers: DockerContainer[]): Choice[] => {
   return containers.map(container => ({
-    name: container.Names,
-    value: container.ID,
+    name: container.Names[0],
+    value: container.Id,
   }))
 }
 

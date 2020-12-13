@@ -54,26 +54,10 @@ USAGE
 
 # Commands
 <!-- commands -->
-* [`takeout enable [SERVICE]`](#takeout-enable-service)
 * [`takeout help [COMMAND]`](#takeout-help-command)
 * [`takeout list`](#takeout-list)
 * [`takeout start [CONTAINER]`](#takeout-start-container)
-
-## `takeout enable [SERVICE]`
-
-Enable services.
-
-```
-USAGE
-  $ takeout enable [SERVICE]
-
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
-```
-
-_See code: [src/commands/enable.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/enable.ts)_
+* [`takeout stop [CONTAINER]`](#takeout-stop-container)
 
 ## `takeout help [COMMAND]`
 
@@ -116,10 +100,28 @@ USAGE
   $ takeout start [CONTAINER]
 
 OPTIONS
-  -h, --help  show CLI help
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
 ```
 
 _See code: [src/commands/start.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/start.ts)_
+
+## `takeout stop [CONTAINER]`
+
+Stop a started container.
+
+```
+USAGE
+  $ takeout stop [CONTAINER]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/stop.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/stop.ts)_
 <!-- commandsstop -->
 
 
