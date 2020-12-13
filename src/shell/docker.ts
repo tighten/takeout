@@ -8,7 +8,7 @@ export default class Docker {
   }
 
   static validContainerId(id: string): boolean {
-    const matchingContainer = // const Docker = require('dockerode')this.listTakeoutContainers().filter((dc: DockerContainer) => id === dc.Id)
+    const matchingContainer = this.listTakeoutContainers().filter((dc: DockerContainer) => id === dc.Id)
     return matchingContainer.length > 0
   }
 

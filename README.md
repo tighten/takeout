@@ -100,7 +100,7 @@ USAGE
   $ takeout start [CONTAINER]
 
 OPTIONS
-  -f, --force
+  -a, --all
   -h, --help       show CLI help
   -n, --name=name  name to print
 ```
@@ -116,7 +116,7 @@ USAGE
   $ takeout stop [CONTAINER]
 
 OPTIONS
-  -f, --force
+  -a, --all
   -h, --help       show CLI help
   -n, --name=name  name to print
 ```

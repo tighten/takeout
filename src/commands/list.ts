@@ -1,5 +1,6 @@
 import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
+import {DockerContainer} from '../types'
 const Docker = require('dockerode')
 
 export default class List extends Command {
@@ -26,7 +27,7 @@ export default class List extends Command {
         if (flags.json) {
           this.log(JSON.stringify(containers))
         } else {
-          const tableData = containers.map(container => ({...container, Names: container.Names[0].substring(1)}))
+          const tableData = containers.map((container: DockerContainer) => ({...container, Names: container.Names[0].substring(1)}))
           cli.table(tableData, {
             Id: {
               header: 'Container ID',
