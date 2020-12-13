@@ -1,7 +1,7 @@
 import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
-import {DockerodeContainer, ContainerTableRow} from '../types'
-import {convertToRow} from '../helpers'
+import {DockerodeContainer} from '../types'
+import {containersToTable} from '../helpers'
 const Docker = require('dockerode')
 
 export default class List extends Command {
@@ -23,13 +23,12 @@ export default class List extends Command {
           name: ['TO--'],
         },
       },
-      (err: any, containers: any) => {
+      (err: Error, containers: DockerodeContainer[]) => {
         if (err) return this.error(err)
         if (flags.json) {
           this.log(JSON.stringify(containers))
         } else {
-          const tableData: ContainerTableRow[] = containers.map((container: DockerodeContainer) => convertToRow(container))
-          cli.table(tableData, {
+          cli.table(containersToTable(containers), {
             Id: {header: 'Container ID'},
             Names: {header: 'Name'},
             Status: {header: 'Status'},

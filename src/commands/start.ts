@@ -19,7 +19,7 @@ export default class Start extends Command {
     try {
       const container = (new Docker()).getContainer(id)
       const containerInspection = await container.inspect()
-      container.start((err: any, data: any) => {
+      container.start((err: Error) => {
         if (err) throw err
         this.log(`Container ${containerInspection.Name.substring(1)} successfully started.`)
       })

@@ -1,4 +1,4 @@
-import {DockerodeContainer, Choice, ServiceChoice} from './types'
+import {DockerodeContainer, Choice, ServiceChoice, ContainerTableRow} from './types'
 import {execSync} from 'child_process'
 const fs = require('fs')
 
@@ -25,15 +25,22 @@ export const getAllServices = (): any => {
   }))
 }
 
-export const convertToRow = (container: DockerodeContainer): any => {
+export const convertToRow = (container: DockerodeContainer): ContainerTableRow => {
   return ({
     ...container,
     Id: container.Id.substring(0, 12), // Truncate the Id string to 12 chars
-    Names: container.Names[0].substring(1), // Grab the first name in Names array
+    Name: container.Names[0].substring(1), // Grab the first name in Names array
   })
 }
+
+export const containersToTable = (containers: DockerodeContainer[]): ContainerTableRow[] => {
+  return containers.map((container: DockerodeContainer) => convertToRow(container))
+}
+
 export default {
   jsonStringToArray,
   menuOptions,
   runAndParseAsJson,
+  convertToRow,
+  containersToTable,
 }
