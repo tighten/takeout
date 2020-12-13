@@ -1,6 +1,6 @@
 import {Command, flags} from '@oclif/command'
 import {menuOptions} from '../helpers'
-import {DockerContainer} from '../types'
+import {DockerodeContainer} from '../types'
 const inquirer = require('inquirer')
 const Docker = require('dockerode')
 
@@ -46,7 +46,7 @@ export default class Stop extends Command {
           if (containers.length === 0) return this.log('There are no containers to stop.')
 
           if (flags.all) {
-            containers.forEach((container: DockerContainer) => {
+            containers.forEach((container: DockerodeContainer) => {
               this.stopContainer(container.Id)
             })
           } else {

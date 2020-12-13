@@ -1,8 +1,8 @@
-import {DockerContainer, Choice, ServiceChoice} from './types'
+import {DockerodeContainer, Choice, ServiceChoice} from './types'
 import {execSync} from 'child_process'
 const fs = require('fs')
 
-export const menuOptions = (containers: DockerContainer[]): Choice[] => {
+export const menuOptions = (containers: DockerodeContainer[]): Choice[] => {
   return containers.map(container => ({
     name: container.Names[0],
     value: container.Id,
@@ -25,6 +25,9 @@ export const getAllServices = (): any => {
   }))
 }
 
+export const convertToRow = (container: DockerodeContainer): any => {
+  return ({...container, Names: container.Names[0].substring(1)})
+}
 export default {
   jsonStringToArray,
   menuOptions,

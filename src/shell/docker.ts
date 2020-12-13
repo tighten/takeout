@@ -1,14 +1,14 @@
 import {runAndParseAsJson} from '../helpers'
-import {DockerContainer} from '../types'
+import {DockerodeContainer} from '../types'
 import {execSync} from 'child_process'
 
 export default class Docker {
-  static listTakeoutContainers(): DockerContainer[] {
+  static listTakeoutContainers(): DockerodeContainer[] {
     return runAndParseAsJson("docker ps -a --filter 'name=TO-' --format '{{ json . }}' --all")
   }
 
   static validContainerId(id: string): boolean {
-    const matchingContainer = this.listTakeoutContainers().filter((dc: DockerContainer) => id === dc.Id)
+    const matchingContainer = this.listTakeoutContainers().filter((dc: DockerodeContainer) => id === dc.Id)
     return matchingContainer.length > 0
   }
 
