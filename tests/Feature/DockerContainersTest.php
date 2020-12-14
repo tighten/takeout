@@ -2,10 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Exceptions\DockerMissingException;
 use App\Shell\Docker;
 use App\Shell\Shell;
-use Illuminate\Support\Collection;
 use Mockery as M;
 use Symfony\Component\Process\Process;
 use Tests\TestCase;
@@ -45,7 +43,7 @@ EOD;
             'status' => 'Up 15 Minutes',
             'ports' => '7700:7700',
             'base_alias' => 'meilisearch',
-            'full_alias' => 'meilisearch0.17'
+            'full_alias' => 'meilisearch0.17',
         ],];
 
         $this->assertEquals($expectedTable, $output->toArray());
@@ -73,7 +71,7 @@ EOD;
             'status' => 'Exited (0) 2 days ago',
             'ports' => '',
             'base_alias' => 'meilisearch',
-            'full_alias' => 'meilisearch0.17'
+            'full_alias' => 'meilisearch0.17',
         ],];
 
         $this->assertEquals($expectedTable, $output->toArray());
