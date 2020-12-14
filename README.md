@@ -54,10 +54,27 @@ USAGE
 
 # Commands
 <!-- commands -->
+* [`takeout enable [FILE]`](#takeout-enable-file)
 * [`takeout help [COMMAND]`](#takeout-help-command)
 * [`takeout list`](#takeout-list)
 * [`takeout start [CONTAINER]`](#takeout-start-container)
 * [`takeout stop [CONTAINER]`](#takeout-stop-container)
+
+## `takeout enable [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ takeout enable [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/enable.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/enable.ts)_
 
 ## `takeout help [COMMAND]`
 

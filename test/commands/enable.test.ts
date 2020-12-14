@@ -1,14 +1,17 @@
 import {expect, test} from '@oclif/test'
-const inquirer = require('inquirer')
-const sinon = require('sinon')
-const child_process = require('child_process')
 
 describe('enable', () => {
   test
-  .stub(inquirer, 'prompt', sinon.stub().returns(Promise.resolve({services: ['mysql']})))
-  .stub(child_process, 'execSync', sinon.stub())
+  .stdout()
   .command(['enable'])
-  .it('displays a list of services to enabled', () => {
-    expect(child_process.execSync.calledOnce).to.equal(true)
+  .it('runs hello', ctx => {
+    expect(ctx.stdout).to.contain('hello world')
+  })
+
+  test
+  .stdout()
+  .command(['enable', '--name', 'jeff'])
+  .it('runs hello --name jeff', ctx => {
+    expect(ctx.stdout).to.contain('hello jeff')
   })
 })
