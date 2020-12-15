@@ -194,7 +194,7 @@ class DisableCommandTest extends TestCase
             $mock->shouldReceive('removeContainer')
                 ->with($postgressId)->once();
 
-            $mock->shouldReceive('allContainers')->andReturn(new Collection())->once();
+            $mock->shouldReceive('allContainers')->andReturn(new Collection)->once();
             $mock->shouldReceive('stopDockerService')->once();
         });
 
