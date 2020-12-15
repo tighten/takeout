@@ -173,4 +173,51 @@ class DisableCommandTest extends TestCase
 
         $this->artisan('disable postgress meilisearch');
     }
+
+    /** @test */
+    function it_will_try_to_stop_docker_service_if_no_containers_are_running()
+    {
+        $services = Collection::make([
+            [
+                'container_id' =>  $postgressId =  '1234',
+                'names' => 'postgress',
+            ],
+        ]);
+
+        $this->mock(Docker::class, function ($mock) use ($services, $postgressId) {
+            $mock->shouldReceive('isInstalled')->andReturn(true);
+            $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
+            $mock->shouldReceive('takeoutContainers')->andReturn($services);
+
+            $mock->shouldReceive('attachedVolumeName')
+                ->with($postgressId)->andReturnNull()->once();
+            $mock->shouldReceive('removeContainer')
+                ->with($postgressId)->once();
+
+            $mock->shouldReceive('allContainers')->andReturn(new Collection())->once();
+            $mock->shouldReceive('stopDockerService')->once();
+        });
+
+        if ($this->isWindows()) {
+            $this->artisan('disable postgress')
+                ->expectsConfirmation('No containers are running. Turn off Docker?', 'Yes')
+                ->assertExitCode(0);
+        } else {
+            $menuMock = $this->mock(Menu::class, function ($mock) {
+                $mock->shouldReceive('disableDefaultItems')->andReturnSelf();
+                $mock->shouldReceive('open')->andReturn(0)->once();
+            });
+
+            Command::macro(
+                'menu',
+                function (string $title, array $options) use ($menuMock) {
+                    Assert::assertEquals('No containers are running. Turn off Docker?', $title);
+                    Assert::assertEquals(['Yes', 'No'], $options);
+                    return $menuMock;
+                }
+            );
+
+            $this->artisan('disable postgress');
+        }
+    }
 }
