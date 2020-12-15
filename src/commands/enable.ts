@@ -1,6 +1,7 @@
 import {Command, flags} from '@oclif/command'
 const Docker = require('dockerode')
 import MySQL from '../services/mysql'
+import Tags from '../docker/tags/dockerhub'
 import inquirer = require('inquirer');
 
 export default class Enable extends Command {
@@ -25,24 +26,26 @@ export default class Enable extends Command {
     const {args, flags} = this.parse(Enable)
     const service = new MySQL()
     inquirer.prompt([...service.defaultPrompts, ...service.prompts])
-    .then(answers => {
+    // @todo check for ports in use
+    // @todo check for volumes in use
+    .then(async answers => {
+      const tag = await (new Tags(service)).resolveTag(answers.tag)
+
       let auxContainer
       const docker = new Docker()
       docker.createContainer({
-        Image: 'library/mysql:8',
-        name: 'TO--mysql',
-        Env: ['MYSQL_ALLOW_EMPTY_PASSWORD=true'],
+        Image: `${service.organization}/${service.imageName}:${tag}`,
+        name: service.containerName(answers, tag),
+        // @todo add alias
+        Env: service.environmentVariables(answers),
         AttachStdin: true,
         AttachStdout: true,
         AttachStderr: true,
         Tty: true,
-        ExposedPorts: {
-          '3306/tcp': { },
-        },
         PortBindings: {
-          '3306/tcp': [
+          [`${service.defaultPort()}/tcp`]: [
             {
-              HostPort: '3306',
+              HostPort: `${answers.port}`,
             },
           ],
         },

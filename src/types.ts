@@ -62,3 +62,5 @@ export interface PromptResponse {
     prompt: string;
     value: string | number;
 }
+
+export type Tag = (number|string)
