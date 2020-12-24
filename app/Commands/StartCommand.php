@@ -100,11 +100,11 @@ class StartCommand extends Command
             return;
         }
 
-        $startableContainers = Arr::where($startableContainers, function ($value, $key) use ($choice) {
+        $chosenStartableContainer = Arr::where($startableContainers, function ($value, $key) use ($choice) {
             return $value[0] === $choice;
         });
 
-        call_user_func(array_values($startableContainers)[0][1]);
+        call_user_func(array_values($chosenStartableContainer)[0][1]);
     }
 
     private function loadMenuItem($container, $label): callable

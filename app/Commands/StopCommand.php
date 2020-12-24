@@ -100,11 +100,11 @@ class StopCommand extends Command
             return;
         }
 
-        $stoppableContainer = Arr::where($stoppableContainers, function ($value, $key) use ($choice) {
+        $chosenStoppableContainer = Arr::where($stoppableContainers, function ($value, $key) use ($choice) {
             return $value[0] === $choice;
         });
 
-        call_user_func(array_values($stoppableContainer)[0][1]);
+        call_user_func(array_values($chosenStoppableContainer)[0][1]);
     }
 
     private function loadMenuItem($container, $label): callable
