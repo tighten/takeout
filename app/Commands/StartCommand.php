@@ -14,9 +14,11 @@ class StartCommand extends Command
 
     protected $signature = 'start {containerId?}';
     protected $description = 'Start a stopped container.';
+    protected $docker;
 
-    public function handle(): void
+    public function handle(Docker $docker): void
     {
+        $this->docker = $docker;
         $this->initializeCommand();
 
         $container = $this->argument('containerId');
@@ -34,7 +36,7 @@ class StartCommand extends Command
 
     public function startableContainers(): array
     {
-        return app(Docker::class)->startableTakeoutContainers()->map(function ($container) {
+        return $this->docker->startableTakeoutContainers()->map(function ($container) {
             $label = sprintf('%s - %s', $container['container_id'], $container['names']);
 
             return [
@@ -60,6 +62,6 @@ class StartCommand extends Command
             $container = Str::before($container, ' -');
         }
 
-        app(Docker::class)->startContainer($container);
+        $this->docker->startContainer($container);
     }
 }

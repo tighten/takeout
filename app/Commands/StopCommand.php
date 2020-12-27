@@ -14,9 +14,11 @@ class StopCommand extends Command
 
     protected $signature = 'stop {containerId?}';
     protected $description = 'Stop a service.';
+    protected $docker;
 
-    public function handle(): void
+    public function handle(Docker $docker): void
     {
+        $this->docker = $docker;
         $this->initializeCommand();
 
         $container = $this->argument('containerId');
@@ -34,7 +36,7 @@ class StopCommand extends Command
 
     public function stoppableContainers(): array
     {
-        return app(Docker::class)->stoppableTakeoutContainers()->map(function ($container) {
+        return $this->docker->stoppableTakeoutContainers()->map(function ($container) {
             $label = sprintf('%s - %s', $container['container_id'], $container['names']);
 
             return [
@@ -60,6 +62,6 @@ class StopCommand extends Command
             $container = Str::before($container, ' -');
         }
 
-        app(Docker::class)->stopContainer($container);
+        $this->docker->stopContainer($container);
     }
 }

@@ -4,6 +4,8 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Services;
+use App\Shell\Docker;
+use App\Shell\Environment;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
@@ -13,9 +15,15 @@ class EnableCommand extends Command
 
     protected $signature = 'enable {serviceNames?*} {--default}';
     protected $description = 'Enable services.';
+    protected $docker;
+    protected $environment;
+    protected $services;
 
-    public function handle(): void
+    public function handle(Docker $docker, Environment $environment, Services $services): void
     {
+        $this->docker = $docker;
+        $this->environment = $environment;
+        $this->services = $services;
         $this->initializeCommand();
 
         $services = $this->argument('serviceNames');
@@ -56,14 +64,14 @@ class EnableCommand extends Command
 
     public function enableableServices(): array
     {
-        return collect((new Services)->all())->mapWithKeys(function ($fqcn, $shortName) {
+        return collect($this->services->all())->mapWithKeys(function ($fqcn, $shortName) {
             return [$shortName => $fqcn::name()];
         })->toArray();
     }
 
     public function enableableServicesByCategory(): array
     {
-        return collect((new Services)->all())
+        return collect($this->services->all())
             ->mapToGroups(function ($fqcn, $shortName) {
                 return [
                     $fqcn::category() => [
@@ -78,7 +86,7 @@ class EnableCommand extends Command
 
     public function enable(string $service, bool $useDefaults = false): void
     {
-        $fqcn = (new Services)->get($service);
+        $fqcn = $this->services->get($service);
         app($fqcn)->enable($useDefaults);
     }
 }
