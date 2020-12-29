@@ -12,14 +12,12 @@ class ListCommand extends Command
 
     protected $signature = 'list {--json}';
     protected $description = 'List all services enabled by Takeout.';
-    protected $docker;
 
     public function handle(Docker $docker): void
     {
-        $this->docker = $docker;
         $this->initializeCommand();
 
-        $containersCollection = $this->docker->takeoutContainers();
+        $containersCollection = $docker->takeoutContainers();
 
         if ($this->option('json')) {
             $this->line($containersCollection->toJson());

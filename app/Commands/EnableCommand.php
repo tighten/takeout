@@ -4,8 +4,6 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Services;
-use App\Shell\Docker;
-use App\Shell\Environment;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
@@ -15,14 +13,10 @@ class EnableCommand extends Command
 
     protected $signature = 'enable {serviceNames?*} {--default}';
     protected $description = 'Enable services.';
-    protected $docker;
-    protected $environment;
     protected $services;
 
-    public function handle(Docker $docker, Environment $environment, Services $services): void
+    public function handle(Services $services): void
     {
-        $this->docker = $docker;
-        $this->environment = $environment;
         $this->services = $services;
         $this->initializeCommand();
 
