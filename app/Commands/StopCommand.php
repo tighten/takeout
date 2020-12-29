@@ -19,10 +19,12 @@ class StopCommand extends Command
     protected $signature = 'stop {containerId?}';
     protected $description = 'Stop a service.';
     protected $docker;
+    protected $environment;
 
-    public function handle(Docker $docker): void
+    public function handle(Docker $docker, Environment $environment): void
     {
         $this->docker = $docker;
+        $this->environment = $environment;
         $this->initializeCommand();
 
         $container = $this->argument('containerId');

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Exceptions\InvalidServiceShortnameException;
+use App\Services;
 use App\Services\MeiliSearch;
 use App\Services\PostgreSql;
 use App\Shell\Docker;
@@ -23,10 +24,7 @@ class EnableCommandTest extends TestCase
         return PHP_OS_FAMILY === 'Linux';
     }
 
-    /** @test
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    /** @test */
     function it_can_enable_a_service_from_menu()
     {
         $services = [
@@ -42,12 +40,12 @@ class EnableCommandTest extends TestCase
             '<info>Exit</>',
         ];
 
-        $this->mock('overload:App\Shell\Docker', function ($mock) {
+        $this->mock(Docker::class, function ($mock) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
         });
 
-        $this->mock('overload:App\Services', function ($mock) use ($services, $fqcn) {
+        $this->mock(Services::class, function ($mock) use ($services, $fqcn) {
             $mock->shouldReceive('all')->andReturn($services);
             $mock->shouldReceive('get')->andReturn($fqcn);
         });
@@ -82,10 +80,7 @@ class EnableCommandTest extends TestCase
         }
     }
 
-    /** @test
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    /** @test */
     function it_can_navigate_a_submenu_in_windows()
     {
         if ($this->isWindows()) {
@@ -109,7 +104,7 @@ class EnableCommandTest extends TestCase
                 '<info>Exit</>',
             ];
 
-            $this->mock('overload:App\Services', function ($mock) use ($services) {
+            $this->mock(Services::class, function ($mock) use ($services) {
                 $mock->shouldReceive('all')->andReturn($services);
             });
 

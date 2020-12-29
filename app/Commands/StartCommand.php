@@ -19,10 +19,12 @@ class StartCommand extends Command
     protected $signature = 'start {containerId?}';
     protected $description = 'Start a stopped container.';
     protected $docker;
+    protected $environment;
 
-    public function handle(Docker $docker): void
+    public function handle(Docker $docker, Environment $environment): void
     {
         $this->docker = $docker;
+        $this->environment = $environment;
         $this->initializeCommand();
 
         $container = $this->argument('containerId');

@@ -17,10 +17,12 @@ class EnableCommand extends Command
 
     protected $signature = 'enable {serviceNames?*} {--default}';
     protected $description = 'Enable services.';
+    protected $environment;
     protected $services;
 
-    public function handle(Services $services): void
+    public function handle(Environment $environment, Services $services): void
     {
+        $this->environment = $environment;
         $this->services = $services;
         $this->initializeCommand();
 
