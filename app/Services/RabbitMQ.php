@@ -8,6 +8,18 @@ class RabbitMQ extends BaseService
 
     protected $imageName = 'rabbitmq';
     protected $defaultPort = 5672;
+    protected $defaultPrompts = [
+        [
+            'shortname' => 'port',
+            'prompt' => 'Which host port would you like %s to use?',
+            // Default is set in the constructor
+        ],
+        [
+            'shortname' => 'tag',
+            'prompt' => 'Which tag (version) of %s would you like to use?',
+            'default' => 'management',
+        ],
+    ];
     protected $prompts = [
         [
             'shortname' => 'hostname',
