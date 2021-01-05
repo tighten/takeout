@@ -24,12 +24,12 @@ class RabbitMQ extends BaseService
         [
             'shortname' => 'hostname',
             'prompt' => 'Which hostname would you like %s to use?',
-            'default' => 'takeout'
+            'default' => 'takeout',
         ],
         [
             'shortname' => 'mgmt_port',
             'prompt' => 'Which management port would you like %s to use?',
-            'default' => 15672
+            'default' => 15672,
         ],
     ];
 
