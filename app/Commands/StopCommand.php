@@ -12,8 +12,8 @@ class StopCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'stop {containerId?}';
-    protected $description = 'Stop a service.';
+    protected $signature = 'stop {containerId?*}';
+    protected $description = 'Stop one ore more started containers.';
     protected $docker;
 
     public function handle(Docker $docker): void
@@ -21,11 +21,12 @@ class StopCommand extends Command
         $this->docker = $docker;
         $this->initializeCommand();
 
-        $container = $this->argument('containerId');
+        $containers = $this->argument('containerId');
 
-        if ($container) {
-            $this->stop($container);
-
+        if (filled($containers)) {
+            foreach ($containers as $container) {
+                $this->stop($container);
+            }
             return;
         }
 
