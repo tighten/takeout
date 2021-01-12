@@ -100,6 +100,14 @@ Show a list of all stopped containers you can start.
 takeout start
 ```
 
+### Start all stopped containers
+
+Start all containers.
+
+```bash
+takeout start --all
+```
+
 ### Start a specific stopped container
 
 Passed the container ID of stopped container, start the stopped container which matches it.
@@ -114,6 +122,14 @@ Show a list of all running containers you can stop.
 
 ```bash
 takeout stop
+```
+
+### Stop all running containers
+
+Stop all running containers.
+
+```bash
+takeout start --all
 ```
 
 ### Stop a specific running container

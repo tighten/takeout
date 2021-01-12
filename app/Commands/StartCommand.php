@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Shell\Docker;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use PhpSchool\CliMenu\CliMenu;
@@ -12,7 +13,7 @@ class StartCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'start {containerId?}';
+    protected $signature = 'start {containerId?} {--all}';
     protected $description = 'Start a stopped container.';
     protected $docker;
 
@@ -29,9 +30,22 @@ class StartCommand extends Command
             return;
         }
 
+        if ($this->option('all')) {
+            $this->startableContainerIds()->each(function (string $startableContainerId) {
+                $this->start($startableContainerId);
+            });
+
+            return;
+        }
+
         $this->menu('Containers to start')
             ->addItems($this->startableContainers())
             ->open();
+    }
+
+    public function startableContainerIds(): Collection
+    {
+        return $this->docker->startableTakeoutContainers()->pluck('container_id');
     }
 
     public function startableContainers(): array

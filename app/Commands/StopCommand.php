@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Shell\Docker;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use PhpSchool\CliMenu\CliMenu;
@@ -12,7 +13,7 @@ class StopCommand extends Command
 {
     use InitializesCommands;
 
-    protected $signature = 'stop {containerId?}';
+    protected $signature = 'stop {containerId?} {--all}';
     protected $description = 'Stop a service.';
     protected $docker;
 
@@ -29,9 +30,22 @@ class StopCommand extends Command
             return;
         }
 
+        if ($this->option('all')) {
+            $this->stoppableContainerIds()->each(function (string $stoppableContainerId) {
+                $this->stop($stoppableContainerId);
+            });
+
+            return;
+        }
+
         $this->menu('Containers to stop')
             ->addItems($this->stoppableContainers())
             ->open();
+    }
+
+    public function stoppableContainerIds(): Collection
+    {
+        return $this->docker->stoppableTakeoutContainers()->pluck('container_id');
     }
 
     public function stoppableContainers(): array
