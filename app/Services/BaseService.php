@@ -79,7 +79,7 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                $this->validateDockerRunTemplate($this->dockerRunTemplate),
+                $this->sanitizeDockerRunTemplate($this->dockerRunTemplate),
                 $this->buildParameters()
             );
 
@@ -211,7 +211,7 @@ abstract class BaseService
         return 'TO--' . $this->shortName() . '--' . $this->tag . $portTag;
     }
 
-    public function validateDockerRunTemplate($dockerRunTemplate): string
+    public function sanitizeDockerRunTemplate($dockerRunTemplate): string
     {
         if ($this->environment->isWindowsOs()) {
             return stripslashes($dockerRunTemplate);
