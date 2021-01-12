@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\InitializesCommands;
 use App\Shell\Docker;
+use App\Shell\Environment;
 use LaravelZero\Framework\Commands\Command;
 use Throwable;
 
@@ -11,14 +12,18 @@ class DisableCommand extends Command
 {
     use InitializesCommands;
 
+    const MENU_TITLE = 'Takeout containers to disable';
+
     protected $signature = 'disable {serviceNames?*} {--all}';
     protected $description = 'Disable services.';
     protected $disableableServices;
     protected $docker;
+    protected $environment;
 
-    public function handle(Docker $docker)
+    public function handle(Docker $docker, Environment $environment)
     {
         $this->docker = $docker;
+        $this->environment = $environment;
         $this->initializeCommand();
         $this->disableableServices = $this->disableableServices();
 
@@ -70,7 +75,7 @@ class DisableCommand extends Command
                 $serviceContainerId = $serviceMatches->flip()->first();
                 break;
             default: // > 1
-                $serviceContainerId = $this->menu('Select which service to disable.', $serviceMatches->toArray())->open();
+                $serviceContainerId = $this->selectMenu($disableableServices ?? $this->disableableServices);
 
                 if (! $serviceContainerId) {
                     return;
@@ -80,16 +85,37 @@ class DisableCommand extends Command
         $this->disableByContainerId($serviceContainerId);
     }
 
-    public function showDisableServiceMenu(): void
+    public function showDisableServiceMenu($disableableServices = null): void
     {
-        $serviceContainerId = $this->menu('Services to disable', $this->disableableServices)
+        if ($serviceContainerId = $this->selectMenu($disableableServices ?? $this->disableableServices)) {
+            $this->disableByContainerId($serviceContainerId);
+        }
+    }
+
+    private function selectMenu($disableableServices): ?string
+    {
+        if ($this->environment->isWindowsOs()) {
+            return $this->windowsMenu($disableableServices);
+        }
+
+        return $this->defaultMenu($disableableServices);
+    }
+
+    private function defaultMenu($disableableServices): ?string
+    {
+        return $this->menu(self::MENU_TITLE, $disableableServices)
             ->addLineBreak('', 1)
             ->setPadding(2, 5)
             ->open();
+    }
 
-        if ($serviceContainerId) {
-            $this->disableByContainerId($serviceContainerId);
-        }
+    private function windowsMenu($disableableServices): ?string
+    {
+        array_push($disableableServices, '<info>Exit</>');
+
+        $choice = $this->choice(self::MENU_TITLE, array_values($disableableServices));
+
+        return array_search($choice, $disableableServices);
     }
 
     public function disableByContainerId(string $containerId): void
@@ -105,13 +131,19 @@ class DisableCommand extends Command
                 $this->info("\n docker volume rm {$volumeName}");
             }
 
-            if (count($this->docker->allContainers()) === 0 && in_array(PHP_OS_FAMILY, ['Darwin', 'Windows'])) {
-                $option = $this->menu('No containers are running. Turn off Docker for Mac?', [
-                    'Yes',
-                    'No',
-                ])->disableDefaultItems()->open();
+            if (count($this->docker->allContainers()) === 0 && ($this->environment->isLinuxOs() || $this->environment->isWindowsOs())) {
+                $question = 'No containers are running. Turn off Docker?';
 
-                if ($option === 0) {
+                if ($this->environment->isWindowsOs()) {
+                    $option = $this->confirm($question);
+                } else {
+                    $option = $this->menu($question, [
+                        'Yes',
+                        'No',
+                    ])->disableDefaultItems()->open();
+                }
+
+                if ($option === 0 || $option === true) {
                     $this->task('Stopping Docker service ', $this->docker->stopDockerService());
                 }
             }

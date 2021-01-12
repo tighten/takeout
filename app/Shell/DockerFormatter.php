@@ -8,7 +8,7 @@ class DockerFormatter
 {
     /**
      * Given the raw string of output from Docker, return a collection of
-     * associative arrays, with the keys lowercased and slugged using underscores
+     * associative arrays, with the keys lowercased and slugged using underscores.
      *
      * @param string $output Docker command output
      * @return Collection     Collection of associative arrays
