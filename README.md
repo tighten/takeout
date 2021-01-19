@@ -9,7 +9,7 @@
 
 Takeout is a CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
 
-It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/docs/valet). It's currently compatible with macOS, Linux, and WSL2.
+It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/docs/valet). It's currently compatible with macOS, Linux, Windows 10 and WSL2.
 
 With `takeout enable mysql` you're running MySQL, and never have to worry about managing or fixing Homebrew MySQL again.
 
@@ -17,9 +17,9 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 ## Requirements
 
-- macOS, Linux, or WSL2
+- macOS, Linux, Windows 10 or WSL2
 - [Composer](https://getcomposer.org/) installed
-- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/))
+- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/), Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/))
 
 ## Installation
 
@@ -106,6 +106,13 @@ Passed the container ID of stopped container, start the stopped container which 
 
 ```bash
 takeout start {container_id}
+```
+
+### Start all containers
+
+You may pass the `-all` flag to start all enabled containers.
+```bash
+takeout start --all
 ```
 
 ### Stop a running container

@@ -18,6 +18,11 @@ class Environment
         return PHP_OS_FAMILY === 'Linux';
     }
 
+    public function isWindowsOs(): bool
+    {
+        return PHP_OS_FAMILY === 'Windows';
+    }
+
     public function portIsAvailable($port): bool
     {
         // E.g. Win/Linux: 127.0.0.1:3306 , macOS: 127.0.0.1.3306
