@@ -10,7 +10,8 @@ jobs:
         strategy:
             matrix:
                 os: [Ubuntu, Windows, macOS]
-                php: [7.2, 7.3, 7.4, 8.0]
+                php: [7.3, 7.4, 8.0]
+                # php: [7.2, 7.3, 7.4, 8.0]
 
                 include:
                   - os: Ubuntu
@@ -21,6 +22,10 @@ jobs:
 
                   - os: macOS
                     os-version: macos-latest
+
+                  - os: macOS-11
+                    os-version: macos-11.0
+                    php: 8.0
 
         name: ${{ matrix.os }} - PHP ${{ matrix.php }}
 

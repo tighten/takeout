@@ -47,16 +47,17 @@ class BaseServiceTest extends TestCase
 
             // This is the actual assertion
             $mock->shouldReceive('bootContainer')->with(
-                $service->dockerRunTemplate(),
+                $service->sanitizeDockerRunTemplate($service->dockerRunTemplate()),
                 [
-                    "organization" => "getmeili",
-                    "image_name" => "meilisearch",
-                    "port" => 7700,
-                    "tag" => "v1.1.1",
-                    "volume" => 'meili_data',
-                    "container_name" => "TO--meilisearch--v1.1.1--7700",
+                    'organization' => 'getmeili',
+                    'image_name' => 'meilisearch',
+                    'port' => 7700,
+                    'tag' => 'v1.1.1',
+                    'volume' => 'meili_data',
+                    'container_name' => 'TO--meilisearch--v1.1.1--7700',
                     'alias' => 'meilisearch1.1',
-                ])->once();
+                ]
+            )->once();
         });
 
         $service = app(MeiliSearch::class); // Extends BaseService
