@@ -36,8 +36,8 @@ class StopCommand extends Command
         }
 
         if ($this->option('all')) {
-            foreach (app(Docker::class)->stoppableTakeoutContainers() as $stopableContainer) {
-                $this->stop($stopableContainer['container_id']);
+            foreach (app(Docker::class)->stoppableTakeoutContainers() as $stoppableContainer) {
+                $this->stop($stoppableContainer['container_id']);
             }
             return;
         }
