@@ -14,7 +14,7 @@ class HelpCommand extends Command
         'enable {service}' => 'Enable the provided service (optionally pass --default flag)',
         'disable' => 'Disable a service from a list of options (optionally pass --all flag)',
         'disable {service}' => 'Disable the provided service',
-        'start' => 'Start a stopped container from a list of options',
+        'start' => 'Start a stopped container from a list of options (optionally pass --all flag)',
         'start {container}' => 'Start the provided stopped containers (by ID)',
         'stop' => 'Stop a running container from a list of options',
         'stop {container}' => 'Stop the provided running containers (by ID)',
