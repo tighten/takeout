@@ -100,12 +100,14 @@ Show a list of all stopped containers you can start.
 takeout start
 ```
 
-### Start a specific stopped container
+### Start specific stopped containers
 
-Passed the container ID of stopped container, start the stopped container which matches it.
+Passed the container ID of one or more stopped containers, start the stopped containers that matches them.
 
 ```bash
 takeout start {container_id}
+
+takeout start {container_id1} {container_id2}
 ```
 
 ### Start all containers
@@ -123,12 +125,14 @@ Show a list of all running containers you can stop.
 takeout stop
 ```
 
-### Stop a specific running container
+### Stop specific running containers
 
-Passed the container ID of running container, stop the running container which matches it.
+Passed the container ID of one or more running containers, stop the running containers that matches them.
 
 ```bash
 takeout stop {container_id}
+
+takeout stop {container_id1} {container_id2}
 ```
 
 ## Running multiple versions of a dependency

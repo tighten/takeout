@@ -28,7 +28,7 @@ class StartCommand extends Command
 
         $containers = $this->argument('containerId');
 
-        if ($containers) {
+        if (filled($containers)) {
             foreach ($containers as $container) {
                 $this->start($container);
             }
