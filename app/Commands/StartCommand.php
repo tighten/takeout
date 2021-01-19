@@ -15,8 +15,7 @@ class StartCommand extends Command
     use InitializesCommands;
 
     const MENU_TITLE = 'Takeout containers to start';
-
-    protected $signature = 'start {containerId?}';
+    protected $signature = 'start {containerId?*} {--all}';
     protected $description = 'Start a stopped container.';
     protected $docker;
     protected $environment;
@@ -27,11 +26,20 @@ class StartCommand extends Command
         $this->environment = $environment;
         $this->initializeCommand();
 
-        $container = $this->argument('containerId');
+        $containers = $this->argument('containerId');
 
-        if ($container) {
-            $this->start($container);
+        if ($containers) {
+            foreach ($containers as $container) {
+                $this->start($container);
+            }
 
+            return;
+        }
+
+        if ($this->option('all')) {
+            foreach (app(Docker::class)->startableTakeoutContainers() as $startableContainer) {
+                $this->start($startableContainer['container_id']);
+            }
             return;
         }
 

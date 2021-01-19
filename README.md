@@ -108,6 +108,13 @@ Passed the container ID of stopped container, start the stopped container which 
 takeout start {container_id}
 ```
 
+### Start all containers
+
+You may pass the `-all` flag to start all enabled containers.
+```bash
+takeout start --all
+```
+
 ### Stop a running container
 
 Show a list of all running containers you can stop.
