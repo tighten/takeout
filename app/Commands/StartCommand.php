@@ -32,7 +32,6 @@ class StartCommand extends Command
             foreach ($containers as $container) {
                 $this->start($container);
             }
-
             return;
         }
 
@@ -45,7 +44,6 @@ class StartCommand extends Command
 
         if (! $startableContainers = $this->startableContainers()) {
             $this->info("No Takeout containers available to start.\n");
-
             return;
         }
 
