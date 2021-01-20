@@ -15,6 +15,7 @@ class StopCommand extends Command
     use InitializesCommands;
 
     const MENU_TITLE = 'Takeout containers to stop';
+
     protected $signature = 'stop {containerId?*} {--all}';
     protected $description = 'Stop one ore more started containers.';
     protected $docker;
@@ -36,7 +37,7 @@ class StopCommand extends Command
         }
 
         if ($this->option('all')) {
-            foreach (app(Docker::class)->stoppableTakeoutContainers() as $stoppableContainer) {
+            foreach ($this->docker->stoppableTakeoutContainers() as $stoppableContainer) {
                 $this->stop($stoppableContainer['container_id']);
             }
             return;
