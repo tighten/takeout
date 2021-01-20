@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<ruleset name="Tighten">
+   <!--
+      The name attribute of the ruleset tag is displayed
+      when running PHP_CodeSniffer with the -v command line
+      argument. The description tag below is not displayed anywhere
+      except in this file, so it can contain information for
+      developers who may change this file in the future.
+   -->
+   <description>Tighten's Laravel Coding Standards</description>
+
+   <!--
+      If no files or directories are specified on the command line
+      your custom standard can specify what files should be checked
+      instead.
+
+      Note that specifying any file or directory path
+      on the command line will ignore all file tags.
+   -->
+   <file>app</file>
+   <file>config</file>
+   <file>tests</file>
+
+   <!--
+      You can hard-code ignore patterns directly into your
+      custom standard so you don't have to specify the
+      patterns on the command line.
+   -->
+   <exclude-pattern>*/cache/*</exclude-pattern>
+   <exclude-pattern>*/*.js</exclude-pattern>
+   <exclude-pattern>*/*.css</exclude-pattern>
+   <exclude-pattern>*/*.xml</exclude-pattern>
+   <exclude-pattern>*/*.blade.php</exclude-pattern>
+   <exclude-pattern>*/autoload.php</exclude-pattern>
+   <exclude-pattern>*/docs/*</exclude-pattern>
+   <exclude-pattern>*/vendor/*</exclude-pattern>
+
+   <!--
+      You can hard-code command line values into your custom standard.
+      Note that this does not work for the command line values:
+      -v[v][v], -l, -d, -sniffs and -standard
+   -->
+   <arg name="colors"/>
+   <arg value="p"/>
+
+   <!--
+      You can hard-code custom php.ini settings into your custom standard.
+      The following tag sets the memory limit to 64M.
+   -->
+   <ini name="memory_limit" value="128M"/>
+
+   <!--
+      Include all sniffs in the PSR2 standard. Note that the
+      path to the standard does not have to be specified as the
+      PSR2 standard exists inside the PHP_CodeSniffer install
+      directory.
+   -->
+   <rule ref="PSR2"/>
+
+   <!-- Disable missing namespace rule for tests and database files -->
+   <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+      <exclude-pattern>*/database/*</exclude-pattern>
+      <exclude-pattern>*/tests/*</exclude-pattern>
+   </rule>
+   <!-- Disable camel caps rule for tests -->
+   <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+      <exclude-pattern>*/tests/*</exclude-pattern>
+   </rule>
+   <!-- Disable method visibility rule for tests -->
+   <rule ref="Squiz.Scope.MethodScope">
+      <exclude-pattern>*/tests/*</exclude-pattern>
+   </rule>
+   <!-- Make the soft line length warning silent -->
+   <!--
+   <rule ref="Generic.Files.LineLength.TooLong">
+      <severity>0</severity>
+   </rule>
+   -->
+
+   <!-- Enable some extra rules -->
+   <!-- Force [] short array syntax -->
+   <rule ref="Generic.Arrays.DisallowLongArraySyntax.Found"/>
+   <!-- Enforce 1 space around concatenation operators -->
+   <rule ref="Squiz.Strings.ConcatenationSpacing">
+      <properties>
+         <property name="spacing" value="1" />
+      </properties>
+   </rule>
+   <!-- Warn when double quotes are used over single quotes -->
+   <rule ref="Squiz.Strings.DoubleQuoteUsage"/>
+   <!-- Except when the double quotes contain a variable -->
+   <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
+      <severity>0</severity>
+   </rule>
+
+   <!-- Class name should match the file name -->
+   <rule ref="Squiz.Classes.ClassFileName"/>
+
+   <!-- Expect one space after NOT (!) operator -->
+   <rule ref="Generic.Formatting.SpaceAfterNot"/>
+</ruleset>
+

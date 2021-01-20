@@ -4,8 +4,9 @@ namespace App\Services;
 
 class InfluxDB extends BaseService
 {
-    protected $imageName = 'influxdb';
     protected static $category = Category::DATABASE;
+
+    protected $imageName = 'influxdb';
     protected $defaultPort = 8086;
     protected $prompts = [
         [

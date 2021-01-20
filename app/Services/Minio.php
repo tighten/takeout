@@ -4,9 +4,10 @@ namespace App\Services;
 
 class Minio extends BaseService
 {
+    protected static $category = Category::STORAGE;
+
     protected $organization = 'minio';
     protected $imageName = 'minio';
-    protected static $category = Category::STORAGE;
     protected $defaultPort = 9000;
     protected $prompts = [
         [

@@ -1,35 +1,33 @@
 name: Run tests
 
 on:
-  #    push:
+    push:
+        branches: [ main ]
     pull_request:
-      #  schedule:
-      #  - cron: '0 0 * * *'
 
 jobs:
     tests:
         strategy:
             matrix:
-                os: [macOS, Ubuntu, Windows]
-                php: [7.2, 7.3, 7.4]
-                dependency: [prefer-lowest, prefer-stable]
+                os: [Ubuntu, Windows, macOS]
+                php: [7.3, 7.4, 8.0]
+                # php: [7.2, 7.3, 7.4, 8.0]
 
                 include:
-                  - os: macOS
-                    experimental: false
-                    os-version: macos-latest
-
                   - os: Ubuntu
-                    experimental: true
                     os-version: ubuntu-latest
 
                   - os: Windows
-                    experimental: true
                     os-version: windows-latest
 
-        name: ${{ matrix.os }} - PHP ${{ matrix.php }} --${{ matrix.dependency }}
+                  - os: macOS
+                    os-version: macos-latest
 
-        continue-on-error: ${{ matrix.experimental }}
+                  - os: macOS-11
+                    os-version: macos-11.0
+                    php: 8.0
+
+        name: ${{ matrix.os }} - PHP ${{ matrix.php }}
 
         runs-on: ${{ matrix.os-version }}
 
@@ -52,7 +50,7 @@ jobs:
                   coverage: none
 
             - name: Install dependencies
-              run: composer update --${{ matrix.dependency }} --prefer-dist --no-interaction --no-suggest --ignore-platform-reqs
+              run: composer update --prefer-stable --prefer-dist --no-interaction --no-suggest --ignore-platform-reqs
 
             - name: Run tests
               run: vendor/bin/phpunit

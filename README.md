@@ -1,39 +1,25 @@
-![Takeout - Docker-based dependency management for macOS](takeout-banner.png?version=1)
+![Takeout - Docker-based dependency management](takeout-banner.png?version=1)
 
 # Takeout
 
+[![Run tests](https://github.com/tighten/takeout/workflows/Run%20tests/badge.svg?branch=main)](https://github.com/tighten/takeout/actions?query=workflow%3A%22Run+tests%22)
+[![Lint](https://github.com/tighten/takeout/workflows/Lint/badge.svg?branch=main)](https://github.com/tighten/takeout/actions?query=workflow%3ALint)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 [![Downloads on Packagist](https://img.shields.io/packagist/dt/tightenco/takeout.svg?style=flat)](https://packagist.org/packages/tightenco/takeout)
 
 Takeout is a CLI tool for spinning up tiny Docker containers, one for each of your development environment dependencies.
 
-It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/docs/valet). It's currently compatible with macOS, Linux, and WSL2.
+It's meant to be paired with a tool like [Laravel Valet](https://laravel.com/docs/valet). It's currently compatible with macOS, Linux, Windows 10 and WSL2.
 
 With `takeout enable mysql` you're running MySQL, and never have to worry about managing or fixing Homebrew MySQL again.
 
-But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, and more, with a simple command.
-
-**Current list of services:**
-- MySQL
-- PostgreSQL
-- MSSQL
-- ElasticSearch
-- MeiliSearch
-- Redis
-- Memcached
-- MailHog
-- MariaDB
-- Minio
-- Mongo
-- InfluxDB
-- DynamoDB
-- Beanstalkd
+But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, and more, with a simple command. For a current list of services, look at the classes available in this directory: https://github.com/tighten/takeout/tree/main/app/Services
 
 ## Requirements
 
-- macOS, Linux, or WSL2
+- macOS, Linux, Windows 10 or WSL2
 - [Composer](https://getcomposer.org/) installed
-- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/)) 
+- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/), Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/))
 
 ## Installation
 
@@ -61,12 +47,24 @@ Show a list of all services you can enable.
 takeout enable
 ```
 
-### Enable a specific service
+### Enable specific services
 
-Passed the short name of a service, enable the given service.
+Passed the short name of one or more services, enable them.
 
 ```bash
 takeout enable mysql
+
+takeout enable redis meilisearch
+```
+
+### Enable services with default parameters
+
+If you want to skip over being asked for each parameter and just accept the defaults. This also works with multiple services in one command.
+
+```bash
+takeout enable mysql --default
+
+takeout enable redis meilisearch --default
 ```
 
 ### Disable a service
@@ -77,12 +75,21 @@ Show a list of all enabled services you can disable.
 takeout disable
 ```
 
-### Disable a specific service
+### Disable specific services
 
-Passed the short name of a service, disable the enabled service which matches it most closely.
+Passed the short name of one or more services, disable the enabled services that match them most closely.
 
 ```bash
 takeout disable mysql
+
+takeout disable redis meilisearch
+```
+
+
+### Disable all services
+
+```bash
+takeout disable --all
 ```
 
 ### Start a stopped container
@@ -93,12 +100,21 @@ Show a list of all stopped containers you can start.
 takeout start
 ```
 
-### Start a specific stopped container
+### Start specific stopped containers
 
-Passed the container ID of stopped container, start the stopped container which matches it.
+Passed the container ID of one or more stopped containers, start the stopped containers that matches them.
 
 ```bash
 takeout start {container_id}
+
+takeout start {container_id1} {container_id2}
+```
+
+### Start all containers
+
+You may pass the `-all` flag to start all enabled containers.
+```bash
+takeout start --all
 ```
 
 ### Stop a running container
@@ -109,12 +125,14 @@ Show a list of all running containers you can stop.
 takeout stop
 ```
 
-### Stop a specific running container
+### Stop specific running containers
 
-Passed the container ID of running container, stop the running container which matches it.
+Passed the container ID of one or more running containers, stop the running containers that matches them.
 
 ```bash
 takeout stop {container_id}
+
+takeout stop {container_id1} {container_id2}
 ```
 
 ## Running multiple versions of a dependency
