@@ -28,11 +28,10 @@ class StartCommand extends Command
 
         $containers = $this->argument('containerId');
 
-        if ($containers) {
+        if (filled($containers)) {
             foreach ($containers as $container) {
                 $this->start($container);
             }
-
             return;
         }
 
@@ -45,7 +44,6 @@ class StartCommand extends Command
 
         if (! $startableContainers = $this->startableContainers()) {
             $this->info("No Takeout containers available to start.\n");
-
             return;
         }
 
