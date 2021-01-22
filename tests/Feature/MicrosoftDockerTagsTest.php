@@ -6,8 +6,8 @@ use App\Services\MsSql;
 use App\Shell\MicrosoftDockerTags;
 use GuzzleHttp\Client;
 use Mockery as M;
-use Tests\TestCase;
 use Tests\Support\MicrosoftDockerTagsFakestream;
+use Tests\TestCase;
 
 class MicrosoftDockerTagsTest extends TestCase
 {
