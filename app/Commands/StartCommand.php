@@ -33,6 +33,7 @@ class StartCommand extends Command
             foreach ($containers as $container) {
                 $this->start($container);
             }
+
             return;
         }
 
@@ -40,11 +41,13 @@ class StartCommand extends Command
             foreach ($this->docker->startableTakeoutContainers() as $startableContainer) {
                 $this->start($startableContainer['container_id']);
             }
+
             return;
         }
 
         if (! $startableContainers = $this->startableContainers()) {
             $this->info("No Takeout containers available to start.\n");
+
             return;
         }
 
@@ -147,11 +150,12 @@ class StartCommand extends Command
                 }
             }
 
-            if (! Arr::has($menu->getItems(), ['use.label'])) {
+            if (count($menu->getItems()) === 3) {
                 $menu->close();
 
                 return;
             }
+
             $menu->redraw();
         };
     }
