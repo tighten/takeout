@@ -33,6 +33,7 @@ class StopCommand extends Command
             foreach ($containers as $container) {
                 $this->stop($container);
             }
+
             return;
         }
 
@@ -40,6 +41,7 @@ class StopCommand extends Command
             foreach ($this->docker->stoppableTakeoutContainers() as $stoppableContainer) {
                 $this->stop($stoppableContainer['container_id']);
             }
+
             return;
         }
 
@@ -148,11 +150,12 @@ class StopCommand extends Command
                 }
             }
 
-            if (! Arr::has($menu->getItems(), ['use.label'])) {
+            if (count($menu->getItems()) === 3) {
                 $menu->close();
 
                 return;
             }
+
             $menu->redraw();
         };
     }
