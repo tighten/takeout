@@ -1,11 +1,11 @@
 import BaseService from './base-service'
 
 export default class MySQL extends BaseService {
-  organization  = 'library'
+  static category  = 'Database'
 
-  imageName = 'mysql'
+  static organization  = 'library'
 
-  defaultPort = () => 3306;
+  _defaultPort = 3306;
 
   environmentVariables(promptAnswers: any): string[] {
     const environment: string[] = []
@@ -16,6 +16,12 @@ export default class MySQL extends BaseService {
   }
 
   prompts = [
+    {
+      type: 'input',
+      name: 'port',
+      message: this.defaultPortMessage(),
+      default: this.defaultPort,
+    },
     {
       type: 'input',
       name: 'volume',

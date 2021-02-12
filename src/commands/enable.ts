@@ -1,60 +1,61 @@
 import {Command, flags} from '@oclif/command'
-const Docker = require('dockerode')
-import MySQL from '../services/mysql'
-import Tags from '../docker/tags/dockerhub'
-import inquirer = require('inquirer');
+import inquirer = require('inquirer')
+import {availableServices, serviceByShortName} from '../helpers'
 
 export default class Enable extends Command {
-  static description = 'describe the command here'
+  static description = 'Enable services via Takeout'
+
+  /** Allow multiple services to be enabled at once */
+  static strict = false
 
   static flags = {
     help: flags.help({char: 'h'}),
-    // flag with a value (-n, --name=VALUE)
-    name: flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: flags.boolean({char: 'f'}),
   }
 
-  static args = [{name: 'file'}]
-
   async run() {
-    // ask the required questions
-    // set the values
-    // create the container with options
-    // start the container
-    // tell the user the container was started
-    const {args, flags} = this.parse(Enable)
-    const service = new MySQL()
-    inquirer.prompt([...service.defaultPrompts, ...service.prompts])
-    // @todo check for ports in use
-    // @todo check for volumes in use
-    .then(async answers => {
-      const tag = await (new Tags(service)).resolveTag(answers.tag)
+    const {argv} = this.parse(Enable)
+    let selectedServices
 
-      let auxContainer
-      const docker = new Docker()
-      docker.createContainer({
-        Image: `${service.organization}/${service.imageName}:${tag}`,
-        name: service.containerName(answers, tag),
-        // @todo add alias
-        Env: service.environmentVariables(answers),
-        AttachStdin: true,
-        AttachStdout: true,
-        AttachStderr: true,
-        Tty: true,
-        PortBindings: {
-          [`${service.defaultPort()}/tcp`]: [
-            {
-              HostPort: `${answers.port}`,
-            },
-          ],
+    if (argv?.length) {
+      selectedServices = argv
+    } else {
+      const responses = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'services',
+          message: 'Takeout containers to enable.',
+          choices: availableServices,
         },
-        OpenStdin: false,
-        StdinOnce: false,
-      }).then((container: any) => {
-        auxContainer = container
-        return auxContainer.start()
-      })
+      ])
+      selectedServices = responses.services
+    }
+
+    const selectedServiceClasses = selectedServices.map((service: string) => {
+      return serviceByShortName(service)
     })
+
+    for (const Service of selectedServiceClasses) {
+      const serviceInstance = new Service()
+      // eslint-disable-next-line no-await-in-loop
+      const ans = await inquirer.prompt([...serviceInstance.defaultPrompts, ...serviceInstance.prompts])
+      console.log(ans)
+    }
+
+    // ask all the questions in the instance
+    // set all the answers back into the service instance
+    // use the service istance to download an image
+    // use the service instancee to run a container
+
+    /**
+    selectedServiceClasses.map(async Service => {
+      const serviceInstance = new Service()
+      // ask all the questions in the instance
+      // set all the answers back into the service instance
+      // use the service istance to download an image
+      // use the service instancee to run a container
+      const answers = await inquirer.prompt([...serviceInstance.defaultPrompts, ...serviceInstance.prompts])
+      console.log(answers)
+    })
+    **/
   }
 }

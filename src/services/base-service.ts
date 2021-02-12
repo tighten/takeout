@@ -1,16 +1,24 @@
 export default abstract class BaseService {
-    abstract imageName: string;
+    static organization = 'library';
 
-    abstract organization: string;
+    static category: string;
 
-    abstract defaultPort(): number;
+    abstract _defaultPort: number;
+
+    set defaultPort(port) {
+      this._defaultPort = port
+    }
+
+    get defaultPort() {
+      return this._defaultPort
+    }
 
     protected tagMessage() {
-      return `Which tag (version) of ${this.imageName} would you like to use?`
+      return `Which tag (version) of ${this.shortName()} would you like to use?`
     }
 
     defaultPortMessage() {
-      return `Which host port would you like ${this.imageName} to use?`
+      return `Which host port would you like ${this.shortName()} to use?`
     }
 
     shortName() {
@@ -33,14 +41,8 @@ export default abstract class BaseService {
       {
         type: 'input',
         name: 'tag',
-        message: () => this.tagMessage(),
+        message: this.tagMessage(),
         default: 'latest',
-      },
-      {
-        type: 'input',
-        name: 'port',
-        message: () => this.defaultPortMessage(),
-        default: () => this.defaultPort(),
       },
     ]
 }

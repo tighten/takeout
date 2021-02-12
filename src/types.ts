@@ -47,9 +47,8 @@ export interface Service {
     defaultPort: number;
 }
 
-export interface ServiceChoice {
+export interface ServiceChoice extends Choice {
     category: string;
-    name: string;
 }
 
 export interface Prompt {
