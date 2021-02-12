@@ -45,17 +45,5 @@ export default class Enable extends Command {
     // set all the answers back into the service instance
     // use the service istance to download an image
     // use the service instancee to run a container
-
-    /**
-    selectedServiceClasses.map(async Service => {
-      const serviceInstance = new Service()
-      // ask all the questions in the instance
-      // set all the answers back into the service instance
-      // use the service istance to download an image
-      // use the service instancee to run a container
-      const answers = await inquirer.prompt([...serviceInstance.defaultPrompts, ...serviceInstance.prompts])
-      console.log(answers)
-    })
-    **/
   }
 }
