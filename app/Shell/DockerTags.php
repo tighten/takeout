@@ -45,10 +45,8 @@ class DockerTags
         $response = json_decode($this->getTagsResponse()->getContents(), true);
 
         return collect($response['results'])
-            ->map(function ($item) {
-                return ['name' => $item['name']];
-            })->sortByDesc('name', SORT_NATURAL)
             ->pluck('name')
+            ->sortDesc(SORT_NATURAL)
             ->filter();
     }
 
