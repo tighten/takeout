@@ -44,7 +44,10 @@ class DockerTags
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
 
-        return collect($response['results'])->map->name->filter();
+        return collect($response['results'])
+            ->pluck('name')
+            ->sortDesc(SORT_NATURAL)
+            ->filter();
     }
 
     protected function getTagsResponse(): StreamInterface

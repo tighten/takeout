@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Services\MySql;
+use App\Services\PostgreSql;
 use App\Shell\DockerTags;
 use GuzzleHttp\Client;
 use Mockery as M;
@@ -38,5 +39,17 @@ class DockerTagsTest extends TestCase
         $dockerTags->shouldReceive('getTags')->andReturn(collect(['latest']));
 
         $this->assertEquals('latest', $dockerTags->getLatestTag());
+    }
+
+    /** @test */
+    function it_sorts_the_versions_naturally()
+    {
+        $postgres = app(PostgreSql::class);
+        $dockerTags = app(DockerTags::class, ['service' => $postgres]);
+        $tags = collect($dockerTags->getTags());
+
+        $this->assertEquals('latest', $tags->first());
+        $this->assertEquals('9', $tags->last());
+        $this->assertCount(10, $tags);
     }
 }
