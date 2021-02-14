@@ -12,7 +12,7 @@ use Tests\TestCase;
 class DockerTagsTest extends TestCase
 {
     /** @test */
-    public function it_lists_10_newest_available_tags_for_service()
+    function it_lists_10_newest_available_tags_for_service()
     {
         $mysql = app(MySql::class);
         $dockerTags = app(DockerTags::class, ['service' => $mysql]);
@@ -24,7 +24,7 @@ class DockerTagsTest extends TestCase
     }
 
     /** @test */
-    public function it_gets_the_latest_tag_not_named_latest()
+    function it_gets_the_latest_tag_not_named_latest()
     {
         $dockerTags = M::mock(DockerTags::class, [app(Client::class), app(Mysql::class)])->makePartial();
         $dockerTags->shouldReceive('getTags')->andReturn(collect(['latest', 'next latest tag']));
@@ -33,7 +33,7 @@ class DockerTagsTest extends TestCase
     }
 
     /** @test */
-    public function if_latest_is_the_only_tag_it_returns_latest()
+    function if_latest_is_the_only_tag_it_returns_latest()
     {
         $dockerTags = M::mock(DockerTags::class, [app(Client::class), app(Mysql::class)])->makePartial();
         $dockerTags->shouldReceive('getTags')->andReturn(collect(['latest']));
@@ -42,7 +42,7 @@ class DockerTagsTest extends TestCase
     }
 
     /** @test */
-    public function it_sorts_the_versions_naturally()
+    function it_sorts_the_versions_naturally()
     {
         $postgres = app(PostgreSql::class);
         $dockerTags = app(DockerTags::class, ['service' => $postgres]);
