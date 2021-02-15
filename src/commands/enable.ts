@@ -78,7 +78,7 @@ export default class Enable extends dockerBaseMixin(Command) {
 
       docker.createContainer(options, (err, container) => {
         container.start({}, (err, data) => {
-          console.log(container)
+          this.logSuccess(`${serviceInstance.shortName()} container started.`)
         })
       })
     }

@@ -1,4 +1,5 @@
-import {Command, flags} from '@oclif/command'
+import Command from '../commands/base'
+import {flags} from '@oclif/command'
 import {menuOptions} from '../helpers'
 import {DockerodeContainer} from '../types'
 const inquirer = require('inquirer')
@@ -21,10 +22,10 @@ export default class Stop extends Command {
       const containerInspection = await container.inspect()
       container.stop((err: any, data: any) => {
         if (err) throw err
-        this.log(`Container ${containerInspection.Name.substring(1)} successfully stopped.`)
+        this.logSuccess(`Container ${containerInspection.Name.substring(1)} successfully stopped.`)
       })
     } catch (error) {
-      this.error(error)
+      this.logError(error)
     }
   }
 
