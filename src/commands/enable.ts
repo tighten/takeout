@@ -1,11 +1,13 @@
 import {Command, flags} from '@oclif/command'
 import inquirer = require('inquirer')
 import {availableServices, serviceByShortName} from '../helpers'
+import dockerBaseMixin from '../mixins/docker-base'
+const Docker = require('dockerode')
 
-export default class Enable extends Command {
+export default class Enable extends dockerBaseMixin(Command) {
   static description = 'Enable services via Takeout'
 
-  /** Allow multiple services to be enabled at once */
+  /** Allow multiple services (argv) to be enabled at once */
   static strict = false
 
   static flags = {
@@ -14,6 +16,9 @@ export default class Enable extends Command {
 
   async run() {
     const {argv} = this.parse(Enable)
+
+    this.initializeCommand()
+
     let selectedServices
 
     if (argv?.length) {
@@ -38,6 +43,38 @@ export default class Enable extends Command {
       const serviceInstance = new Service()
       // eslint-disable-next-line no-await-in-loop
       const ans = await inquirer.prompt([...serviceInstance.defaultPrompts, ...serviceInstance.prompts])
+
+      const docker = new Docker()
+      docker.run(`${serviceInstance.shortName()}:${ans.tag}`, [], process.stdout, {
+        name: 'TO--redis-test',
+        Env: [
+          'FOO=bar',
+          'BAZ=quux',
+        ],
+        Labels: {
+          'com.example.vendor': 'Acme',
+          'com.example.license': 'GPL',
+          'com.example.version': '1.0',
+        },
+        HostConfig: {
+          Binds: [
+            `${ans.volume}:/data`,
+          ],
+          PortBindings: {
+            '6379/tcp': [
+              {
+                HostPort: `${ans.port}`,
+              },
+            ],
+          },
+          NetworkMode: 'bridge',
+          Devices: [],
+        },
+        NetworkingConfig: {
+        },
+      }).catch(function (error: any) {
+        console.log(error)
+      })
       console.log(ans)
     }
 
@@ -45,5 +82,9 @@ export default class Enable extends Command {
     // set all the answers back into the service instance
     // use the service istance to download an image
     // use the service instancee to run a container
+  }
+
+  async catch(error: Error) {
+    console.log(error)
   }
 }

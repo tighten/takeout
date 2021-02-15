@@ -44,7 +44,7 @@ $ npm install -g @tighten/takeout
 $ takeout COMMAND
 running command...
 $ takeout (-v|--version|version)
-@tighten/takeout/2.0.0-alpha.1 darwin-x64 node-v14.15.4
+@tighten/takeout/2.0.0-alpha.1 linux-x64 node-v14.15.4
 $ takeout --help [COMMAND]
 USAGE
   $ takeout COMMAND
