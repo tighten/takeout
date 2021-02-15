@@ -14,4 +14,8 @@ export default class DockerShell {
     const result = spawn.sync('docker', ['info'])
     return result.status === 0
   }
+
+  static isDockerServiceStopped(): boolean {
+    return !this.isDockerServiceRunning()
+  }
 }

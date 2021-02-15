@@ -1,4 +1,5 @@
-import {Command, flags} from '@oclif/command'
+import Command from '../commands/base'
+import {flags} from '@oclif/command'
 import inquirer = require('inquirer')
 import {availableServices, serviceByShortName} from '../helpers'
 import dockerBaseMixin from '../mixins/docker-base'
@@ -45,8 +46,9 @@ export default class Enable extends dockerBaseMixin(Command) {
       const ans = await inquirer.prompt([...serviceInstance.defaultPrompts, ...serviceInstance.prompts])
 
       const docker = new Docker()
-      docker.run(`${serviceInstance.shortName()}:${ans.tag}`, [], process.stdout, {
-        name: 'TO--redis-test',
+      const options = {
+        Image: `${serviceInstance.shortName()}:${ans.tag}`,
+        name: `TO--${serviceInstance.shortName()}-test`,
         Env: [
           'FOO=bar',
           'BAZ=quux',
@@ -72,19 +74,18 @@ export default class Enable extends dockerBaseMixin(Command) {
         },
         NetworkingConfig: {
         },
-      }).catch(function (error: any) {
-        console.log(error)
+      }
+
+      docker.createContainer(options, (err, container) => {
+        container.start({}, (err, data) => {
+          console.log(container)
+        })
       })
-      console.log(ans)
     }
 
     // ask all the questions in the instance
     // set all the answers back into the service instance
     // use the service istance to download an image
     // use the service instancee to run a container
-  }
-
-  async catch(error: Error) {
-    console.log(error)
   }
 }

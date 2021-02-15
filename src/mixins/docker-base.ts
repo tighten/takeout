@@ -12,15 +12,11 @@ export default function dockerBaseMixin(className: any) {
   return class extends className {
     initializeCommand() {
       if (DockerShell.isNotInstalled()) {
-        console.log('docker not installed')
-      } else {
-        console.log('docker is installed')
+        throw new Error('Docker is not installed.')
       }
 
-      if (DockerShell.isDockerServiceRunning()) {
-        console.log('docker is running')
-      } else {
-        throw new Error('docker is not running')
+      if (DockerShell.isDockerServiceStopped()) {
+        throw new Error('Docker service is not running.')
       }
     }
   }
