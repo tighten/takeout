@@ -3,7 +3,6 @@ import {flags} from '@oclif/command'
 import inquirer = require('inquirer')
 import {availableServices, serviceByShortName} from '../helpers'
 import dockerBaseMixin from '../mixins/docker-base'
-const Docker = require('dockerode')
 
 export default class Enable extends dockerBaseMixin(Command) {
   static description = 'Enable services via Takeout'
@@ -42,13 +41,13 @@ export default class Enable extends dockerBaseMixin(Command) {
 
     for (const Service of selectedServiceClasses) {
       const serviceInstance = new Service()
+
       // eslint-disable-next-line no-await-in-loop
       const ans = await inquirer.prompt([...serviceInstance.defaultPrompts, ...serviceInstance.prompts])
 
-      const docker = new Docker()
       const options = {
-        Image: `${serviceInstance.shortName()}:${ans.tag}`,
-        name: `TO--${serviceInstance.shortName()}-test`,
+        Image: `${serviceInstance.organization}/${serviceInstance.shortName()}:${ans.tag}`,
+        name: `TO--${serviceInstance.shortName()}--${ans.tag}--${ans.port}`,
         Env: [
           'FOO=bar',
           'BAZ=quux',
@@ -62,25 +61,26 @@ export default class Enable extends dockerBaseMixin(Command) {
           Binds: [
             `${ans.volume}:/data`,
           ],
-          PortBindings: {
-            '6379/tcp': [
-              {
-                HostPort: `${ans.port}`,
-              },
-            ],
-          },
+          PortBindings: {},
           NetworkMode: 'bridge',
           Devices: [],
         },
         NetworkingConfig: {
         },
       }
+      const containerPortBindingKey = `${serviceInstance.defaultPort}/tcp`
+      options.HostConfig.PortBindings[containerPortBindingKey] =  [{HostPort: `${ans.port}`}]
 
-      docker.createContainer(options, (err, container) => {
-        container.start({}, (err, data) => {
-          this.logSuccess(`${serviceInstance.shortName()} container started.`)
-        })
-      })
+      // check if the port is in use
+      // check if the name is already taken
+      // check if we have the image downloaded
+
+      if (await this.imageIsDownloaded(serviceInstance, ans.tag)) {
+        this.enableContainer(serviceInstance, options)
+      } else {
+        this.downloadImage(serviceInstance, ans.tag)
+        .then(() => this.enableContainer(serviceInstance, options))
+      }
     }
 
     // ask all the questions in the instance

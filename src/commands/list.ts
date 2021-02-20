@@ -1,4 +1,5 @@
-import {Command, flags} from '@oclif/command'
+import Command from '../commands/base'
+import {flags} from '@oclif/command'
 import {cli} from 'cli-ux'
 import {DockerodeContainer} from '../types'
 import {containersToTable} from '../helpers'
@@ -27,6 +28,8 @@ export default class List extends Command {
         if (err) return this.error(err)
         if (flags.json) {
           this.log(JSON.stringify(containers))
+        } else if (containers.length === 0) {
+          this.logSuccess('No Takeout containers.')
         } else {
           cli.table(containersToTable(containers), {
             Id: {header: 'Container ID'},

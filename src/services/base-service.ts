@@ -1,5 +1,7 @@
 export default abstract class BaseService {
-    static organization = 'library';
+    protected organization = 'library';
+
+    protected imageName: string;
 
     static category: string;
 
@@ -25,6 +27,17 @@ export default abstract class BaseService {
       return this.constructor.name.toLowerCase()
     }
 
+    public repoTag(tag) {
+      return `${this.organization}/${this.imageName}:${tag}`
+    }
+
+    public imageString(tag) {
+      let imageString = ''
+      imageString += this.organization === 'library' ? '' : this.organization
+      imageString += `${this.imageName}:${tag}`
+      return imageString
+    }
+
     containerName(promptAnswers: any, tag: string|number): string {
       let portTag = ''
 
@@ -34,7 +47,7 @@ export default abstract class BaseService {
         }
       }
 
-      return `TO--${this.shortName()}--${tag}${portTag}`
+      return `TO--${this.imageName}--${tag}${portTag}`
     }
 
     defaultPrompts = [

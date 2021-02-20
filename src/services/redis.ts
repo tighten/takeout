@@ -3,7 +3,9 @@ import BaseService from './base-service'
 export default class Redis extends BaseService {
   static category  = 'Cache'
 
-  static organization  = 'library'
+  protected organization  = 'library'
+
+  protected imageName  = 'redis'
 
   _defaultPort = 6739;
 
