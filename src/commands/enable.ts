@@ -80,8 +80,8 @@ export default class Enable extends dockerBaseMixin(Command) {
       // check if the port is in use
       // check if the name is already taken
 
-      this.imageIsDownloaded(serviceInstance, ans.tag).then(async res => {
-        if (!res) {
+      this.imageIsDownloaded(serviceInstance, ans.tag).then(async imageAvailable => {
+        if (!imageAvailable) {
           await this.downloadImage(serviceInstance, ans.tag)
         }
         this.enableContainer(serviceInstance, options)

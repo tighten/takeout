@@ -24,6 +24,17 @@ export default function dockerBaseMixin(className: any) {
       this.docker = new Docker()
     }
 
+    listTakeoutContainers() {
+      return this.docker.listContainers(
+        {
+          all: true,
+          filters: {
+            name: ['TO--'],
+            status: ['running'],
+          },
+        })
+    }
+
     preEnableCheck() {
       // check if the image is downloaded
       console.log('in docker base')
@@ -38,7 +49,6 @@ export default function dockerBaseMixin(className: any) {
       return new Promise((resolve, reject) => {
         spinner.start(`Downloading ${service.imageString(tag)} image.`)
         return this.docker.pull(service.imageString(tag), (err: Error, stream: any) => {
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define
           this.docker.modem.followProgress(stream, onFinished)
           if (err) {
             throw new Error(err.message)
@@ -64,6 +74,19 @@ export default function dockerBaseMixin(className: any) {
           this.logSuccess(`${service.constructor.name} container started.`)
         })
       })
+    }
+
+    async stopContainer(id: string) {
+      try {
+        const container = this.docker.getContainer(id)
+        const containerInspection = await container.inspect()
+        container.stop((err: any, data: any) => {
+          if (err) throw err
+          this.logSuccess(`Container ${containerInspection.Name.substring(1)} successfully stopped.`)
+        })
+      } catch (error) {
+        this.logError(error)
+      }
     }
   }
 }
