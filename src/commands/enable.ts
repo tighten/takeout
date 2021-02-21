@@ -68,24 +68,24 @@ export default class Enable extends dockerBaseMixin(Command) {
         NetworkingConfig: {
         },
       }
+
       const containerPortBindingKey = `${serviceInstance.defaultPort}/tcp`
-      options.HostConfig.PortBindings[containerPortBindingKey] =  [{HostPort: `${ans.port}`}]
+
+      options.HostConfig.PortBindings[containerPortBindingKey] =  [
+        {
+          HostPort: `${ans.port}`,
+        },
+      ]
 
       // check if the port is in use
       // check if the name is already taken
-      // check if we have the image downloaded
 
-      if (await this.imageIsDownloaded(serviceInstance, ans.tag)) {
+      this.imageIsDownloaded(serviceInstance, ans.tag).then(async res => {
+        if (!res) {
+          await this.downloadImage(serviceInstance, ans.tag)
+        }
         this.enableContainer(serviceInstance, options)
-      } else {
-        this.downloadImage(serviceInstance, ans.tag)
-        .then(() => this.enableContainer(serviceInstance, options))
-      }
+      })
     }
-
-    // ask all the questions in the instance
-    // set all the answers back into the service instance
-    // use the service istance to download an image
-    // use the service instancee to run a container
   }
 }

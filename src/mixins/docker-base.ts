@@ -37,17 +37,19 @@ export default function dockerBaseMixin(className: any) {
     downloadImage(service: any, tag: string) {
       return new Promise((resolve, reject) => {
         spinner.start(`Downloading ${service.imageString(tag)} image.`)
-        return this.docker.pull(service.imageString(tag), (err, stream) => {
-          this.docker.modem.followProgress(stream, onFinished, onProgress)
-          function onFinished(err, output) {
+        return this.docker.pull(service.imageString(tag), (err: Error, stream: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
+          this.docker.modem.followProgress(stream, onFinished)
+          if (err) {
+            throw new Error(err.message)
+          }
+
+          function onFinished(err: any) {
             spinner.stop()
             if (err) {
               reject(new Error('There was a problem downloading the image.'))
             }
             resolve()
-          }
-          function onProgress(event) {
-            // console.log(event)
           }
         })
       })
