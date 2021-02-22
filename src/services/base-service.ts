@@ -1,7 +1,7 @@
 export default abstract class BaseService {
-    protected organization = 'library';
+    public organization = 'library';
 
-    protected imageName: string;
+    public imageName!: string;
 
     static category: string;
 
@@ -27,11 +27,11 @@ export default abstract class BaseService {
       return this.constructor.name.toLowerCase()
     }
 
-    public repoTag(tag) {
+    public repoTag(tag: string) {
       return `${this.organization}/${this.imageName}:${tag}`
     }
 
-    public imageString(tag) {
+    public imageString(tag: string) {
       let imageString = ''
       imageString += this.organization === 'library' ? '' : this.organization
       imageString += `${this.imageName}:${tag}`

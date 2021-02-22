@@ -24,13 +24,27 @@ export default function dockerBaseMixin(className: any) {
       this.docker = new Docker()
     }
 
-    listTakeoutContainers() {
+    async takeoutContainerIdsByShortNames(shortnames: string[]): Promise<string[]> {
+      const containers = await this.listTakeoutContainers([])
+
+      const ids = containers.filter((container: any) => {
+        const containerName = container.Labels['com.tighten.takeout.shortname']
+        // @TODO: Check for partial matches
+        return shortnames.includes(containerName)
+      }).map((container: any) => {
+        return container.Id
+      })
+
+      return ids
+    }
+
+    listTakeoutContainers(status: string[]) {
       return this.docker.listContainers(
         {
           all: true,
           filters: {
             name: ['TO--'],
-            status: ['running'],
+            status: status,
           },
         })
     }
@@ -42,14 +56,13 @@ export default function dockerBaseMixin(className: any) {
 
     async imageIsDownloaded(service: any, tag: string) {
       const downloadedImages = await this.docker.listImages()
-      return downloadedImages.some(img => img.RepoTags.includes(service.imageString(tag)))
+      return downloadedImages.some((img: any) => img.RepoTags.includes(service.imageString(tag)))
     }
 
     downloadImage(service: any, tag: string) {
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject)  => {
         spinner.start(`Downloading ${service.imageString(tag)} image.`)
         return this.docker.pull(service.imageString(tag), (err: Error, stream: any) => {
-          this.docker.modem.followProgress(stream, onFinished)
           if (err) {
             throw new Error(err.message)
           }
@@ -61,19 +74,35 @@ export default function dockerBaseMixin(className: any) {
             }
             resolve()
           }
+
+          this.docker.modem.followProgress(stream, onFinished)
         })
       })
     }
 
     enableContainer(service: any, options: any) {
-      this.docker.createContainer(options, (err, container) => {
+      this.docker.createContainer(options, (err: any, container: any) => {
         if (err) {
           throw new Error(err.message)
         }
-        container.start({}, (err, data) => {
+        container.start({}, (err: any) => {
+          if (err) throw err
           this.logSuccess(`${service.constructor.name} container started.`)
         })
       })
+    }
+
+    async disableContainer(id: string) {
+      try {
+        const container = this.docker.getContainer(id)
+        const containerInspection = await container.inspect()
+        container.remove({force: true}, (err: any, data: any) => {
+          if (err) throw err
+          this.logSuccess(`Container ${containerInspection.Name.substring(1)} successfully removed.`)
+        })
+      } catch (error) {
+        this.logError(error)
+      }
     }
 
     async stopContainer(id: string) {

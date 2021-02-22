@@ -8,26 +8,41 @@ import dockerBaseMixin from '../mixins/docker-base'
 export default class Stop extends dockerBaseMixin(Command) {
   static description = 'Stop a started container.'
 
+  /** Allow multiple services (argv) to be enabled at once */
+  static strict = false
+
   static flags = {
     help: flags.help({char: 'h'}),
     name: flags.string({char: 'n', description: 'name to print'}),
     all: flags.boolean({char: 'a'}),
   }
 
-  static args = [{name: 'container'}]
-
   async run() {
-    const {args, flags} = this.parse(Stop)
+    const {argv, flags} = this.parse(Stop)
 
     this.initializeCommand()
 
-    if (args.container) {
-      // @TODO translate short name to container id
-      // @TODO menu selection if multiple containers
+    if (false /** check for flag --all */) {
       // @TODO stop all with an --all flag
-      this.stopContainer(args.container)
+    } else if (argv?.length) {
+      argv.forEach(async (arg: string) => {
+        // @TODO: Add a spinner right here
+        const containerIds = await this.takeoutContainerIdsByShortNames([arg])
+        let containerId = ''
+
+        if (containerIds.length === 0) {
+          // @TODO: Handle error more gracefully
+          throw new Error(`No containers found for ${arg}`)
+        } else if (containerIds.length > 1) {
+        // @TODO: Menu choice, return containerId
+        } else {
+          containerId = containerIds[0]
+        }
+
+        this.stopContainer(containerId)
+      })
     } else {
-      const containers = await this.listTakeoutContainers()
+      const containers = await this.listTakeoutContainers(['running'])
 
       if (containers.length === 0) return this.log('There are no containers to stop.')
 

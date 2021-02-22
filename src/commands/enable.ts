@@ -45,17 +45,15 @@ export default class Enable extends dockerBaseMixin(Command) {
       // eslint-disable-next-line no-await-in-loop
       const ans = await inquirer.prompt([...serviceInstance.defaultPrompts, ...serviceInstance.prompts])
 
-      const options = {
+      const options: any = {
         Image: `${serviceInstance.organization}/${serviceInstance.shortName()}:${ans.tag}`,
         name: `TO--${serviceInstance.shortName()}--${ans.tag}--${ans.port}`,
         Env: [
-          'FOO=bar',
+          'MYSQL_ROOT_PASSWORD=foobarbaz',
           'BAZ=quux',
         ],
         Labels: {
-          'com.example.vendor': 'Acme',
-          'com.example.license': 'GPL',
-          'com.example.version': '1.0',
+          'com.tighten.takeout.shortname': `${serviceInstance.shortName()}`,
         },
         HostConfig: {
           Binds: [

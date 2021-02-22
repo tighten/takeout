@@ -54,24 +54,49 @@ USAGE
 
 # Commands
 <!-- commands -->
-* [`takeout enable [FILE]`](#takeout-enable-file)
+* [`takeout base`](#takeout-base)
+* [`takeout disable [CONTAINER]`](#takeout-disable-container)
+* [`takeout enable`](#takeout-enable)
 * [`takeout help [COMMAND]`](#takeout-help-command)
 * [`takeout list`](#takeout-list)
 * [`takeout start [CONTAINER]`](#takeout-start-container)
 * [`takeout stop [CONTAINER]`](#takeout-stop-container)
 
-## `takeout enable [FILE]`
-
-describe the command here
+## `takeout base`
 
 ```
 USAGE
-  $ takeout enable [FILE]
+  $ takeout base
+```
+
+_See code: [src/commands/base.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/base.ts)_
+
+## `takeout disable [CONTAINER]`
+
+Disable an enabled container.
+
+```
+USAGE
+  $ takeout disable [CONTAINER]
 
 OPTIONS
   -f, --force
   -h, --help       show CLI help
   -n, --name=name  name to print
+```
+
+_See code: [src/commands/disable.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/disable.ts)_
+
+## `takeout enable`
+
+Enable services via Takeout
+
+```
+USAGE
+  $ takeout enable
+
+OPTIONS
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/enable.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/enable.ts)_

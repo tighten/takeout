@@ -3,9 +3,9 @@ import BaseService from './base-service'
 export default class MySQL extends BaseService {
   static category  = 'Database'
 
-  protected organization  = 'library'
+  public organization  = 'library'
 
-  protected imageName  = 'mysql'
+  public imageName  = 'mysql'
 
   _defaultPort = 3306;
 
