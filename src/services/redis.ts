@@ -7,7 +7,7 @@ export default class Redis extends BaseService {
 
   public imageName  = 'redis'
 
-  _defaultPort = 6739;
+  _defaultPort = 6379;
 
   environmentVariables(promptAnswers: any): string[] {
     const environment: string[] = []
