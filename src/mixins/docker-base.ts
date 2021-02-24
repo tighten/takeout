@@ -131,5 +131,21 @@ export default function dockerBaseMixin(className: any) {
         this.logError(error)
       }
     }
+
+    listVolumes() {
+      return this.docker.listVolumes()
+    }
+
+    removeVolume(volume: any) {
+      Spinner.start('Removing volumes.')
+      this.docker.getVolume(volume.Name).remove((err: any) => {
+        Spinner.stop()
+        if (err) {
+          this.logError(`${err.reason.toUpperCase()} - ${err.json.message}`)
+        } else {
+          this.logSuccess(`Volume ${volume.Name} successfully deleted.`)
+        }
+      })
+    }
   }
 }
