@@ -1,5 +1,8 @@
+import {
+  DockerodeContainer,
+} from '../types'
 import DockerShell from '../shell/dockershell'
-import spinner from '../ux/spinner'
+import Spinner from '../ux/spinner'
 const Docker = require('dockerode')
 
 // eslint-disable-next-line valid-jsdoc
@@ -22,6 +25,16 @@ export default function dockerBaseMixin(className: any) {
       }
 
       this.docker = new Docker()
+    }
+
+    async takeoutContainersByShortNames(shortnames: string[], status: string[]): Promise<DockerodeContainer[]> {
+      const containers = await this.listTakeoutContainers(status)
+
+      return containers.filter((container: any) => {
+        const containerName = container.Labels['com.tighten.takeout.shortname']
+        // @TODO: Check for partial matches
+        return shortnames.includes(containerName)
+      })
     }
 
     async takeoutContainerIdsByShortNames(shortnames: string[]): Promise<string[]> {
@@ -49,11 +62,6 @@ export default function dockerBaseMixin(className: any) {
         })
     }
 
-    preEnableCheck() {
-      // check if the image is downloaded
-      console.log('in docker base')
-    }
-
     async imageIsDownloaded(service: any, tag: string) {
       const downloadedImages = await this.docker.listImages()
       return downloadedImages.some((img: any) => img.RepoTags.includes(service.imageString(tag)))
@@ -61,14 +69,14 @@ export default function dockerBaseMixin(className: any) {
 
     downloadImage(service: any, tag: string) {
       return new Promise<void>((resolve, reject)  => {
-        spinner.start(`Downloading ${service.imageString(tag)} image.`)
+        Spinner.start(`Downloading ${service.imageString(tag)} image.`)
         return this.docker.pull(service.imageString(tag), (err: Error, stream: any) => {
           if (err) {
             throw new Error(err.message)
           }
 
           function onFinished(err: any) {
-            spinner.stop()
+            Spinner.stop()
             if (err) {
               reject(new Error('There was a problem downloading the image.'))
             }
@@ -81,23 +89,27 @@ export default function dockerBaseMixin(className: any) {
     }
 
     enableContainer(service: any, options: any) {
+      Spinner.start('Enabling container(s).')
       this.docker.createContainer(options, (err: any, container: any) => {
         if (err) {
           throw new Error(err.message)
         }
         container.start({}, (err: any) => {
           if (err) throw err
+          Spinner.stop()
           this.logSuccess(`${service.constructor.name} container started.`)
         })
       })
     }
 
     async disableContainer(id: string) {
+      const container = this.docker.getContainer(id)
+      const containerInspection = await container.inspect()
+      Spinner.start('Disabling container(s).')
       try {
-        const container = this.docker.getContainer(id)
-        const containerInspection = await container.inspect()
         container.remove({force: true}, (err: any, data: any) => {
           if (err) throw err
+          Spinner.stop()
           this.logSuccess(`Container ${containerInspection.Name.substring(1)} successfully removed.`)
         })
       } catch (error) {
@@ -106,12 +118,14 @@ export default function dockerBaseMixin(className: any) {
     }
 
     async stopContainer(id: string) {
+      const container = this.docker.getContainer(id)
+      const containerInspection = await container.inspect()
+      Spinner.start('Stopping container(s).')
       try {
-        const container = this.docker.getContainer(id)
-        const containerInspection = await container.inspect()
         container.stop((err: any, data: any) => {
           if (err) throw err
-          this.logSuccess(`Container ${containerInspection.Name.substring(1)} successfully stopped.`)
+          Spinner.stop()
+          this.logSuccess(`Container ${containerInspection.Name.substring(1)} successfully removed.`)
         })
       } catch (error) {
         this.logError(error)
