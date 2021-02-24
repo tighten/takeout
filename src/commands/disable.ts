@@ -23,7 +23,7 @@ export default class Disable extends dockerBaseMixin(Command) {
     this.initializeCommand()
 
     if (flags.all) {
-      const runningTOContainers = await this.listTakeoutContainers(['running', 'exited'])
+      const runningTOContainers = await this.listTakeoutContainers(['running', 'exited', 'created'])
 
       if (runningTOContainers.length === 0) {
         throw new Error('No containers to disable.')
@@ -50,7 +50,7 @@ export default class Disable extends dockerBaseMixin(Command) {
         this.disableContainer(containerId)
       })
     } else {
-      const containers = await this.listTakeoutContainers(['running', 'exited'])
+      const containers = await this.listTakeoutContainers(['running', 'exited', 'created'])
 
       if (containers.length === 0) return this.log('There are no containers to disable.')
 

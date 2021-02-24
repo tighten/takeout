@@ -44,14 +44,11 @@ export default class Enable extends dockerBaseMixin(Command) {
 
       // eslint-disable-next-line no-await-in-loop
       const ans = await inquirer.prompt([...serviceInstance.defaultPrompts, ...serviceInstance.prompts])
-
+      const envs = serviceInstance.environmentVariables(ans)
       const options: any = {
         Image: `${serviceInstance.organization}/${serviceInstance.shortName()}:${ans.tag}`,
         name: `TO--${serviceInstance.shortName()}--${ans.tag}--${ans.port}`,
-        Env: [
-          'MYSQL_ROOT_PASSWORD=foobarbaz',
-          'BAZ=quux',
-        ],
+        Env: envs,
         Labels: {
           'com.tighten.takeout.shortname': `${serviceInstance.shortName()}`,
         },
@@ -75,6 +72,7 @@ export default class Enable extends dockerBaseMixin(Command) {
         },
       ]
 
+      console.log('options: ', options)
       // check if the port is in use
       // check if the name is already taken
 
