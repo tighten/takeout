@@ -13,6 +13,7 @@ export default class MySQL extends BaseService {
     const environment: string[] = []
     if (promptAnswers.root_password === '') {
       environment.push('MYSQL_ALLOW_EMPTY_PASSWORD=true')
+      environment.push('MYSQL_ROOT_PASSWORD=')
     }
     return environment
   }
