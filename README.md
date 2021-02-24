@@ -55,12 +55,13 @@ USAGE
 # Commands
 <!-- commands -->
 * [`takeout base`](#takeout-base)
-* [`takeout disable [CONTAINER]`](#takeout-disable-container)
+* [`takeout disable`](#takeout-disable)
 * [`takeout enable`](#takeout-enable)
 * [`takeout help [COMMAND]`](#takeout-help-command)
 * [`takeout list`](#takeout-list)
 * [`takeout start [CONTAINER]`](#takeout-start-container)
-* [`takeout stop [CONTAINER]`](#takeout-stop-container)
+* [`takeout stop`](#takeout-stop)
+* [`takeout volume [COMMAND]`](#takeout-volume-command)
 
 ## `takeout base`
 
@@ -71,16 +72,16 @@ USAGE
 
 _See code: [src/commands/base.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/base.ts)_
 
-## `takeout disable [CONTAINER]`
+## `takeout disable`
 
 Disable an enabled container.
 
 ```
 USAGE
-  $ takeout disable [CONTAINER]
+  $ takeout disable
 
 OPTIONS
-  -f, --force
+  -a, --all
   -h, --help       show CLI help
   -n, --name=name  name to print
 ```
@@ -149,13 +150,13 @@ OPTIONS
 
 _See code: [src/commands/start.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/start.ts)_
 
-## `takeout stop [CONTAINER]`
+## `takeout stop`
 
 Stop a started container.
 
 ```
 USAGE
-  $ takeout stop [CONTAINER]
+  $ takeout stop
 
 OPTIONS
   -a, --all
@@ -164,6 +165,22 @@ OPTIONS
 ```
 
 _See code: [src/commands/stop.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/stop.ts)_
+
+## `takeout volume [COMMAND]`
+
+Manage data volumes.
+
+```
+USAGE
+  $ takeout volume [COMMAND]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/volume.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/volume.ts)_
 <!-- commandsstop -->
 
 

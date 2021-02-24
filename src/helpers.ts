@@ -15,6 +15,13 @@ export const menuOptions = (containers: DockerodeContainer[]): Choice[] => {
   }))
 }
 
+export const volMenuOptions = (volumes: any[]): Choice[] => {
+  return volumes.map(volume => ({
+    name: volume.Name,
+    value: volume,
+  }))
+}
+
 export const jsonStringToArray = (json: string): string[] => {
   return json.split(/\r?\n/).filter(Boolean).map((row: string) => JSON.parse(row))
 }
@@ -31,8 +38,20 @@ export const convertToRow = (container: DockerodeContainer): ContainerTableRow =
   })
 }
 
+export const convertVolToRow = (volume: any): any => {
+  return ({
+    ...volume,
+    Name: volume.Name,
+    Mountpoint: volume.Mountpoint,
+  })
+}
+
 export const containersToTable = (containers: DockerodeContainer[]): ContainerTableRow[] => {
   return containers.map((container: DockerodeContainer) => convertToRow(container))
+}
+
+export const volumesToTable = (volumes: any[]): any[] => {
+  return volumes.map((volume: any) => convertVolToRow(volume))
 }
 
 export const availableServices = Object.entries(Services).map(([key, Service]): ServiceChoice => ({
@@ -50,7 +69,9 @@ export const serviceByShortName = (shortName: string) => {
 export default {
   jsonStringToArray,
   menuOptions,
+  volMenuOptions,
   runAndParseAsJson,
   convertToRow,
   containersToTable,
+  volumesToTable,
 }
