@@ -41,6 +41,7 @@ export default function dockerBaseMixin(className: any) {
       const containers = await this.listTakeoutContainers([])
 
       const ids = containers.filter((container: any) => {
+        // @TODO: Check for PHP takeout label names
         const containerName = container.Labels['com.tighten.takeout.shortname']
         // @TODO: Check for partial matches
         return shortnames.includes(containerName)

@@ -39,15 +39,26 @@ export default class Disable extends dockerBaseMixin(Command) {
         let containerId = ''
 
         if (containerIds.length === 0) {
-          // @TODO: Handle error more gracefully
           throw new Error(`No containers found for ${arg}`)
         } else if (containerIds.length > 1) {
-        // @TODO: Menu choice, return containerId
+          const containers = await this.takeoutContainersByShortNames([arg], ['running', 'exited', 'created'])
+          inquirer.prompt([
+            {
+              type: 'checkbox',
+              name: 'containers',
+              message: 'Which container(s) would you like to disable?',
+              choices: menuOptions(containers),
+            },
+          ])
+          .then((answers: any) => {
+            answers.containers.forEach((answer: string) => {
+              this.disableContainer(answer)
+            })
+          })
         } else {
           containerId = containerIds[0]
+          this.disableContainer(containerId)
         }
-
-        this.disableContainer(containerId)
       })
     } else {
       const containers = await this.listTakeoutContainers(['running', 'exited', 'created'])

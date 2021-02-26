@@ -175,9 +175,7 @@ USAGE
   $ takeout volume [COMMAND]
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/volume.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/volume.ts)_
