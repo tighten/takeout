@@ -52,4 +52,9 @@ class Environment
 
         return $netstatCmd;
     }
+
+    public function userIsInDockerGroup(): bool
+    {
+        return $this->shell->execQuietly('groups | grep docker')->isSuccessful();
+    }
 }
