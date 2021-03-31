@@ -19,22 +19,19 @@ class DockerNotAvailableException extends Exception
 
         if (in_array(PHP_OS_FAMILY, ['Darwin', 'Linux', 'Windows'])) {
             $osSpecificHelp = 'helpFor' . ucfirst(PHP_OS_FAMILY);
-            $this->$osSpecificHelp();
+            $this->$osSpecificHelp($console);
         }
     }
 
-    protected function helpForDarwin()
+    protected function helpForDarwin($console)
     {
-        $console = app('console');
-
         $console->line('Open Docker for Mac or run:');
         $console->line('  open --background -a Docker');
         $console->line('to start the Docker service.');
     }
 
-    protected function helpForLinux()
+    protected function helpForLinux($console)
     {
-        $console = app('console');
         $environment = app(Environment::class);
         $shell = app(Shell::class);
 
@@ -54,10 +51,8 @@ class DockerNotAvailableException extends Exception
         }
     }
 
-    protected function helpForWindows()
+    protected function helpForWindows($console)
     {
-        $console = app('console');
-
         $console->line('Open Docker for Windows to start the Docker service.');
     }
 }
