@@ -6,7 +6,7 @@ export default class EnvironmentShell {
     return result.status !== 0
   }
 
-  static netstatCmd(port: number): any {
+  static netstatCmd(port: number): { status: number } {
     const portText = EnvironmentShell.isLinuxOs()
       ? `:${port} `
       : `.${port} `
