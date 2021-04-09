@@ -3,6 +3,7 @@ import {flags} from '@oclif/command'
 import inquirer = require('inquirer')
 import {availableServices, serviceByShortName} from '../helpers'
 import dockerBaseMixin from '../mixins/docker-base'
+import EnvironmentShell from '../shell/environmentshell'
 
 export default class Enable extends dockerBaseMixin(Command) {
   static description = 'Enable services via Takeout'
@@ -14,7 +15,24 @@ export default class Enable extends dockerBaseMixin(Command) {
     help: flags.help({char: 'h'}),
   }
 
+  async uniqueContainerName(name: string, num = 0): Promise<string> {
+    if (await this.takeoutContainerByName(name)) {
+      const incrementor = num + 1
+      let newName
+      if (name.endsWith(`--${num}`)) {
+        newName = name.replace(new RegExp(`--${num}`), `--${incrementor}`)
+      } else {
+        newName = `${name}--${incrementor}`
+      }
+
+      return this.uniqueContainerName(newName, incrementor)
+    }
+
+    return name
+  }
+
   async run() {
+    // console.log(EnvironmentShell.netstatCmd())
     const {argv} = this.parse(Enable)
 
     this.initializeCommand()
@@ -35,6 +53,7 @@ export default class Enable extends dockerBaseMixin(Command) {
       selectedServices = responses.services
     }
 
+    // conver the string to a class 'mysql' => MySQL
     const selectedServiceClasses = selectedServices.map((service: string) => {
       return serviceByShortName(service)
     })
@@ -56,7 +75,7 @@ export default class Enable extends dockerBaseMixin(Command) {
           Binds: [
             `${ans.volume}:/data`,
           ],
-          PortBindings: {},
+          PjortBindings: {},
           NetworkMode: 'bridge',
           Devices: [],
         },
@@ -72,15 +91,16 @@ export default class Enable extends dockerBaseMixin(Command) {
         },
       ]
 
-      console.log('options: ', options)
-      // check if the port is in use
-      // check if the name is already taken
+      // @TODO check if the port is in use
 
       this.imageIsDownloaded(serviceInstance, ans.tag).then(async imageAvailable => {
         if (!imageAvailable) {
           await this.downloadImage(serviceInstance, ans.tag)
         }
-        this.enableContainer(serviceInstance, options)
+
+        const newName = await this.uniqueContainerName(options.name)
+        const newOptions = {...options, name: newName}
+        this.enableContainer(serviceInstance, newOptions)
       })
     }
   }

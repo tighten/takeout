@@ -1,4 +1,5 @@
 import BaseService from './base-service'
+import EnvironmentShell from '../shell/environmentshell'
 
 export default class MySQL extends BaseService {
   static category  = 'Database'
@@ -24,6 +25,17 @@ export default class MySQL extends BaseService {
       name: 'port',
       message: this.defaultPortMessage(),
       default: this.defaultPort,
+      validate: function (input: string|number) {
+        const portCheck = ((res: any, rej: any) => {
+          const a = EnvironmentShell.netstatCmd()
+          console.log('a: ', a)
+          if (parseInt(input, 10) === 3306) {
+            rej('Some error')
+          }
+          res(true)
+        })
+        return new Promise(portCheck)
+      },
     },
     {
       type: 'input',
