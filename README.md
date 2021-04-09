@@ -26,9 +26,27 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 # Requirements
 
-- macOS, Linux, or WSL2
+- macOS, Linux, or WSL2 (also see [Linux Dependencies](#linux-dependencies))
 - Node installed or whatever
 - Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/))
+
+## Linux Dependencies
+<a name="linux-dependencies"></a>
+
+Some distros don't come with `netstat` installed by default, so you may need to install it yourself:
+
+```bash
+# Debian/Ubuntu
+apt-get install net-tools
+# CentOS/RHEL
+yum install net-tools
+# OpenSuse
+zypper install net-tools
+# Arch Linux
+pacman -S netstat-nat
+```
+
+You may need to run these as the `root` user.
 
 # Usage
 
