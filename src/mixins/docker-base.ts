@@ -27,6 +27,13 @@ export default function dockerBaseMixin(className: any) {
       this.docker = new Docker()
     }
 
+    async takeoutContainerByName(name: string): Promise<DockerodeContainer> {
+      const containers = await this.listTakeoutContainers([])
+      return containers.filter((container: DockerodeContainer) => {
+        return container.Names.includes(`/${name}`)
+      })[0]
+    }
+
     async takeoutContainersByShortNames(shortnames: string[], status: string[]): Promise<DockerodeContainer[]> {
       const containers = await this.listTakeoutContainers(status)
 
