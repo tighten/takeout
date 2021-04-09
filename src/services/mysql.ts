@@ -25,16 +25,15 @@ export default class MySQL extends BaseService {
       name: 'port',
       message: this.defaultPortMessage(),
       default: this.defaultPort,
-      validate: function (input: string|number) {
-        const portCheck = ((res: any, rej: any) => {
-          const a = EnvironmentShell.netstatCmd()
-          console.log('a: ', a)
-          if (parseInt(input, 10) === 3306) {
-            rej('Some error')
+      validate: function (port: number) {
+        return new Promise((res, rej) => {
+          if (! EnvironmentShell.isPortAvailable(port)) {
+            rej(`Port ${port} has already been taken. Try another one.`);
+            return;
           }
-          res(true)
+
+          res(true);
         })
-        return new Promise(portCheck)
       },
     },
     {
