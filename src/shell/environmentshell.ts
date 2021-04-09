@@ -7,11 +7,11 @@ export default class EnvironmentShell {
   }
 
   static netstatCmd(port: number): any {
-    // @TODO: is there any danger in concatenating the command like this? Do we need to escape it somehow?
     const portText = EnvironmentShell.isLinuxOs()
       ? `:${port} `
       : `.${port} `
 
+    // @TODO: is there any danger in concatenating the command like this? Do we need to escape it somehow?
     const cmd = `netstat -vanp tcp | grep '${portText}' | grep -v 'TIME_WAIT' | grep -v 'CLOSE_WAIT' | grep -v 'FIN_WAIT'`
 
     return spawn.sync('sh', ['-c', cmd])
