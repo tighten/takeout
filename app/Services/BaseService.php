@@ -20,7 +20,7 @@ abstract class BaseService
     protected $organization = 'library'; // Official repositories use `library` as the organization name.
     protected $imageName;
     protected $dockerTagsClass = DockerTags::class;
-    protected $tag;
+
     protected $dockerRunTemplate;
     protected $defaultPort;
     protected $defaultPrompts = [
@@ -131,19 +131,15 @@ abstract class BaseService
 
     protected function prompts(): void
     {
-        $items = [];
+        $prompts = collect(array_merge($this->defaultPrompts, $this->prompts))->keyBy('shortname');
 
-        foreach ($this->defaultPrompts as $prompt) {
+        foreach ($prompts->toArray() as $prompt) {
             $this->askQuestion($prompt, $this->useDefaults);
 
             while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
                 app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.");
                 $this->askQuestion($prompt);
             }
-        }
-
-        foreach ($this->prompts as $prompt) {
-            $this->askQuestion($prompt, $this->useDefaults);
 
             while ($prompt['shortname'] === 'volume' && ! $this->docker->volumeIsAvailable($this->promptResponses['volume'])) {
                 app('console')->error("Volume {$this->promptResponses['volume']} is already in use. Please select a different volume.");
@@ -154,8 +150,6 @@ abstract class BaseService
                 app('console')->error("Port {$this->promptResponses[$prompt['shortname']]} is already in use. Please select a different port.");
                 $this->askQuestion($prompt);
             }
-
-            $items[] = $prompt;
         }
 
         $this->tag = $this->resolveTag($this->promptResponses['tag']);
