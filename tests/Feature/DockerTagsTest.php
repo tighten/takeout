@@ -48,8 +48,8 @@ class DockerTagsTest extends TestCase
         $dockerTags = app(DockerTags::class, ['service' => $postgres]);
         $tags = collect($dockerTags->getTags());
 
-        $this->assertEquals('latest', $tags->first());
-        $this->assertEquals('9', $tags->last());
+        $this->assertEquals('alpine', $tags->first());
+        $this->assertEquals('9-alpine', $tags->last());
         $this->assertCount(10, $tags);
     }
 }

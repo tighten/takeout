@@ -47,6 +47,7 @@ class DockerTags
         return collect($response['results'])
             ->pluck('name')
             ->sortDesc(SORT_NATURAL)
+            ->values()
             ->filter();
     }
 
