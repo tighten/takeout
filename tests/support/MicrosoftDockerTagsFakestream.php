@@ -25,8 +25,7 @@ class MicrosoftDockerTagsFakestream extends Psr7Stream
                     'latest',
                 ],
             ]);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return '';
         }
     }
