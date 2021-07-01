@@ -2,7 +2,7 @@ name: Lint
 
 on:
     push:
-        branches: [ krc/upgrade-slack-notification ]
+        branches: [ main ]
     pull_request:
 
 jobs:
@@ -42,7 +42,7 @@ jobs:
 
             - name: Send Slack notification
               uses: 8398a7/action-slack@v3
-              if: always()
+              if: failure()
               with:
                   status: ${{ job.status }}
                   author_name: ${{ github.actor }}
