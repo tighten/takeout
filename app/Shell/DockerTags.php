@@ -29,26 +29,36 @@ class DockerTags
 
     public function getLatestTag(): string
     {
-        $nonLatestTags = $this->getTags()->reject(function ($tag) {
-            return $tag === 'latest';
+        $numericTags = $this->getTags()->reject(function ($tag) {
+            return ! is_numeric($tag[0]);
         });
 
-        if ($nonLatestTags->isEmpty()) {
+        if ($numericTags->isEmpty()) {
             return 'latest';
         }
 
-        return $nonLatestTags->first();
+        return $numericTags->first();
     }
 
     public function getTags(): Collection
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
 
-        return collect($response['results'])
+        [$numericTags, $alphaTags] = collect($response['results'])
             ->pluck('name')
-            ->sortDesc(SORT_NATURAL)
-            ->values()
-            ->filter();
+            ->partition(function ($tag) {
+                return is_numeric($tag[0]);
+            });
+
+        $sortedTags = $alphaTags->sortDesc(SORT_NATURAL)
+                                ->concat($numericTags->sortDesc(SORT_NATURAL));
+
+        if ($sortedTags->contains('latest')) {
+            $sortedTags->splice($sortedTags->search('latest'), 1);
+            $sortedTags->prepend('latest');
+        }
+
+        return $sortedTags->values()->filter();
     }
 
     protected function getTagsResponse(): StreamInterface
@@ -69,6 +79,6 @@ class DockerTags
 
     protected function tagsUrlTemplate(): string
     {
-        return 'https://registry.hub.docker.com/v2/repositories/%s/%s/tags';
+        return 'https://registry.hub.docker.com/v2/repositories/%s/%s/tags?page_size=1024';
     }
 }
