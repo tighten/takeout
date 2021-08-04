@@ -52,6 +52,9 @@ jobs:
             - name: Install dependencies
               run: composer update --prefer-stable --prefer-dist --no-interaction --no-suggest --ignore-platform-reqs
 
+            - name: Constrain PSR-7 to avoid string conflict
+              run: composer require guzzlehttp/psr7:"^1.0"
+
             - name: Run tests
               run: vendor/bin/phpunit
 
