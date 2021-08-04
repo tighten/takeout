@@ -50,7 +50,10 @@ jobs:
                   coverage: none
 
             - name: Install dependencies
-              run: composer update --prefer-stable --prefer-dist --no-interaction --no-suggest --ignore-platform-reqs
+              run: composer update --prefer-stable --prefer-dist --no-interaction --ignore-platform-reqs
+
+            - name: Constrain PSR-7 to avoid string conflict
+              run: composer require guzzlehttp/psr7:"^1.7" --ignore-platform-reqs
 
             - name: Run tests
               run: vendor/bin/phpunit
