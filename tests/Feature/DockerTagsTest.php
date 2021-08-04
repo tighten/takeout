@@ -12,24 +12,12 @@ use Tests\TestCase;
 class DockerTagsTest extends TestCase
 {
     /** @test */
-    function it_lists_10_newest_available_tags_for_service()
-    {
-        $mysql = app(MySql::class);
-        $dockerTags = app(DockerTags::class, ['service' => $mysql]);
-        $tags = $dockerTags->getTags();
-
-        $this->assertEquals('latest', $tags[0]);
-        $this->assertTrue($tags->contains('5.7'));
-        $this->assertCount(10, $tags);
-    }
-
-    /** @test */
     function it_gets_the_latest_tag_not_named_latest()
     {
         $dockerTags = M::mock(DockerTags::class, [app(Client::class), app(Mysql::class)])->makePartial();
-        $dockerTags->shouldReceive('getTags')->andReturn(collect(['latest', 'next latest tag']));
+        $dockerTags->shouldReceive('getTags')->andReturn(collect(['latest', 'some named tag', '1.0.0']));
 
-        $this->assertEquals('next latest tag', $dockerTags->getLatestTag());
+        $this->assertEquals('1.0.0', $dockerTags->getLatestTag());
     }
 
     /** @test */
@@ -49,7 +37,6 @@ class DockerTagsTest extends TestCase
         $tags = collect($dockerTags->getTags());
 
         $this->assertEquals('latest', $tags->first());
-        $this->assertEquals('9-buster', $tags->last());
-        $this->assertCount(10, $tags);
+        $this->assertEquals('9', $tags->last());
     }
 }
