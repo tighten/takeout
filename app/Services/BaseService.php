@@ -158,10 +158,12 @@ abstract class BaseService
             $items[] = $prompt;
         }
 
+        // Allow users to pass custom docker images (e.g. "postgis/postgis:latest") when we ask for the tag
         if (Str::is('*:*', $this->promptResponses['tag'])) {
             [$image, $this->promptResponses['tag']] = explode(':', $this->promptResponses['tag']);
             [$this->promptResponses['organization'], $this->promptResponses['image_name']] = Str::is('*/*', $image) ? explode('/', $image) : [$this->organization, $image];
         }
+
         $this->tag = $this->resolveTag($this->promptResponses['tag']);
     }
 
