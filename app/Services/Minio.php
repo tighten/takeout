@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Shell\MinioDockerTags;
+
 class Minio extends BaseService
 {
     protected static $category = Category::STORAGE;
@@ -9,6 +11,7 @@ class Minio extends BaseService
     protected $organization = 'minio';
     protected $imageName = 'minio';
     protected $defaultPort = 9000;
+    protected $dockerTagsClass = MinioDockerTags::class;
     protected $prompts = [
         [
             'shortname' => 'volume',
@@ -21,21 +24,21 @@ class Minio extends BaseService
             'default' => 9001,
         ],
         [
-            'shortname' => 'access_key',
-            'prompt' => 'What will the access key for Minio be?',
+            'shortname' => 'root_user',
+            'prompt' => 'What will the root user name for Minio be?',
             'default' => 'minioadmin',
         ],
         [
-            'shortname' => 'secret_key',
-            'prompt' => 'What will the secret key for Minio be?',
+            'shortname' => 'root_password',
+            'prompt' => 'What will the root password for Minio be?',
             'default' => 'minioadmin',
         ],
     ];
 
     protected $dockerRunTemplate = '-p "${:port}":9000 \
         -p "${:console}":9001 \
-        -e MINIO_ACCESS_KEY="${:access_key}" \
-        -e MINIO_SECRET_KEY="${:secret_key}" \
+        -e MINIO_ROOT_USER="${:root_user}" \
+        -e MINIO_ROOT_PASSWORD="${:root_password}" \
         -v "${:volume}":/data \
         "${:organization}"/"${:image_name}":"${:tag}" server /data --console-address ":9001"';
 }
