@@ -66,7 +66,7 @@ class MinioDockerTagsTest extends TestCase
         $this->assertTrue($laterReleasePosition < $earlierReleasePosition);
     }
 
-    protected function getDockerTags()
+    function getDockerTags()
     {
         $minio = app(Minio::class);
         $dockerTags = M::mock(MinioDockerTags::class, [app(Client::class), $minio])
