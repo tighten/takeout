@@ -26,13 +26,13 @@ export default class MySQL extends BaseService {
       message: this.defaultPortMessage(),
       default: this.defaultPort,
       validate: function (port: number) {
-        return new Promise((res, rej) => {
+        return new Promise((resolve, reject) => {
           if (! EnvironmentShell.isPortAvailable(port)) {
-            rej(`Port ${port} has already been taken. Try another one.`);
+            reject(`Port ${port} has already been taken. Please, try another one.`)
             return;
           }
 
-          res(true);
+          resolve(true);
         })
       },
     },

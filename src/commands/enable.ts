@@ -91,8 +91,6 @@ export default class Enable extends dockerBaseMixin(Command) {
         },
       ]
 
-      // @TODO check if the port is in use
-
       this.imageIsDownloaded(serviceInstance, ans.tag).then(async imageAvailable => {
         if (!imageAvailable) {
           await this.downloadImage(serviceInstance, ans.tag)
