@@ -75,7 +75,7 @@ export default class Enable extends dockerBaseMixin(Command) {
           Binds: [
             `${ans.volume}:/data`,
           ],
-          PjortBindings: {},
+          PortBindings: {},
           NetworkMode: 'bridge',
           Devices: [],
         },
