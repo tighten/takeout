@@ -1,6 +1,8 @@
-import {Command, flags} from '@oclif/command'
+import Command from '../commands/base'
+import {flags} from '@oclif/command'
 import {cli} from 'cli-ux'
-import {DockerContainer} from '../types'
+import {DockerodeContainer} from '../types'
+import {containersToTable} from '../helpers'
 const Docker = require('dockerode')
 
 export default class List extends Command {
@@ -12,7 +14,7 @@ export default class List extends Command {
   }
 
   async run() {
-    const {args, flags} = this.parse(List)
+    const {flags} = this.parse(List)
 
     const docker = new Docker()
     docker.listContainers(
@@ -22,26 +24,18 @@ export default class List extends Command {
           name: ['TO--'],
         },
       },
-      (err: any, containers: any) => {
+      (err: Error, containers: DockerodeContainer[]) => {
         if (err) return this.error(err)
         if (flags.json) {
           this.log(JSON.stringify(containers))
+        } else if (containers.length === 0) {
+          this.logSuccess('No Takeout containers.')
         } else {
-          const tableData = containers.map((container: DockerContainer) => ({...container, Names: container.Names[0].substring(1)}))
-          cli.table(tableData, {
-            Id: {
-              header: 'Container ID',
-            },
-            Names: {
-              header: 'Name',
-            },
-            Status: {
-              header: 'Status',
-            },
-          }, {
-            printLine: this.log,
-            ...flags,
-          })
+          cli.table(containersToTable(containers), {
+            Id: {header: 'Container ID'},
+            Names: {header: 'Name'},
+            Status: {header: 'Status'},
+          }, {printLine: this.log, ...flags})
         }
       }
     )

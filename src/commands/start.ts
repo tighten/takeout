@@ -1,6 +1,6 @@
 import {Command, flags} from '@oclif/command'
 import {menuOptions} from '../helpers'
-import {DockerContainer} from '../types'
+import {DockerodeContainer} from '../types'
 const inquirer = require('inquirer')
 const Docker = require('dockerode')
 
@@ -19,7 +19,7 @@ export default class Start extends Command {
     try {
       const container = (new Docker()).getContainer(id)
       const containerInspection = await container.inspect()
-      container.start((err: any, data: any) => {
+      container.start((err: Error) => {
         if (err) throw err
         this.log(`Container ${containerInspection.Name.substring(1)} successfully started.`)
       })
@@ -45,7 +45,7 @@ export default class Start extends Command {
           if (containers.length === 0) return this.log('There are no containers to start.')
 
           if (flags.all) {
-            containers.forEach((container: DockerContainer) => {
+            containers.forEach((container: DockerodeContainer) => {
               this.startContainer(container.Id)
             })
           } else {

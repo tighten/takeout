@@ -1,14 +1,13 @@
 import {expect, test} from '@oclif/test'
-import Docker from '../../src/shell/docker'
-import {DockerContainer} from '../../src/types'
+import Docker from '../../src/shell/dockershell'
 const child_process = require('child_process')
 const inquirer = require('inquirer')
 const sinon = require('sinon')
 
-const fakeTakeoutContainers: DockerContainer[] = [
+const fakeTakeoutContainers = [
   {
-    ID: 'redisId',
-    Names: 'redis',
+    Id: 'redisId',
+    Names: ['redis'],
     Status: 'Exited 0 minutes ago.',
   },
 ]

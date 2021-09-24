@@ -1,11 +1,10 @@
 import {expect, test} from '@oclif/test'
-import Docker from '../../src/shell/docker'
-import {DockerContainer} from '../../src/types'
+import Docker from '../../src/shell/dockershell'
 
-const fakeTakeoutContainers: DockerContainer[] = [
+const fakeTakeoutContainers = [
   {
-    ID: 'redisId',
-    Names: 'redis',
+    Id: 'redis',
+    Names: ['redis'],
     Status: 'Running',
   },
 ]

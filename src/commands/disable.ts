@@ -5,10 +5,10 @@ import {DockerodeContainer} from '../types'
 import inquirer = require('inquirer')
 import dockerBaseMixin from '../mixins/docker-base'
 
-export default class Stop extends dockerBaseMixin(Command) {
-  static description = 'Stop a started container.'
+export default class Disable extends dockerBaseMixin(Command) {
+  static description = 'Disable an enabled container.'
 
-  /** Allow multiple services (argv) to be stopped at once */
+  /** Allow multiple services (argv) to be disabled at once */
   static strict = false
 
   static flags = {
@@ -18,65 +18,69 @@ export default class Stop extends dockerBaseMixin(Command) {
   }
 
   async run() {
-    const {argv, flags} = this.parse(Stop)
+    const {argv, flags} = this.parse(Disable)
 
     this.initializeCommand()
 
     if (flags.all) {
-      const runningTOContainers = await this.listTakeoutContainers(['running'])
+      const runningTOContainers = await this.listTakeoutContainers(['running', 'exited', 'created'])
 
       if (runningTOContainers.length === 0) {
-        throw new Error('No containers to stop.')
+        throw new Error('No containers to disable.')
       }
 
       runningTOContainers.forEach((container: any) => {
-        this.stopContainer(container.Id)
+        this.disableContainer(container.Id)
       })
     } else if (argv?.length) {
       argv.forEach(async (arg: string) => {
-        const containers = await this.takeoutContainersByShortNames([arg], ['running'])
-        if (containers.length === 0) {
-          // @TODO: Handle error more gracefully
+        // @TODO: Add a spinner right here
+        const containerIds = await this.takeoutContainerIdsByShortNames([arg])
+        let containerId = ''
+
+        if (containerIds.length === 0) {
           throw new Error(`No containers found for ${arg}`)
-        } else if (containers.length > 1) {
+        } else if (containerIds.length > 1) {
+          const containers = await this.takeoutContainersByShortNames([arg], ['running', 'exited', 'created'])
           inquirer.prompt([
             {
               type: 'checkbox',
               name: 'containers',
-              message: 'Which container(s) would you like to stop?',
+              message: 'Which container(s) would you like to disable?',
               choices: menuOptions(containers),
             },
           ])
           .then((answers: any) => {
             answers.containers.forEach((answer: string) => {
-              this.stopContainer(answer)
+              this.disableContainer(answer)
             })
           })
         } else {
-          this.stopContainer(containers[0].Id)
+          containerId = containerIds[0]
+          this.disableContainer(containerId)
         }
       })
     } else {
-      const containers = await this.listTakeoutContainers(['running'])
+      const containers = await this.listTakeoutContainers(['running', 'exited', 'created'])
 
-      if (containers.length === 0) return this.log('There are no containers to stop.')
+      if (containers.length === 0) return this.log('There are no containers to disable.')
 
       if (flags.all) {
         containers.forEach((container: DockerodeContainer) => {
-          this.stopContainer(container.Id)
+          this.disableContainer(container.Id)
         })
       } else {
         inquirer.prompt([
           {
             type: 'checkbox',
             name: 'containers',
-            message: 'Which container(s) would you like to stop?',
+            message: 'Which container(s) would you like to disable?',
             choices: menuOptions(containers),
           },
         ])
         .then((answers: any) => {
           answers.containers.forEach((answer: string) => {
-            this.stopContainer(answer)
+            this.disableContainer(answer)
           })
         })
       }

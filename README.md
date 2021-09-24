@@ -26,9 +26,27 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 # Requirements
 
-- macOS, Linux, or WSL2
+- macOS, Linux, or WSL2 (also see [Linux Dependencies](#linux-dependencies))
 - Node installed or whatever
 - Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/))
+
+## Linux Dependencies
+<a name="linux-dependencies"></a>
+
+Some distros don't come with `netstat` installed by default, so you may need to install it yourself:
+
+```bash
+# Debian/Ubuntu
+apt-get install net-tools
+# CentOS/RHEL
+yum install net-tools
+# OpenSuse
+zypper install net-tools
+# Arch Linux
+pacman -S netstat-nat
+```
+
+You may need to run these as the `root` user.
 
 # Usage
 
@@ -44,7 +62,7 @@ $ npm install -g @tighten/takeout
 $ takeout COMMAND
 running command...
 $ takeout (-v|--version|version)
-@tighten/takeout/2.0.0-alpha.1 darwin-x64 node-v14.15.0
+@tighten/takeout/2.0.0-alpha.1 darwin-x64 node-v14.15.4
 $ takeout --help [COMMAND]
 USAGE
   $ takeout COMMAND
@@ -54,10 +72,53 @@ USAGE
 
 # Commands
 <!-- commands -->
+* [`takeout base`](#takeout-base)
+* [`takeout disable`](#takeout-disable)
+* [`takeout enable`](#takeout-enable)
 * [`takeout help [COMMAND]`](#takeout-help-command)
 * [`takeout list`](#takeout-list)
 * [`takeout start [CONTAINER]`](#takeout-start-container)
-* [`takeout stop [CONTAINER]`](#takeout-stop-container)
+* [`takeout stop`](#takeout-stop)
+* [`takeout volume [COMMAND]`](#takeout-volume-command)
+
+## `takeout base`
+
+```
+USAGE
+  $ takeout base
+```
+
+_See code: [src/commands/base.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/base.ts)_
+
+## `takeout disable`
+
+Disable an enabled container.
+
+```
+USAGE
+  $ takeout disable
+
+OPTIONS
+  -a, --all
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/disable.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/disable.ts)_
+
+## `takeout enable`
+
+Enable services via Takeout
+
+```
+USAGE
+  $ takeout enable
+
+OPTIONS
+  -h, --help  show CLI help
+```
+
+_See code: [src/commands/enable.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/enable.ts)_
 
 ## `takeout help [COMMAND]`
 
@@ -74,7 +135,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
 
 ## `takeout list`
 
@@ -107,13 +168,13 @@ OPTIONS
 
 _See code: [src/commands/start.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/start.ts)_
 
-## `takeout stop [CONTAINER]`
+## `takeout stop`
 
 Stop a started container.
 
 ```
 USAGE
-  $ takeout stop [CONTAINER]
+  $ takeout stop
 
 OPTIONS
   -a, --all
@@ -122,6 +183,20 @@ OPTIONS
 ```
 
 _See code: [src/commands/stop.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/stop.ts)_
+
+## `takeout volume [COMMAND]`
+
+Manage data volumes.
+
+```
+USAGE
+  $ takeout volume [COMMAND]
+
+OPTIONS
+  -h, --help  show CLI help
+```
+
+_See code: [src/commands/volume.ts](https://github.com/tighten/takeout/blob/v2.0.0-alpha.1/src/commands/volume.ts)_
 <!-- commandsstop -->
 
 
