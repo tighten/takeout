@@ -1,3 +1,4 @@
+import EnvironmentShell from '../shell/environmentshell';
 import BaseService from './base-service'
 
 export default class Redis extends BaseService {
@@ -27,6 +28,16 @@ export default class Redis extends BaseService {
       name: 'port',
       message: this.defaultPortMessage(),
       default: this.defaultPort,
+      validate: function (port: number) {
+        return new Promise((resolve, reject) => {
+          if (! EnvironmentShell.isPortAvailable(port)) {
+            reject(`Port ${port} has already been taken. Please, try another one.`)
+            return;
+          }
+
+          resolve(true);
+        })
+      },
     },
   ];
 }
