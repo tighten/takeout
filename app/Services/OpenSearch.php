@@ -7,7 +7,7 @@ class OpenSearch extends BaseService
     protected static $category = Category::SEARCH;
 
     protected $organization = 'opensearchproject';
-    protected $imageName = 'opensearchproject/opensearch';
+    protected $imageName = 'opensearch';
     protected $defaultPort = 9200;
     protected $prompts = [
         [
@@ -23,10 +23,10 @@ class OpenSearch extends BaseService
     ];
 
     protected $dockerRunTemplate = '-p "${:port}":9200 \
-        -p ${:analyzer_port}:9600
+        -p "${:analyzer_port}":9600 \
         -e "discovery.type=single-node"  \
         -v "${:volume}":/usr/share/opensearch/data \
-         "${:organization}"/"${:image_name}":"${:tag}"';
+        "${:organization}"/"${:image_name}":"${:tag}"';
 
     protected static $displayName = 'OpenSearch';
 }
