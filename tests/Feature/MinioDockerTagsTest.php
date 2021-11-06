@@ -77,11 +77,4 @@ class MinioDockerTagsTest extends TestCase
 
         return $dockerTags;
     }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        require_once(base_path('tests/support/MinioDockerTagsFakestream.php'));
-    }
 }

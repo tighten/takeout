@@ -11,7 +11,7 @@ class MinioDockerTagsFakestream extends Psr7Stream
         // Do nothing
     }
 
-    public function getContents()
+    public function getContents(): string
     {
         return json_encode([
             'results' => [

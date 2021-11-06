@@ -46,11 +46,4 @@ class MicrosoftDockerTagsTest extends TestCase
 
         $this->assertEquals('2024-GA-ubuntu-18.04', $dockerTags->getLatestTag());
     }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        require_once(base_path('tests/support/MicrosoftDockerTagsFakestream.php'));
-    }
 }
