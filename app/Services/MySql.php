@@ -6,7 +6,8 @@ class MySql extends BaseService
 {
     protected static $category = Category::DATABASE;
 
-    protected $imageName = 'mysql';
+    protected $organization = 'mysql';
+    protected $imageName = 'mysql-server';
     protected $defaultPort = 3306;
     protected $prompts = [
         [
@@ -33,7 +34,7 @@ class MySql extends BaseService
     {
         $parameters = parent::buildParameters();
 
-        $parameters['allow_empty_password'] = $parameters['root_password'] === '' ? 'yes' : 'no';
+        $parameters['allow_empty_password'] = $parameters['root_password'] === '' ? '1' : '0';
 
         return $parameters;
     }
