@@ -43,8 +43,17 @@ class DockerTags
     public function getTags(): Collection
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
+        $platform = php_uname('m');
 
         [$numericTags, $alphaTags] = collect($response['results'])
+            ->when($platform === 'arm64', function ($results) use ($platform) {
+                // We need to take into account if the M1 chip is supported by the tag.
+                return $results->filter(function ($results) use ($platform) {
+                    return collect($results['images'])
+                        ->pluck('architecture')
+                        ->contains($platform);
+                });
+            })
             ->pluck('name')
             ->partition(function ($tag) {
                 return is_numeric($tag[0]);
