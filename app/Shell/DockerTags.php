@@ -71,12 +71,12 @@ class DockerTags
      */
     protected function armSupportedImagesOnlyFilter()
     {
-        return function ($results) {
+        return function ($tags) {
             $platform = $this->platform();
 
             // We need to take into account if the M1 chip is supported by the tag.
-            return $results->filter(function ($results) use ($platform) {
-                return collect($results['images'])
+            return $tags->filter(function ($tag) use ($platform) {
+                return collect($tag['images'])
                     ->pluck('architecture')
                     ->contains($platform);
             });
@@ -90,9 +90,9 @@ class DockerTags
      */
     protected function nonArmOnlySupportImagesFilter()
     {
-        return function ($results) {
-            return $results->filter(function ($results) {
-                $supportedArchitectures = collect($results['images'])
+        return function ($tags) {
+            return $tags->filter(function ($tag) {
+                $supportedArchitectures = collect($tag['images'])
                     ->pluck('architecture')
                     ->unique()
                     ->values();
