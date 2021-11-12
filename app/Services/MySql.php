@@ -25,6 +25,7 @@ class MySql extends BaseService
     protected $dockerRunTemplate = '-p "${:port}":3306 \
         -e MYSQL_ROOT_PASSWORD="${:root_password}" \
         -e MYSQL_ALLOW_EMPTY_PASSWORD="${:allow_empty_password}" \
+        -e MYSQL_ROOT_HOST="%" \
         -v "${:volume}":/var/lib/mysql \
         "${:organization}"/"${:image_name}":"${:tag}" --default-authentication-plugin=mysql_native_password';
 
