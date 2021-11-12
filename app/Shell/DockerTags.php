@@ -64,6 +64,11 @@ class DockerTags
         return $sortedTags->values()->filter();
     }
 
+    /**
+     * Filter that ensures images that do not support arm architecture are filtered out.
+     *
+     * @return callable
+     */
     protected function armSupportedImagesOnlyFilter()
     {
         return function ($results) {
@@ -78,6 +83,11 @@ class DockerTags
         };
     }
 
+    /**
+     * Filter that ensures are arm-only images are filtered out.
+     *
+     * @return callable
+     */
     protected function nonArmOnlySupportImagesFilter()
     {
         return function ($results) {
