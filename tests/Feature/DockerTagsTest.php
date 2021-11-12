@@ -10,6 +10,8 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Mockery as M;
+use Tests\Support\IntelDockerTags;
+use Tests\Support\M1DockerTags;
 use Tests\TestCase;
 
 class DockerTagsTest extends TestCase
@@ -94,21 +96,5 @@ class DockerTagsTest extends TestCase
                 ],
             ])),
         ]);
-    }
-}
-
-class M1DockerTags extends DockerTags
-{
-    protected function platform(): string
-    {
-        return 'arm64';
-    }
-}
-
-class IntelDockerTags extends DockerTags
-{
-    protected function platform(): string
-    {
-        return 'x86_64';
     }
 }
