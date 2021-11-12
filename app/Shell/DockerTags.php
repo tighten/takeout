@@ -74,7 +74,8 @@ class DockerTags
         return function ($tags) {
             $platform = $this->platform();
 
-            // We need to take into account if the M1 chip is supported by the tag.
+            // We only want tags that specify arm64 in the supported architecture.
+
             return $tags->filter(function ($tag) use ($platform) {
                 return collect($tag['images'])
                     ->pluck('architecture')
@@ -97,7 +98,9 @@ class DockerTags
                     ->unique()
                     ->values();
 
-                // They should have more architecture options when removing 'arm64'.
+                // When removing the arm64 option from the list, there should
+                // still be other options in the supported architectures
+                // so we can consider that the tag is not arm-only.
 
                 return $supportedArchitectures->diff(['arm64'])->count() > 0;
             });
