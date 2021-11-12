@@ -43,17 +43,11 @@ class DockerTags
     public function getTags(): Collection
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
-        $platform = php_uname('m');
+        $platform = $this->platform();
 
         [$numericTags, $alphaTags] = collect($response['results'])
-            ->when($platform === 'arm64', function ($results) use ($platform) {
-                // We need to take into account if the M1 chip is supported by the tag.
-                return $results->filter(function ($results) use ($platform) {
-                    return collect($results['images'])
-                        ->pluck('architecture')
-                        ->contains($platform);
-                });
-            })
+            ->when($platform === 'arm64', $this->armSupportedImagesOnlyFilter())
+            ->when($platform !== 'arm64', $this->nonArmOnlySupportImagesFilter())
             ->pluck('name')
             ->partition(function ($tag) {
                 return is_numeric($tag[0]);
@@ -68,6 +62,41 @@ class DockerTags
         }
 
         return $sortedTags->values()->filter();
+    }
+
+    protected function armSupportedImagesOnlyFilter()
+    {
+        return function ($results) {
+            $platform = $this->platform();
+
+            // We need to take into account if the M1 chip is supported by the tag.
+            return $results->filter(function ($results) use ($platform) {
+                return collect($results['images'])
+                    ->pluck('architecture')
+                    ->contains($platform);
+            });
+        };
+    }
+
+    protected function nonArmOnlySupportImagesFilter()
+    {
+        return function ($results) {
+            return $results->filter(function ($results) {
+                $supportedArchitectures = collect($results['images'])
+                    ->pluck('architecture')
+                    ->unique()
+                    ->values();
+
+                // They should have more architecture options when removing 'arm64'.
+
+                return $supportedArchitectures->diff(['arm64'])->count() > 0;
+            });
+        };
+    }
+
+    protected function platform(): string
+    {
+        return php_uname('m');
     }
 
     protected function getTagsResponse(): StreamInterface

@@ -6,6 +6,9 @@ use App\Services\MySql;
 use App\Services\PostgreSql;
 use App\Shell\DockerTags;
 use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Mockery as M;
 use Tests\TestCase;
 
@@ -38,5 +41,74 @@ class DockerTagsTest extends TestCase
 
         $this->assertEquals('latest', $tags->first());
         $this->assertEquals('9', $tags->last());
+    }
+
+    /** @test */
+    function it_detects_arm64_based_images_when_running_on_arm64_based_host()
+    {
+        $handlerStack = HandlerStack::create($this->mockImagesResponseHandler());
+        $client = new Client(['handler' => $handlerStack]);
+
+        /** @var DockerTags $dockerTags */
+        $dockerTags = M::mock(M1DockerTags::class, [$client, app(MySql::class)])->makePartial();
+
+        $this->assertEquals('1.0.0-arm64', $dockerTags->getLatestTag());
+    }
+
+    /** @test */
+    function it_gets_latest_tag_on_intel_platform()
+    {
+        $handlerStack = HandlerStack::create($this->mockImagesResponseHandler());
+        $client = new Client(['handler' => $handlerStack]);
+
+        /** @var DockerTags $dockerTags */
+        $dockerTags = M::mock(IntelDockerTags::class, [$client, app(MySql::class)])->makePartial();
+
+        $this->assertEquals('1.0.0', $dockerTags->getLatestTag());
+    }
+
+    private function mockImagesResponseHandler()
+    {
+        return new MockHandler([
+            new Response(200, [], json_encode([
+                'results' => [
+                    [
+                        'name' => 'latest',
+                        'images' => [
+                            ['architecture' => 'amd64'],
+                            ['architecture' => 'arm64'],
+                        ],
+                    ],
+                    [
+                        'name' => '1.0.0',
+                        'images' => [
+                            ['architecture' => 'amd64'],
+                        ],
+                    ],
+                    [
+                        'name' => '1.0.0-arm64',
+                        'images' => [
+                            ['architecture' => 'arm64'],
+                        ],
+                    ],
+                ],
+            ])),
+        ]);
+    }
+}
+
+class M1DockerTags extends DockerTags
+{
+    protected function platform(): string
+    {
+        return 'arm64';
+    }
+}
+
+class IntelDockerTags extends DockerTags
+{
+    protected function platform(): string
+    {
+        return 'x86_64';
     }
 }
