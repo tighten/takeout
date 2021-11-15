@@ -65,7 +65,7 @@ class DockerTags
     }
 
     /**
-     * Filter that ensures images that do not support arm architecture are filtered out.
+     * Return a function intended to filter tags, ensuring images that do not support arm architecture are filtered out.
      *
      * @return callable
      */
@@ -85,7 +85,7 @@ class DockerTags
     }
 
     /**
-     * Filter that ensures are arm-only images are filtered out.
+     * Return a function intended to filter tags, that ensures are arm-only images are filtered out.
      *
      * @return callable
      */
