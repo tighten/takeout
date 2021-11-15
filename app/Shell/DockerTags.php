@@ -72,7 +72,7 @@ class DockerTags
     protected function armSupportedImagesOnlyFilter()
     {
         return function ($tags) {
-            return $tags->filter(function ($tag) use ($platform) {
+            return $tags->filter(function ($tag) {
                 return collect($tag['images'])
                     ->pluck('architecture')
                     ->contains('arm64');
