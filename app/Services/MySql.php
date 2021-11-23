@@ -6,7 +6,8 @@ class MySql extends BaseService
 {
     protected static $category = Category::DATABASE;
 
-    protected $imageName = 'mysql';
+    protected $organization = 'mysql';
+    protected $imageName = 'mysql-server';
     protected $defaultPort = 3306;
     protected $prompts = [
         [
@@ -24,6 +25,7 @@ class MySql extends BaseService
     protected $dockerRunTemplate = '-p "${:port}":3306 \
         -e MYSQL_ROOT_PASSWORD="${:root_password}" \
         -e MYSQL_ALLOW_EMPTY_PASSWORD="${:allow_empty_password}" \
+        -e MYSQL_ROOT_HOST="%" \
         -v "${:volume}":/var/lib/mysql \
         "${:organization}"/"${:image_name}":"${:tag}" --default-authentication-plugin=mysql_native_password';
 
@@ -33,7 +35,7 @@ class MySql extends BaseService
     {
         $parameters = parent::buildParameters();
 
-        $parameters['allow_empty_password'] = $parameters['root_password'] === '' ? 'yes' : 'no';
+        $parameters['allow_empty_password'] = $parameters['root_password'] === '' ? '1' : '0';
 
         return $parameters;
     }
