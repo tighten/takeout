@@ -4,3 +4,4 @@
 /.vagrant
 .phpunit.result.cache
 /storage
+phpunit.xml
