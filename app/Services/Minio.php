@@ -24,6 +24,11 @@ class Minio extends BaseService
             'default' => 9001,
         ],
         [
+            'shortname' => 'domain',
+            'prompt' => 'What domain will Minio be accessible at (optional, to allow dns buckets)?',
+            'default' => 'localhost',
+        ],
+        [
             'shortname' => 'root_user',
             'prompt' => 'What will the root user name for Minio be?',
             'default' => 'minioadmin',
@@ -39,6 +44,7 @@ class Minio extends BaseService
         -p "${:console}":9001 \
         -e MINIO_ROOT_USER="${:root_user}" \
         -e MINIO_ROOT_PASSWORD="${:root_password}" \
+        -e MINIO_DOMAIN="${:domain}" \
         -v "${:volume}":/data \
         "${:organization}"/"${:image_name}":"${:tag}" server /data --console-address ":9001"';
 }
