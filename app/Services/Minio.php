@@ -52,7 +52,7 @@ class Minio extends BaseService
         parent::prompts();
 
         if ('' !== $this->promptResponses['domain']) {
-            $this->dockerRunTemplate = '-e MINIO_DOMAIN="${:domain}" '.$this->dockerRunTemplate;
+            $this->dockerRunTemplate = '-e MINIO_DOMAIN="${:domain}" ' . $this->dockerRunTemplate;
         }
     }
 }
