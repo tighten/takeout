@@ -26,7 +26,7 @@ class Minio extends BaseService
         [
             'shortname' => 'domain',
             'prompt' => 'What domain will Minio be accessible at (optional, to allow dns buckets)?',
-            'default' => 'localhost',
+            'default' => '',
         ],
         [
             'shortname' => 'root_user',
@@ -44,7 +44,15 @@ class Minio extends BaseService
         -p "${:console}":9001 \
         -e MINIO_ROOT_USER="${:root_user}" \
         -e MINIO_ROOT_PASSWORD="${:root_password}" \
-        -e MINIO_DOMAIN="${:domain}" \
         -v "${:volume}":/data \
         "${:organization}"/"${:image_name}":"${:tag}" server /data --console-address ":9001"';
+
+    protected function prompts(): void
+    {
+        parent::prompts();
+
+        if ('' !== $this->promptResponses['domain']) {
+            $this->dockerRunTemplate = '-e MINIO_DOMAIN="${:domain}" '.$this->dockerRunTemplate;
+        }
+    }
 }
