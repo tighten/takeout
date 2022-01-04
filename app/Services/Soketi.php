@@ -7,6 +7,7 @@ use App\Shell\QuayDockerTags;
 class Soketi extends BaseService
 {
     protected static $category = Category::SOCKET;
+
     protected $dockerTagsClass = QuayDockerTags::class;
     protected $organization = 'quay.io';
     protected $imageName = 'soketi/soketi';
