@@ -13,6 +13,11 @@ class Environment
         $this->shell = $shell;
     }
 
+    public function isMacOs(): bool
+    {
+        return PHP_OS_FAMILY === 'Darwin';
+    }
+
     public function isLinuxOs(): bool
     {
         return PHP_OS_FAMILY === 'Linux';
