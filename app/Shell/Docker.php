@@ -3,6 +3,7 @@
 namespace App\Shell;
 
 use App\Exceptions\DockerContainerMissingException;
+use App\Shell\Environment;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -12,12 +13,14 @@ class Docker
     protected $shell;
     protected $formatter;
     protected $networking;
+    protected $environment;
 
-    public function __construct(Shell $shell, DockerFormatter $formatter, DockerNetworking $networking)
+    public function __construct(Shell $shell, DockerFormatter $formatter, DockerNetworking $networking, Environment $environment)
     {
         $this->shell = $shell;
         $this->formatter = $formatter;
         $this->networking = $networking;
+        $this->environment = $environment;
     }
 
     public function removeContainer(string $containerId): void
@@ -180,7 +183,17 @@ class Docker
 
     public function stopDockerService(): void
     {
-        $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
+        if ($this->environment->isWindowsOs()) {
+            $this->shell->execQuietly('wsl -t docker-desktop');
+            $this->shell->execQuietly('wsl -t docker-desktop-data');
+        } elseif ($this->environment->isMacOs()) {
+            $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
+        } elseif ($this->environment->isLinuxOs()) {
+            $this->shell->execQuietly('systemctl stop docker');
+        } else {
+            // BSD, Solaris, Unknown
+            throw new Exception('Cannot stop Docker in PHP_OS_FAMILY ' . PHP_OS_FAMILY);
+        }
     }
 
     protected function runAndParseTable(string $command): Collection

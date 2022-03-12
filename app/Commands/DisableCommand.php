@@ -131,7 +131,7 @@ class DisableCommand extends Command
                 $this->info("\n docker volume rm {$volumeName}");
             }
 
-            if (count($this->docker->allContainers()) === 0 && ($this->environment->isLinuxOs() || $this->environment->isWindowsOs())) {
+            if (count($this->docker->allContainers()) === 0) {
                 $question = 'No containers are running. Turn off Docker?';
 
                 if ($this->environment->isWindowsOs()) {
