@@ -184,12 +184,12 @@ class Docker
     public function stopDockerService(): void
     {
         if ($this->environment->isWindowsOs()) {
-            $this->shell->execQuietly("wsl -t docker-desktop");
-            $this->shell->execQuietly("wsl -t docker-desktop-data");
+            $this->shell->execQuietly('wsl -t docker-desktop');
+            $this->shell->execQuietly('wsl -t docker-desktop-data');
         } elseif ($this->environment->isMacOs()) {
             $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
         } elseif ($this->environment->isLinuxOs()) {
-            $this->shell->execQuietly("systemctl stop docker");
+            $this->shell->execQuietly('systemctl stop docker');
         } else {
             // BSD, Solaris, Unknown
             throw new Exception('Cannot stop Docker in PHP_OS_FAMILY ' . PHP_OS_FAMILY);
