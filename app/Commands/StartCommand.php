@@ -6,6 +6,7 @@ use App\InitializesCommands;
 use App\Shell\Docker;
 use App\Shell\Environment;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use PhpSchool\CliMenu\CliMenu;
@@ -69,11 +70,14 @@ class StartCommand extends Command
     public function startByServiceNameOrContainerId(string $serviceNameOrContainerId): void
     {
         $containersByServiceName = $this->docker->startableTakeoutContainers()
-            ->mapWithKeys(function ($container) {
-                return [$container['container_id'] => str_replace('TO--', '', $container['names'])];
+            ->map(function ($container) {
+                return [
+                    'container' => $container,
+                    'label' => str_replace('TO--', '', $container['names']),
+                ];
             })
-            ->filter(function ($containerName) use ($serviceNameOrContainerId) {
-                return Str::startsWith($containerName, $serviceNameOrContainerId);
+            ->filter(function ($item) use ($serviceNameOrContainerId) {
+                return Str::startsWith($item['label'], $serviceNameOrContainerId);
             });
 
         // If we don't get any container by the service name, that probably means
@@ -86,8 +90,26 @@ class StartCommand extends Command
             return;
         }
 
+        if ($containersByServiceName->count() === 1) {
+            $this->start($containersByServiceName->first()['container']['container_id']);
 
-        $this->start($containersByServiceName->keys()->first());
+            return;
+        }
+
+        $selectedItem = $this->loadMenu($containersByServiceName->map(function ($item) {
+            $label = $item['container']['container_id'] . ' - ' . $item['label'];
+
+            return [
+                $label,
+                $this->loadMenuItem($item['container'], $label),
+            ];
+        })->all());
+
+        if (! $selectedItem) {
+            return;
+        }
+
+        $this->start($selectedItem);
     }
 
     public function start(string $container): void
@@ -99,20 +121,18 @@ class StartCommand extends Command
         $this->docker->startContainer($container);
     }
 
-    private function loadMenu($startableContainers): void
+    private function loadMenu($startableContainers)
     {
         if ($this->environment->isWindowsOs()) {
-            $this->windowsMenu($startableContainers);
-
-            return;
+            return $this->windowsMenu($startableContainers);
         }
 
-        $this->defaultMenu($startableContainers);
+        return $this->defaultMenu($startableContainers);
     }
 
     private function defaultMenu($startableContainers)
     {
-        $this->menu(self::MENU_TITLE)
+        return $this->menu(self::MENU_TITLE)
             ->addItems($startableContainers)
             ->addLineBreak('', 1)
             ->open();
@@ -140,7 +160,7 @@ class StartCommand extends Command
             return $value[0] === $choice;
         });
 
-        call_user_func(array_values($chosenStartableContainer)[0][1]);
+        return call_user_func(array_values($chosenStartableContainer)[0][1]);
     }
 
     private function loadMenuItem($container, $label): callable
