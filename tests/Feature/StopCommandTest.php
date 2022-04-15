@@ -71,4 +71,29 @@ class StopCommandTest extends TestCase
             $this->artisan('stop');
         }
     }
+
+    /** @test */
+    function it_can_stop_containers_by_service_name()
+    {
+        $services = Collection::make([
+            [
+                'container_id' => $containerId = '12345',
+                'names' => 'TO--mysql--8.0.22--3306',
+                'status' => 'Up 27 minutes',
+                'ports' => '0.0.0.0:3306->3306/tcp, 33060/tcp',
+                'base_alias' => 'mysql',
+                'full_alias' => 'mysql8.0',
+            ],
+        ]);
+
+        $this->mock(Docker::class, function ($mock) use ($services, $containerId) {
+            $mock->shouldReceive('isInstalled')->andReturn(true);
+            $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
+            $mock->shouldReceive('stoppableTakeoutContainers')->andReturn($services, new Collection);
+            $mock->shouldReceive('stopContainer')->with($containerId)->once();
+        });
+
+        $this->artisan('stop', ['containerId' => ['mysql']])
+            ->assertExitCode(0);
+    }
 }

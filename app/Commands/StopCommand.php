@@ -31,7 +31,7 @@ class StopCommand extends Command
 
         if (filled($containers)) {
             foreach ($containers as $container) {
-                $this->stop($container);
+                $this->stopByServiceNameOrContainerId($container);
             }
 
             return;
@@ -64,6 +64,28 @@ class StopCommand extends Command
                 $this->loadMenuItem($container, $label),
             ];
         }, collect())->toArray();
+    }
+
+    public function stopByServiceNameOrContainerId(string $serviceNameOrContainerId): void
+    {
+        $containersByServiceName = $this->docker->stoppableTakeoutContainers()
+            ->map(function ($container) {
+                return [
+                    'container' => $container,
+                    'label' => str_replace('TO--', '', $container['names']),
+                ];
+            })
+            ->filter(function ($item) use ($serviceNameOrContainerId) {
+                return Str::startsWith($item['label'], $serviceNameOrContainerId);
+            });
+
+        if ($containersByServiceName->isEmpty()) {
+            $this->start($serviceNameOrContainerId);
+
+            return;
+        }
+
+        $this->stop($containersByServiceName->first()['container']['container_id']);
     }
 
     public function stop(string $container): void
