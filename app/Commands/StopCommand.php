@@ -99,7 +99,9 @@ class StopCommand extends Command
             ];
         })->all());
 
-        if (! $selectedContainer) return;
+        if (! $selectedContainer) {
+            return;
+        }
 
         $this->stop($selectedContainer);
     }
