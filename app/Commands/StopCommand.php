@@ -85,7 +85,23 @@ class StopCommand extends Command
             return;
         }
 
-        $this->stop($containersByServiceName->first()['container']['container_id']);
+        if ($containersByServiceName->count() === 1) {
+            $this->stop($containersByServiceName->first()['container']['container_id']);
+            return;
+        }
+
+        $selectedContainer = $this->loadMenu($containersByServiceName->map(function ($item) {
+            $label = $item['container']['container_id'] . ' - ' . $item['label'];
+
+            return [
+                $label,
+                $this->loadMenuItem($item['container'], $label),
+            ];
+        })->all());
+
+        if (! $selectedContainer) return;
+
+        $this->stop($selectedContainer);
     }
 
     public function stop(string $container): void
@@ -97,20 +113,18 @@ class StopCommand extends Command
         $this->docker->stopContainer($container);
     }
 
-    private function loadMenu($stoppableContainers): void
+    private function loadMenu($stoppableContainers)
     {
         if ($this->environment->isWindowsOs()) {
-            $this->windowsMenu($stoppableContainers);
-
-            return;
+            return $this->windowsMenu($stoppableContainers);
         }
 
-        $this->defaultMenu($stoppableContainers);
+        return $this->defaultMenu($stoppableContainers);
     }
 
     private function defaultMenu($stoppableContainers)
     {
-        $this->menu(self::MENU_TITLE)
+        return $this->menu(self::MENU_TITLE)
             ->addItems($stoppableContainers)
             ->addLineBreak('', 1)
             ->open();
@@ -138,7 +152,7 @@ class StopCommand extends Command
             return $value[0] === $choice;
         });
 
-        call_user_func(array_values($chosenStoppableContainer)[0][1]);
+        return call_user_func(array_values($chosenStoppableContainer)[0][1]);
     }
 
     private function loadMenuItem($container, $label): callable
