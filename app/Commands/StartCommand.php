@@ -31,7 +31,7 @@ class StartCommand extends Command
 
         if (filled($containers)) {
             foreach ($containers as $container) {
-                $this->start($container);
+                $this->startByServiceNameOrContainerId($container);
             }
 
             return;
@@ -64,6 +64,30 @@ class StartCommand extends Command
                 $this->loadMenuItem($container, $label),
             ];
         }, collect())->toArray();
+    }
+
+    public function startByServiceNameOrContainerId(string $serviceNameOrContainerId): void
+    {
+        $containersByServiceName = $this->docker->startableTakeoutContainers()
+            ->mapWithKeys(function ($container) {
+                return [$container['container_id'] => str_replace('TO--', '', $container['names'])];
+            })
+            ->filter(function ($containerName) use ($serviceNameOrContainerId) {
+                return Str::startsWith($containerName, $serviceNameOrContainerId);
+            });
+
+        // If we don't get any container by the service name, that probably means
+        // the user is trying to start a container using its container ID, so
+        // we will just forward that down to the underlying start method.
+
+        if ($containersByServiceName->isEmpty()) {
+            $this->start($serviceNameOrContainerId);
+
+            return;
+        }
+
+
+        $this->start($containersByServiceName->keys()->first());
     }
 
     public function start(string $container): void
