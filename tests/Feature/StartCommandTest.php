@@ -128,7 +128,7 @@ class StartCommandTest extends TestCase
 
         $menuItems = [
             $firstContainerId . ' - ' . $firstContainerName,
-            $mysql = $secondContainerId . ' - ' . str_replace('TO--', '', $secondContainerName),
+            $mysql = $secondContainerId . ' - ' . $secondContainerName,
             '<info>Exit</>',
         ];
 
