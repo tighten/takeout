@@ -75,7 +75,7 @@ class DisableCommand extends Command
                 $serviceContainerId = $serviceMatches->flip()->first();
                 break;
             default: // > 1
-                $serviceContainerId = $this->selectMenu($disableableServices ?? $this->disableableServices);
+                $serviceContainerId = $this->selectMenu($this->disableableServices);
 
                 if (! $serviceContainerId) {
                     return;
