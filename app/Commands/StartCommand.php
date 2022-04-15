@@ -6,7 +6,6 @@ use App\InitializesCommands;
 use App\Shell\Docker;
 use App\Shell\Environment;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use PhpSchool\CliMenu\CliMenu;
