@@ -26,13 +26,19 @@ class EnableCommand extends Command
         $this->services = $services;
         $this->initializeCommand();
 
-        $services = $this->argument('serviceNames');
+        $services = $this->removePassthroughOptions($this->argument('serviceNames'));
 
         $useDefaults = $this->option('default');
 
+        // Extract passthrough options, if provided, passed after "-- "
+        $passthroughOptions = [];
+        if (in_array('--', $_SERVER['argv'])) {
+            $passthroughOptions = array_slice($_SERVER['argv'], array_search('--', $_SERVER['argv']) + 1);
+        }
+
         if (filled($services)) {
             foreach ($services as $service) {
-                $this->enable($service, $useDefaults);
+                $this->enable($service, $useDefaults, $passthroughOptions);
             }
 
             return;
@@ -44,7 +50,20 @@ class EnableCommand extends Command
             return;
         }
 
-        $this->enable($option, $useDefaults);
+        $this->enable($option, $useDefaults, $passthroughOptions);
+    }
+
+    /**
+     * Remove any passthrough options from the parameters list
+     *
+     * @param array $serviceNames
+     * @return array
+     */
+    protected function removePassthroughOptions(array $serviceNames): array
+    {
+        return collect($serviceNames)->reject(function ($item) {
+            return str_starts_with($item, '--');
+        })->all();
     }
 
     private function selectService(): ?string
@@ -146,9 +165,9 @@ class EnableCommand extends Command
             ->toArray();
     }
 
-    public function enable(string $service, bool $useDefaults = false): void
+    public function enable(string $service, bool $useDefaults = false, array $passthroughOptions = []): void
     {
         $fqcn = $this->services->get($service);
-        app($fqcn)->enable($useDefaults);
+        app($fqcn)->enable($useDefaults, $passthroughOptions);
     }
 }

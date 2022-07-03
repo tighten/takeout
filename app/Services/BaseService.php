@@ -67,7 +67,7 @@ abstract class BaseService
         return static::$displayName ?? Str::afterLast(static::class, '\\');
     }
 
-    public function enable(bool $useDefaults = false): void
+    public function enable(bool $useDefaults = false, array $passthroughOptions = []): void
     {
         $this->useDefaults = $useDefaults;
 
@@ -79,7 +79,7 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                $this->sanitizeDockerRunTemplate($this->dockerRunTemplate),
+                $this->sanitizeDockerRunTemplate($this->dockerRunTemplate) . $this->buildPassthroughOptionsString($passthroughOptions),
                 $this->buildParameters()
             );
 
@@ -224,5 +224,14 @@ abstract class BaseService
         }
 
         return $dockerRunTemplate;
+    }
+
+    public function buildPassthroughOptionsString(array $passthroughOptions): string
+    {
+        if (empty($passthroughOptions)) {
+            return '';
+        }
+
+        return ' ' . join(' ', $passthroughOptions);
     }
 }
