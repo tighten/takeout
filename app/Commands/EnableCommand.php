@@ -87,12 +87,12 @@ class EnableCommand extends Command
      */
     public function removeOptions(array $arguments): array
     {
-        $arguments = collect($arguments)->reject(fn ($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)->toArray();
+        $arguments = collect($arguments)->reject(fn ($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)->values()->toArray();
 
         $start = array_search('enable', $arguments) + 1;
 
         if (in_array('--', $arguments)) {
-            $length = array_search('--', $arguments) - $start - 1;
+            $length = array_search('--', $arguments) - $start;
 
             return array_slice($arguments, $start, $length);
         }

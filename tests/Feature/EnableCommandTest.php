@@ -177,11 +177,13 @@ class EnableCommandTest extends TestCase
     /** @test */
     function it_removes_options()
     {
-        $cli = explode(' ', "./takeout enable meilisearch postgresql mysql --default -- -e 'abc' --other-flag");
-
         $command = new EnableCommand;
 
+        $cli = explode(' ', "./takeout enable meilisearch postgresql mysql --default -- -e 'abc' --other-flag");
         $this->assertEquals(['meilisearch', 'postgresql', 'mysql'], $command->removeOptions($cli));
+
+        $cli = explode(' ', "./takeout enable meilisearch -- -e MEILI_MASTER_KEY='abc'");
+        $this->assertEquals(['meilisearch'], $command->removeOptions($cli));
     }
 
     /** @test */
