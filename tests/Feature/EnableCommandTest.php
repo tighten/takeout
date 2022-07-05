@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Commands\EnableCommand;
 use App\Exceptions\InvalidServiceShortnameException;
 use App\Services;
 use App\Services\MeiliSearch;
@@ -171,5 +172,25 @@ class EnableCommandTest extends TestCase
         $this->expectException(InvalidServiceShortnameException::class);
         $this->artisan('enable asdfasdfadsfasdfadsf')
             ->assertExitCode(0);
+    }
+
+    /** @test */
+    function it_removes_options()
+    {
+        $cli = explode(' ', "./takeout enable meilisearch postgresql mysql --default -- -e 'abc' --other-flag");
+
+        $command = new EnableCommand;
+
+        $this->assertEquals(['meilisearch', 'postgresql', 'mysql'], $command->removeOptions($cli));
+    }
+
+    /** @test */
+    function it_extracts_passthrough_options()
+    {
+        $cli = explode(' ', "./takeout enable meilisearch postgresql mysql --default -- -e 'abc' --other-flag");
+
+        $command = new EnableCommand;
+
+        $this->assertEquals(['-e', "'abc'", '--other-flag'], $command->extractPassthroughOptions($cli));
     }
 }

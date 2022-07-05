@@ -6,6 +6,7 @@ use App\InitializesCommands;
 use App\Services;
 use App\Shell\Environment;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
@@ -26,15 +27,10 @@ class EnableCommand extends Command
         $this->services = $services;
         $this->initializeCommand();
 
-        $services = $this->removePassthroughOptions($this->argument('serviceNames'));
+        $services = $this->removeOptions($this->serverArguments());
+        $passthroughOptions = $this->extractPassthroughOptions($this->serverArguments());
 
         $useDefaults = $this->option('default');
-
-        // Extract passthrough options, if provided, passed after "-- "
-        $passthroughOptions = [];
-        if (in_array('--', $_SERVER['argv'])) {
-            $passthroughOptions = array_slice($_SERVER['argv'], array_search('--', $_SERVER['argv']) + 1);
-        }
 
         if (filled($services)) {
             foreach ($services as $service) {
@@ -53,17 +49,55 @@ class EnableCommand extends Command
         $this->enable($option, $useDefaults, $passthroughOptions);
     }
 
+    public function serverArguments(): array
+    {
+        if (App::environment() === 'testing') {
+            $string = array_merge(['takeout', 'enable'], $this->argument('serviceNames'));
+
+            if ($this->option('default')) {
+                $string[] = '--default';
+            }
+
+            return $string;
+        }
+
+        return $_SERVER['argv'];
+    }
+
     /**
-     * Remove any passthrough options from the parameters list
+     * Extract and return any passthrough options from the parameters list
      *
-     * @param array $serviceNames
+     * @param array $arguments
      * @return array
      */
-    protected function removePassthroughOptions(array $serviceNames): array
+    public function extractPassthroughOptions(array $arguments): array
     {
-        return collect($serviceNames)->reject(function ($item) {
-            return str_starts_with($item, '--');
-        })->all();
+        if (! in_array('--', $arguments)) {
+            return [];
+        }
+
+        return array_slice($arguments, array_search('--', $arguments) + 1);
+    }
+
+    /**
+     * Remove any options or passthrough options from the parameters list
+     *
+     * @param array $arguments
+     * @return array
+     */
+    public function removeOptions(array $arguments): array
+    {
+        $arguments = collect($arguments)->reject(fn ($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)->toArray();
+
+        $start = array_search('enable', $arguments) + 1;
+
+        if (in_array('--', $arguments)) {
+            $length = array_search('--', $arguments) - $start - 1;
+
+            return array_slice($arguments, $start, $length);
+        }
+
+        return array_slice($arguments, $start);
     }
 
     private function selectService(): ?string
