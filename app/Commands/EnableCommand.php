@@ -51,7 +51,7 @@ class EnableCommand extends Command
 
     /**
      * Since we're pulling the *full* list of server arguments, not just relying on
-     * $this->argument, we have to do own manual overriding for testing scenarios,
+     * $this->argument, we have to do our own manual overriding for testing scenarios,
      * because pulling $_SERVER['argv'] won't give the right results in testing.
      */
     public function serverArguments(): array
