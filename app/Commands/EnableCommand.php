@@ -49,6 +49,11 @@ class EnableCommand extends Command
         $this->enable($option, $useDefaults, $passthroughOptions);
     }
 
+    /**
+     * Since we're pulling the *full* list of server arguments, not just relying on
+     * $this->argument, we have to do own manual overriding for testing scenarios,
+     * because pulling $_SERVER['argv'] won't give the right results in testing.
+     */
     public function serverArguments(): array
     {
         if (App::environment() === 'testing') {
@@ -80,7 +85,8 @@ class EnableCommand extends Command
     }
 
     /**
-     * Remove any options or passthrough options from the parameters list
+     * Remove any options or passthrough options from the parameters list, returning
+     * just the parameters passed to `enable`
      *
      * @param array $arguments
      * @return array
