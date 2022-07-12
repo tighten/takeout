@@ -31,7 +31,7 @@ class ServiceEnableDefaultTest extends TestCase
 
         $service = 'mailhog';
         $this->mock(MailHog::class, function ($mock) use ($service) {
-            $mock->shouldReceive('enable')->with(true)->twice();
+            $mock->shouldReceive('enable')->with(true, [])->twice();
             $mock->shouldReceive('shortName')->andReturn($service);
         });
 
@@ -47,6 +47,6 @@ class ServiceEnableDefaultTest extends TestCase
         $this->artisan('enable ' . $service . ' --default');
 
         $service = app(MailHog::class); // Extends BaseService
-        $service->enable(true);
+        $service->enable(true, []);
     }
 }

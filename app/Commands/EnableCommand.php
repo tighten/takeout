@@ -6,6 +6,7 @@ use App\InitializesCommands;
 use App\Services;
 use App\Shell\Environment;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
@@ -26,13 +27,14 @@ class EnableCommand extends Command
         $this->services = $services;
         $this->initializeCommand();
 
-        $services = $this->argument('serviceNames');
+        $services = $this->removeOptions($this->serverArguments());
+        $passthroughOptions = $this->extractPassthroughOptions($this->serverArguments());
 
         $useDefaults = $this->option('default');
 
         if (filled($services)) {
             foreach ($services as $service) {
-                $this->enable($service, $useDefaults);
+                $this->enable($service, $useDefaults, $passthroughOptions);
             }
 
             return;
@@ -44,7 +46,64 @@ class EnableCommand extends Command
             return;
         }
 
-        $this->enable($option, $useDefaults);
+        $this->enable($option, $useDefaults, $passthroughOptions);
+    }
+
+    /**
+     * Since we're pulling the *full* list of server arguments, not just relying on
+     * $this->argument, we have to do our own manual overriding for testing scenarios,
+     * because pulling $_SERVER['argv'] won't give the right results in testing.
+     */
+    public function serverArguments(): array
+    {
+        if (App::environment() === 'testing') {
+            $string = array_merge(['takeout', 'enable'], $this->argument('serviceNames'));
+
+            if ($this->option('default')) {
+                $string[] = '--default';
+            }
+
+            return $string;
+        }
+
+        return $_SERVER['argv'];
+    }
+
+    /**
+     * Extract and return any passthrough options from the parameters list
+     *
+     * @param array $arguments
+     * @return array
+     */
+    public function extractPassthroughOptions(array $arguments): array
+    {
+        if (! in_array('--', $arguments)) {
+            return [];
+        }
+
+        return array_slice($arguments, array_search('--', $arguments) + 1);
+    }
+
+    /**
+     * Remove any options or passthrough options from the parameters list, returning
+     * just the parameters passed to `enable`
+     *
+     * @param array $arguments
+     * @return array
+     */
+    public function removeOptions(array $arguments): array
+    {
+        $arguments = collect($arguments)->reject(fn ($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)->values()->toArray();
+
+        $start = array_search('enable', $arguments) + 1;
+
+        if (in_array('--', $arguments)) {
+            $length = array_search('--', $arguments) - $start;
+
+            return array_slice($arguments, $start, $length);
+        }
+
+        return array_slice($arguments, $start);
     }
 
     private function selectService(): ?string
@@ -146,9 +205,9 @@ class EnableCommand extends Command
             ->toArray();
     }
 
-    public function enable(string $service, bool $useDefaults = false): void
+    public function enable(string $service, bool $useDefaults = false, array $passthroughOptions = []): void
     {
         $fqcn = $this->services->get($service);
-        app($fqcn)->enable($useDefaults);
+        app($fqcn)->enable($useDefaults, $passthroughOptions);
     }
 }
