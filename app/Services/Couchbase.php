@@ -12,7 +12,7 @@ class Couchbase extends BaseService
         [
             'shortname' => 'encrypted_port',
             'prompt' => 'Which encrypted port would you like %s to use?',
-            'default' => 11210
+            'default' => 11210,
         ],
         [
             'shortname' => 'volume',

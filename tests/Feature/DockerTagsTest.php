@@ -42,7 +42,7 @@ class DockerTagsTest extends TestCase
         $tags = collect($dockerTags->getTags());
 
         $this->assertEquals('latest', $tags->first());
-        $this->assertEquals('9-bullseye', $tags->last());
+        $this->assertEquals('10', $tags->last());
     }
 
     /** @test */
