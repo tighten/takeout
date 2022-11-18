@@ -147,12 +147,12 @@ class BaseServiceTest extends TestCase
                     $service->buildPassthroughOptionsString($passthroughOptions),
                 ]),
                 [
-                    "organization" => "tighten",
-                    "image_name" => "_test_image",
-                    "port" => 12345,
-                    "tag" => "latest",
-                    "container_name" => "TO--testservice--latest--12345",
-                    "alias" => "testservice-latest",
+                    'organization' => 'tighten',
+                    'image_name' => '_test_image',
+                    'port' => 12345,
+                    'tag' => 'latest',
+                    'container_name' => 'TO--testservice--latest--12345',
+                    'alias' => 'testservice-latest',
                 ]
             )->once();
         });
@@ -197,12 +197,12 @@ class BaseServiceTest extends TestCase
                     $service->buildPassthroughOptionsString($passthroughOptions),
                 ]),
                 [
-                    "organization" => "tighten",
-                    "image_name" => "_test_image",
-                    "port" => 12345,
-                    "tag" => "latest",
-                    "container_name" => "TO--testservice--latest--12345",
-                    "alias" => "testservice-latest",
+                    'organization' => 'tighten',
+                    'image_name' => '_test_image',
+                    'port' => 12345,
+                    'tag' => 'latest',
+                    'container_name' => 'TO--testservice--latest--12345',
+                    'alias' => 'testservice-latest',
                 ]
             )->once();
         });
