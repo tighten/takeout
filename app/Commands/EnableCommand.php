@@ -16,7 +16,7 @@ class EnableCommand extends Command
 
     const MENU_TITLE = 'Takeout containers to enable';
 
-    protected $signature = 'enable {serviceNames?*} {--default} {--run}';
+    protected $signature = 'enable {serviceNames?*} {--default} {--run= : Pass any extra docker run options.}';
     protected $description = 'Enable services.';
     protected $environment;
     protected $services;
