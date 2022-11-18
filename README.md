@@ -75,7 +75,7 @@ You may specify extra arguments to the container after a `--` sepatator:
 takeout enable mysql -- -hsome.mysql.host -usome-user
 ```
 
-Notice that these are options for the container (arguments), not extra docker run options (see below).
+Notice that these are arguments for the container Entrypoint, not extra docker run options (see below).
 
 #### Extra `docker run` Options
 
@@ -93,9 +93,9 @@ docker run {docker-run-options} {service-options} mysql/mysql-server
 
 Where `{docker-run-options}` are the options you specify inside the `--run` option and `{service-options}` are generated based on the default options for that service.
 
-#### Mixing `docker run` Options With Container Options
+#### Mixing `docker run` Options With Container Arguments
 
-You may mix and match the `run` options with the container options:
+You may mix and match the `run` options with the container arguments:
 
 ```bash
 takeout enable mysql --run="{docker-run-options}" -- -hsome.mysql.host -usome-user
