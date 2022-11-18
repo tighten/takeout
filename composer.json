@@ -52,6 +52,15 @@
             "ext-posix": "7.2"
         }
     },
+    "scripts": {
+        "lint:check": [
+            "tlint",
+            "phpcs"
+        ],
+        "lint:fix": [
+            "phpcbf"
+        ]
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "bin": ["builds/takeout"]
