@@ -161,6 +161,56 @@ class BaseServiceTest extends TestCase
         $service = app(TestService::class);
         $service->enable(passthroughOptions: $passthroughOptions);
     }
+
+    /** @test */
+    public function it_accepts_run_options_and_passthrough_options()
+    {
+        $service = app(TestService::class);
+        $passthroughOptions = ['-h=127.0.0.1', '-usome-user'];
+        $runOptions = '--restart unless-stopped -e "LOREM=IPSUM"';
+
+        app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
+            $defaultPort = $service->defaultPort();
+            $mock->shouldReceive('ask')->with('Which host port would you like _test_image to use?', $defaultPort)->andReturn(12345);
+            $mock->shouldReceive('ask')->with('Which tag (version) of _test_image would you like to use?', 'latest')->andReturn('latest');
+            $mock->shouldIgnoreMissing();
+        }));
+
+        $this->mock(Shell::class, function ($mock) {
+            $process = M::mock(Process::class);
+            $process->shouldReceive('isSuccessful')->andReturn(false);
+            $process->shouldReceive('getOutput')->andReturn('');
+
+            $mock->shouldReceive('execQuietly')->andReturn($process);
+        });
+
+        $this->mock(Docker::class, function ($mock) use ($service, $runOptions, $passthroughOptions) {
+            $mock->shouldReceive('isInstalled')->andReturn(true);
+            $mock->shouldReceive('imageIsDownloaded')->andReturn(true);
+            $mock->shouldReceive('volumeIsAvailable')->andReturn(true);
+
+            // This is the actual assertion
+            $mock->shouldReceive('bootContainer')->with(
+                join(' ', [
+                    $runOptions,
+                    $service->sanitizeDockerRunTemplate($service->dockerRunTemplate()),
+                    $service->buildPassthroughOptionsString($passthroughOptions),
+                ]),
+                [
+                    "organization" => "tighten",
+                    "image_name" => "_test_image",
+                    "port" => 12345,
+                    "tag" => "latest",
+                    "container_name" => "TO--testservice--latest--12345",
+                    "alias" => "testservice-latest",
+                ]
+            )->once();
+        });
+
+        // We need to create a new instance of the service so it can use the mocked objects...
+        $service = app(TestService::class);
+        $service->enable(passthroughOptions: $passthroughOptions, runOptions: $runOptions);
+    }
 }
 
 class TestService extends BaseService
