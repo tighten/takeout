@@ -79,7 +79,7 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                $this->sanitizeDockerRunTemplate($this->dockerRunTemplate) . $this->buildPassthroughOptionsString($passthroughOptions),
+                join(' ', array_filter([$this->buildPassthroughOptionsString($passthroughOptions), $this->sanitizeDockerRunTemplate($this->dockerRunTemplate)])),
                 $this->buildParameters()
             );
 
@@ -232,6 +232,6 @@ abstract class BaseService
             return '';
         }
 
-        return ' ' . join(' ', $passthroughOptions);
+        return join(' ', $passthroughOptions);
     }
 }
