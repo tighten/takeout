@@ -79,8 +79,11 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                join(' ', array_filter([$this->sanitizeDockerRunTemplate($this->dockerRunTemplate), $this->buildPassthroughOptionsString($passthroughOptions)])),
-                $this->buildParameters()
+                join(' ', array_filter([
+                    $this->sanitizeDockerRunTemplate($this->dockerRunTemplate),
+                    $this->buildPassthroughOptionsString($passthroughOptions),
+                ])),
+                $this->buildParameters(),
             );
 
             $this->info("\nService enabled!");
