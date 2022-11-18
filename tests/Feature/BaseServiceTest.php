@@ -2,16 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Services\BaseService;
-use App\Services\Category;
 use App\Services\MeiliSearch;
 use App\Services\PostgreSql;
 use App\Shell\Docker;
-use App\Shell\DockerTags;
 use App\Shell\Shell;
 use LaravelZero\Framework\Commands\Command;
 use Mockery as M;
 use Symfony\Component\Process\Process;
+use Tests\Support\FakeService;
 use Tests\TestCase;
 
 class BaseServiceTest extends TestCase
@@ -117,7 +115,7 @@ class BaseServiceTest extends TestCase
     /** @test */
     public function it_can_receive_container_arguments_via_passthrough()
     {
-        $service = app(TestService::class);
+        $service = app(FakeService::class);
         $passthroughOptions = ['-h=127.0.0.1', '-usome-user'];
 
         app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
@@ -151,21 +149,21 @@ class BaseServiceTest extends TestCase
                     'image_name' => '_test_image',
                     'port' => 12345,
                     'tag' => 'latest',
-                    'container_name' => 'TO--testservice--latest--12345',
-                    'alias' => 'testservice-latest',
+                    'container_name' => 'TO--fakeservice--latest--12345',
+                    'alias' => 'fakeservice-latest',
                 ]
             )->once();
         });
 
         // We need to create a new instance of the service so it can use the mocked objects...
-        $service = app(TestService::class);
+        $service = app(FakeService::class);
         $service->enable(passthroughOptions: $passthroughOptions);
     }
 
     /** @test */
     public function it_accepts_run_options_and_passthrough_options()
     {
-        $service = app(TestService::class);
+        $service = app(FakeService::class);
         $passthroughOptions = ['-h=127.0.0.1', '-usome-user'];
         $runOptions = '--restart unless-stopped -e "LOREM=IPSUM"';
 
@@ -201,34 +199,14 @@ class BaseServiceTest extends TestCase
                     'image_name' => '_test_image',
                     'port' => 12345,
                     'tag' => 'latest',
-                    'container_name' => 'TO--testservice--latest--12345',
-                    'alias' => 'testservice-latest',
+                    'container_name' => 'TO--fakeservice--latest--12345',
+                    'alias' => 'fakeservice-latest',
                 ]
             )->once();
         });
 
         // We need to create a new instance of the service so it can use the mocked objects...
-        $service = app(TestService::class);
+        $service = app(FakeService::class);
         $service->enable(passthroughOptions: $passthroughOptions, runOptions: $runOptions);
-    }
-}
-
-class TestService extends BaseService
-{
-    protected static $category = Category::CACHE;
-    protected $dockerTagsClass = FakeDockerTags::class;
-
-    protected $organization = 'tighten';
-    protected $imageName = '_test_image';
-    protected $defaultPort = 12345;
-
-    protected $dockerRunTemplate = '"${:organization}"/"${:image_name}":"${:tag}"';
-}
-
-class FakeDockerTags
-{
-    public function resolveTag($tag)
-    {
-        return $tag;
     }
 }
