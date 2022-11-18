@@ -16,7 +16,7 @@ class EnableCommand extends Command
 
     const MENU_TITLE = 'Takeout containers to enable';
 
-    protected $signature = 'enable {serviceNames?*} {--default}';
+    protected $signature = 'enable {serviceNames?*} {--default} {--run= : Pass any extra docker run options.}';
     protected $description = 'Enable services.';
     protected $environment;
     protected $services;
@@ -31,10 +31,16 @@ class EnableCommand extends Command
         $passthroughOptions = $this->extractPassthroughOptions($this->serverArguments());
 
         $useDefaults = $this->option('default');
+        $runOptions = $this->option('run');
 
         if (filled($services)) {
+            if ($runOptions && is_array($services) && count($services) > 1) {
+                $this->error('The --run options should only be used for enabling a single service.');
+                return;
+            }
+
             foreach ($services as $service) {
-                $this->enable($service, $useDefaults, $passthroughOptions);
+                $this->enable($service, $useDefaults, $passthroughOptions, $runOptions);
             }
 
             return;
@@ -61,6 +67,10 @@ class EnableCommand extends Command
 
             if ($this->option('default')) {
                 $string[] = '--default';
+            }
+
+            if ($this->option('run')) {
+                $string[] = '--run';
             }
 
             return $string;
@@ -205,9 +215,9 @@ class EnableCommand extends Command
             ->toArray();
     }
 
-    public function enable(string $service, bool $useDefaults = false, array $passthroughOptions = []): void
+    public function enable(string $service, bool $useDefaults = false, array $passthroughOptions = [], string $runOptions = null): void
     {
         $fqcn = $this->services->get($service);
-        app($fqcn)->enable($useDefaults, $passthroughOptions);
+        app($fqcn)->enable($useDefaults, $passthroughOptions, $runOptions);
     }
 }
