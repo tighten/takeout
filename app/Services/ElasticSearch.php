@@ -18,10 +18,16 @@ class ElasticSearch extends BaseService
             'prompt' => 'What is the Docker volume name?',
             'default' => 'elastic_data',
         ],
+        [
+            'shortname' => 'enable_security',
+            'prompt' => 'Enable security (true or false)?',
+            'default' => 'true',
+        ],
     ];
 
     protected $dockerRunTemplate = '-p "${:port}":9200 \
-        -e "discovery.type=single-node"  \
+        -e "discovery.type=single-node" \
+        -e xpack.security.enabled="${:enable_security}" \
         -v "${:volume}":/usr/share/elasticsearch/data \
          "${:organization}"/"${:image_name}":"${:tag}"';
 
