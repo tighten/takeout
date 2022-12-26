@@ -240,8 +240,6 @@ If you're working with us and are assigned to push a release, here's the easiest
 4. Run the build once to make sure it works (`php ./builds/takeout list`)
 5. Commit your build and push it up
 6. [Draft a new release](https://github.com/tighten/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
-7. Set the body to be a bullet-point list with simple descriptions for each of the PRs merged, as well as the PR link in parentheses at the end. For example:
-
-    `- Fix internal Memcached port (#92)`
+7. Use the "Generate release notes" button to generate release notes from the merged PRs.
 8. Hit `Publish release`
-9. Profit
+9. Profit 😆
