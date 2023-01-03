@@ -47,7 +47,7 @@ jobs:
                   coverage: none
 
             - name: Install dependencies
-              run: composer update --prefer-stable --prefer-dist --no-interaction --ignore-platform-req=ext-pcntl
+              run: composer update --prefer-stable --prefer-dist --no-interaction --ignore-platform-req=ext-pcntl --ignore-platform-req=ext-posix
 
             - name: Run tests
               run: vendor/bin/phpunit
