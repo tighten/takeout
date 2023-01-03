@@ -48,7 +48,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true,
-        "platform-check": false,
+        "platform-check": true,
         "platform": {
             "php": "8.0.2"
         }
