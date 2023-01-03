@@ -46,8 +46,9 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true,
-        "platform-check": false,
+        "platform-check": true,
         "platform": {
+            "php": "8.0.2",
             "ext-pcntl": "7.2",
             "ext-posix": "7.2"
         }

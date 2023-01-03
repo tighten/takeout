@@ -231,15 +231,28 @@ The best way to see our future plans is to check out the [Projects Board](https:
 
 ## Process for release
 
-If you're working with us and are assigned to push a release, here's the easiest process:
+If you're working with us and are assigned to push a release, here's the process to do so.
 
+Before we start, visit the [Takeout Releases page](https://github.com/tighten/takeout/releases); figure out what your next tag will be (increase the third number if it's a patch or fix; increase the second number if it's adding features).
 
-1. Visit the [Takeout Releases page](https://github.com/tighten/takeout/releases); figure out what your next tag will be (increase the third number if it's a patch or fix; increase the second number if it's adding features)
-2. On your local machine, pull down the latest version of `main` (`git checkout main && git pull`)
-3. Build for the version you're targeting (`php ./takeout app:build`)
-4. Run the build once to make sure it works (`php ./builds/takeout list`)
-5. Commit your build and push it up
-6. [Draft a new release](https://github.com/tighten/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
-7. Use the "Generate release notes" button to generate release notes from the merged PRs.
-8. Hit `Publish release`
-9. Profit 😆
+### Building From Your Local Machin
+1. Ensure you're on PHP 8.0.x (so all the dependencies resolved with Composer work with that version)
+1. Pull down the latest version of `main` (`git checkout main && git pull`)
+1. Pull the composer dependencies from that PHP version (`rm -rf vendor/ composer.lock && composer install`)
+1. Build for the version you're targeting (`php ./takeout app:build`)
+1. Run the build once to make sure it works (`php ./builds/takeout list`)
+1. Commit your build and push it up
+1. [Draft a new release](https://github.com/tighten/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
+1. Use the "Generate release notes" button to generate release notes from the merged PRs.
+1. Hit `Publish release`
+1. Profit 😆
+
+### Building From Docker
+1. Ensure you have [Docker installed](https://docs.docker.com/get-docker/)
+1. Run `./bin/build.sh`
+1. Run the build once to make sure it works (`php ./builds/takeout list`)
+1. Commit your build and push it up
+1. [Draft a new release](https://github.com/tighten/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
+1. Use the "Generate release notes" button to generate release notes from the merged PRs.
+1. Hit `Publish release`
+1. Profit 😆
