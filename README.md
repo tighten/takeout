@@ -235,7 +235,7 @@ If you're working with us and are assigned to push a release, here's the process
 
 Before we start, visit the [Takeout Releases page](https://github.com/tighten/takeout/releases); figure out what your next tag will be (increase the third number if it's a patch or fix; increase the second number if it's adding features).
 
-### Building From Your Local Machin
+### Building From Your Local Machine
 1. Ensure you're on PHP 8.0.x (so all the dependencies resolved with Composer work with that version)
 1. Pull down the latest version of `main` (`git checkout main && git pull`)
 1. Pull the composer dependencies from that PHP version (`rm -rf vendor/ composer.lock && composer install`)
