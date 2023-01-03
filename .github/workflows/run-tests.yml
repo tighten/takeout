@@ -39,22 +39,15 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v1
 
-            # - name: Cache dependencies
-            #   uses: actions/cache@v1
-            #   with:
-            #       path: ~/.composer/cache/files
-            #       key: dependencies-os-${{ matrix.os }}-php-${{ matrix.php }}-laravel-${{ matrix.laravel-version }}-composer-${{ hashFiles('**/composer.lock') }}
-            #       restore-keys: dependencies-os-${{ matrix.os }}-php-${{ matrix.php }}-laravel-${{ matrix.laravel-version }}
-
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: posix, dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
+                  extensions: posix, dom, curl, libxml, fileinfo, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
 
             - name: Install dependencies
-              run: composer update --prefer-stable --prefer-dist --no-interaction --ignore-platform-req=ext-fileinfo
+              run: composer update --prefer-stable --prefer-dist --no-interaction
 
             - name: Run tests
               run: vendor/bin/phpunit
