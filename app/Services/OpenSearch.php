@@ -20,10 +20,16 @@ class OpenSearch extends BaseService
             'prompt' => 'Which host port would you like to be used by the performance analyzer?',
             'default' => 9600,
         ],
+        [
+            'shortname' => 'disable_security',
+            'prompt' => 'Disable security plugin (true or false)?',
+            'default' => 'false',
+        ],
     ];
 
     protected $dockerRunTemplate = '-p "${:port}":9200 \
         -p "${:analyzer_port}":9600 \
+        -e DISABLE_SECURITY_PLUGIN="${:disable_security}"  \
         -e "discovery.type=single-node"  \
         -v "${:volume}":/usr/share/opensearch/data \
         "${:organization}"/"${:image_name}":"${:tag}"';

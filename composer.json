@@ -18,6 +18,8 @@
     "require": {
         "php": "^8.0",
         "ext-json": "*",
+        "ext-pcntl": "*",
+        "ext-posix": "*",
         "guzzlehttp/psr7": "^1.7"
     },
     "require-dev": {
@@ -48,9 +50,17 @@
         "optimize-autoloader": true,
         "platform-check": false,
         "platform": {
-            "ext-pcntl": "7.2",
-            "ext-posix": "7.2"
+            "php": "8.0.2"
         }
+    },
+    "scripts": {
+        "lint:check": [
+            "tlint",
+            "phpcs"
+        ],
+        "lint:fix": [
+            "phpcbf"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

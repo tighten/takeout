@@ -67,6 +67,40 @@ takeout enable mysql --default
 takeout enable redis meilisearch --default
 ```
 
+#### Passthrough Container Arguments
+
+You may specify extra arguments to the container after a `--` sepatator:
+
+```bash
+takeout enable mysql -- -hsome.mysql.host -usome-user
+```
+
+Notice that these are arguments for the container Entrypoint, not extra docker run options (see below).
+
+#### Extra `docker run` Options
+
+Under the hood, the `takeout enable` command generates a `docker run` command. Sometimes you may want to specify extra options to the `docker run` command such as an extra environment variable or an extra volume mapping. You can pass a string with all the extra `docker run` options using the `--run=` option:
+
+```bash
+takeout enable mysql --run="{docker-run-options}"
+```
+
+Which would generate the following command:
+
+```bash
+docker run {docker-run-options} {service-options} mysql/mysql-server
+```
+
+Where `{docker-run-options}` are the options you specify inside the `--run` option and `{service-options}` are generated based on the default options for that service.
+
+#### Mixing `docker run` Options With Container Arguments
+
+You may mix and match the `run` options with the container arguments:
+
+```bash
+takeout enable mysql --run="{docker-run-options}" -- -hsome.mysql.host -usome-user
+```
+
 ### Disable a service
 
 Show a list of all enabled services you can disable.
@@ -206,8 +240,6 @@ If you're working with us and are assigned to push a release, here's the easiest
 4. Run the build once to make sure it works (`php ./builds/takeout list`)
 5. Commit your build and push it up
 6. [Draft a new release](https://github.com/tighten/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
-7. Set the body to be a bullet-point list with simple descriptions for each of the PRs merged, as well as the PR link in parentheses at the end. For example:
-
-    `- Fix internal Memcached port (#92)`
+7. Use the "Generate release notes" button to generate release notes from the merged PRs.
 8. Hit `Publish release`
-9. Profit
+9. Profit 😆
