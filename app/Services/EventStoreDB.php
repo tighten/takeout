@@ -2,10 +2,6 @@
 
 namespace App\Services;
 
-use App\Shell\Docker;
-use App\Shell\Environment;
-use App\Shell\Shell;
-
 class EventStoreDB extends BaseService
 {
     protected static $category = Category::DATABASE;
