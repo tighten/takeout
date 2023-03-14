@@ -26,18 +26,6 @@ class EventStoreDB extends BaseService
         ],
     ];
 
-    public function __construct(Shell $shell, Environment $environment, Docker $docker)
-    {
-        parent::__construct($shell, $environment, $docker);
-
-        $this->defaultPrompts = array_map(function ($prompt) {
-            if ($prompt['shortname'] === 'tag') {
-                $prompt['default'] = '5.0.8-xenial';
-            }
-            return $prompt;
-        }, $this->defaultPrompts);
-    }
-
     /**
      * The following only supports version 5.X.
      *
@@ -47,5 +35,7 @@ class EventStoreDB extends BaseService
     protected $dockerRunTemplate = '-p "${:port}":1113 \
         -p "${:web_port}":2113 \
         -v "${:volume}":/var/lib/eventstore \
-        "${:organization}"/"${:image_name}":"${:tag}"';
+        "${:organization}"/"${:image_name}":"${:tag}" \
+        --insecure --run-projections=All \
+        --enable-external-tcp --enable-atom-pub-over-http';
 }
