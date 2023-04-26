@@ -63,4 +63,20 @@ class Environment
     {
         return $this->shell->execQuietly('groups | grep docker')->isSuccessful();
     }
+
+    public function homeDirectory(): string
+    {
+        $home = rtrim(getenv('HOME'), '/');
+
+        if (! empty($home)) {
+            return $home;
+        }
+
+        // Windows
+        if (! empty($_SERVER['HOMEDRIVE']) && ! empty($_SERVER['HOMEPATH'])) {
+            return rtrim($_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'], '/');
+        }
+
+        return '~';
+    }
 }

@@ -45,7 +45,7 @@ class Traefik extends BaseService
     {
         parent::__construct($shell, $environment, $docker);
 
-        $home = $this->homeDirectory();
+        $home = $this->environment->homeDirectory();
 
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'tag') {
@@ -62,26 +62,6 @@ class Traefik extends BaseService
 
             return $prompt;
         }, $this->prompts);
-    }
-
-    protected function homeDirectory(): ?string
-    {
-        // Cannot use $_SERVER superglobal since that's empty during
-        // UnitUnishTestCase; getenv('HOME') isn't set on Windows and generates
-        // a Notice.
-        $home = getenv('HOME');
-
-        if (! empty($home)) {
-            // Trim the trailing slash
-            $home = rtrim($home, '/');
-        } elseif (! empty($_SERVER['HOMEDRIVE']) && ! empty($_SERVER['HOMEPATH'])) {
-            // home directory on windows
-            $home = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
-            // Trim the trailing slash
-            $home = rtrim($home, '\\/');
-        }
-
-        return empty($home) ? null : $home;
     }
 
     protected function prompts(): void
