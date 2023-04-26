@@ -22,9 +22,19 @@ class Traefik extends BaseService
             'shortname' => 'config',
             'prompt' => 'What is the configuration directory?',
         ],
+        [
+            'shortname' => 'web_port',
+            'prompt' => 'What is the web port?',
+            'default' => '80',
+        ],
+        [
+            'shortname' => 'websecure_port',
+            'prompt' => 'What is the websecure port?',
+            'default' => '443',
+        ]
     ];
 
-    protected $dockerRunTemplate = '-p "${:port}":8080 -p 80:80 -p 443:443 \
+    protected $dockerRunTemplate = '-p "${:port}":8080 -p "${:web_port}":80 -p "${:websecure_port}":443 \
         -v "${:config}":/etc/traefik \
         -v /var/run/docker.sock:/var/run/docker.sock \
         "${:organization}"/"${:image_name}":"${:tag}" \
