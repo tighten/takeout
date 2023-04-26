@@ -28,9 +28,15 @@ class BaseServiceTest extends TestCase
 
         app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
             $defaultPort = $service->defaultPort();
-            $mock->shouldReceive('ask')->with('Which host port would you like meilisearch to use?', $defaultPort)->andReturn(7700);
-            $mock->shouldReceive('ask')->with('What is the Docker volume name?', 'meili_data')->andReturn('meili_data');
-            $mock->shouldReceive('ask')->with('Which tag (version) of meilisearch would you like to use?', 'latest')->andReturn('v1.1.1');
+            $mock->shouldReceive('ask')
+                ->with('Which host port would you like meilisearch to use?', $defaultPort)
+                ->andReturn(7700);
+            $mock->shouldReceive('ask')
+                ->with('What is the Docker volume name?', 'meili_data')
+                ->andReturn('meili_data');
+            $mock->shouldReceive('ask')
+                ->with('Which tag (version) of meilisearch would you like to use?', 'latest')
+                ->andReturn('v1.1.1');
             $mock->shouldIgnoreMissing();
         }));
 
@@ -73,9 +79,15 @@ class BaseServiceTest extends TestCase
 
         app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
             $defaultPort = $service->defaultPort();
-            $mock->shouldReceive('ask')->with('Which host port would you like postgres to use?', $defaultPort)->andReturn(5432);
-            $mock->shouldReceive('ask')->with('Which tag (version) of postgres would you like to use?', 'latest')->andReturn('timescale/timescaledb:latest-pg12');
-            $mock->shouldReceive('ask')->with('What is the Docker volume name?', 'postgres_data')->andReturn('postgres_data');
+            $mock->shouldReceive('ask')
+                ->with('Which host port would you like postgres to use?', $defaultPort)
+                ->andReturn(5432);
+            $mock->shouldReceive('ask')
+                ->with('Which tag (version) of postgres would you like to use?', 'latest')
+                ->andReturn('timescale/timescaledb:latest-pg12');
+            $mock->shouldReceive('ask')
+                ->with('What is the Docker volume name?', 'postgres_data')
+                ->andReturn('postgres_data');
             $mock->shouldIgnoreMissing();
         }));
 
@@ -120,8 +132,12 @@ class BaseServiceTest extends TestCase
 
         app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
             $defaultPort = $service->defaultPort();
-            $mock->shouldReceive('ask')->with('Which host port would you like _test_image to use?', $defaultPort)->andReturn(12345);
-            $mock->shouldReceive('ask')->with('Which tag (version) of _test_image would you like to use?', 'latest')->andReturn('latest');
+            $mock->shouldReceive('ask')
+                ->with('Which host port would you like _test_image to use?', $defaultPort)
+                ->andReturn(12345);
+            $mock->shouldReceive('ask')
+                ->with('Which tag (version) of _test_image would you like to use?', 'latest')
+                ->andReturn('latest');
             $mock->shouldIgnoreMissing();
         }));
 
@@ -169,8 +185,12 @@ class BaseServiceTest extends TestCase
 
         app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
             $defaultPort = $service->defaultPort();
-            $mock->shouldReceive('ask')->with('Which host port would you like _test_image to use?', $defaultPort)->andReturn(12345);
-            $mock->shouldReceive('ask')->with('Which tag (version) of _test_image would you like to use?', 'latest')->andReturn('latest');
+            $mock->shouldReceive('ask')
+                ->with('Which host port would you like _test_image to use?', $defaultPort)
+                ->andReturn(12345);
+            $mock->shouldReceive('ask')
+                ->with('Which tag (version) of _test_image would you like to use?', 'latest')
+                ->andReturn('latest');
             $mock->shouldIgnoreMissing();
         }));
 

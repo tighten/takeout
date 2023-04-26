@@ -14,9 +14,15 @@ class ServiceEnableDefaultTest extends TestCase
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $defaultPort = app(MailHog::class)->defaultPort();
-            $mock->shouldReceive('ask')->with('Which host port would you like this service to use?', $defaultPort)->andReturn(7700);
-            $mock->shouldReceive('ask')->with('Which host port would you like this service to use?', $defaultPort)->andReturn(77001);
-            $mock->shouldReceive('ask')->with('Which tag (version) of this service would you like to use?', 'latest')->andReturn('latest');
+            $mock->shouldReceive('ask')
+                ->with('Which host port would you like this service to use?', $defaultPort)
+                ->andReturn(7700);
+            $mock->shouldReceive('ask')
+                ->with('Which host port would you like this service to use?', $defaultPort)
+                ->andReturn(77001);
+            $mock->shouldReceive('ask')
+                ->with('Which tag (version) of this service would you like to use?', 'latest')
+                ->andReturn('latest');
             $mock->shouldIgnoreMissing();
         }));
 
@@ -56,9 +62,15 @@ class ServiceEnableDefaultTest extends TestCase
         $runOptions = '--restart unless-stopped -e "LOREM=IPSUM"';
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $defaultPort = app(MailHog::class)->defaultPort();
-            $mock->shouldReceive('ask')->with('Which host port would you like this service to use?', $defaultPort)->andReturn(7700);
-            $mock->shouldReceive('ask')->with('Which host port would you like this service to use?', $defaultPort)->andReturn(77001);
-            $mock->shouldReceive('ask')->with('Which tag (version) of this service would you like to use?', 'latest')->andReturn('latest');
+            $mock->shouldReceive('ask')
+                ->with('Which host port would you like this service to use?', $defaultPort)
+                ->andReturn(7700);
+            $mock->shouldReceive('ask')
+                ->with('Which host port would you like this service to use?', $defaultPort)
+                ->andReturn(77001);
+            $mock->shouldReceive('ask')
+                ->with('Which tag (version) of this service would you like to use?', 'latest')
+                ->andReturn('latest');
             $mock->shouldIgnoreMissing();
         }));
 

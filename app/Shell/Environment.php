@@ -36,7 +36,8 @@ class Environment
         $netstatCmd = $this->netstatCmd();
 
         // Check to see if the system is running a service with the desired port
-        $process = $this->shell->execQuietly("{$netstatCmd} -vanp tcp | grep '{$portText}' | grep -v 'TIME_WAIT' | grep -v 'CLOSE_WAIT' | grep -v 'FIN_WAIT'");
+        $process = $this->shell->execQuietly("{$netstatCmd} -vanp tcp \n
+            | grep '{$portText}' | grep -v 'TIME_WAIT' | grep -v 'CLOSE_WAIT' | grep -v 'FIN_WAIT'");
 
         // A successful netstat command means a port in use was found
         return ! $process->isSuccessful();

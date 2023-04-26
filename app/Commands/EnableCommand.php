@@ -103,7 +103,10 @@ class EnableCommand extends Command
      */
     public function removeOptions(array $arguments): array
     {
-        $arguments = collect($arguments)->reject(fn ($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)->values()->toArray();
+        $arguments = collect($arguments)
+            ->reject(fn ($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)
+            ->values()
+            ->toArray();
 
         $start = array_search('enable', $arguments) + 1;
 
@@ -215,8 +218,12 @@ class EnableCommand extends Command
             ->toArray();
     }
 
-    public function enable(string $service, bool $useDefaults = false, array $passthroughOptions = [], string $runOptions = null): void
-    {
+    public function enable(
+        string $service,
+        bool $useDefaults = false,
+        array $passthroughOptions = [],
+        string $runOptions = null
+    ): void {
         $fqcn = $this->services->get($service);
         app($fqcn)->enable($useDefaults, $passthroughOptions, $runOptions);
     }

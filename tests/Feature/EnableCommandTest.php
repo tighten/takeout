@@ -189,10 +189,16 @@ class EnableCommandTest extends TestCase
     /** @test */
     function it_extracts_passthrough_options()
     {
-        $cli = explode(' ', "./takeout enable meilisearch postgresql mysql --default -- -e 'abc' --other-flag -t \"double-quote\"");
+        $cli = explode(
+            ' ',
+            "./takeout enable meilisearch postgresql mysql --default -- -e 'abc' --other-flag -t \"double-quote\""
+        );
 
         $command = new EnableCommand;
 
-        $this->assertEquals(['-e', "'abc'", '--other-flag', '-t', '"double-quote"'], $command->extractPassthroughOptions($cli));
+        $this->assertEquals(
+            ['-e', "'abc'", '--other-flag', '-t', '"double-quote"'],
+            $command->extractPassthroughOptions($cli)
+        );
     }
 }

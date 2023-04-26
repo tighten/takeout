@@ -31,15 +31,15 @@ class Traefik extends BaseService
             'shortname' => 'websecure_port',
             'prompt' => 'What is the websecure port?',
             'default' => '443',
-        ]
+        ],
     ];
 
     protected $dockerRunTemplate = '-p "${:port}":8080 -p "${:web_port}":80 -p "${:websecure_port}":443 \
         -v "${:config_dir}":/etc/traefik \
         -v /var/run/docker.sock:/var/run/docker.sock \
         "${:organization}"/"${:image_name}":"${:tag}" \
-        --api.insecure=true --providers.docker=true --entryPoints.web.address=:80 --entryPoints.websecure.address=:443 --providers.file.directory=/etc/traefik/conf --providers.file.watch=true';
-
+        --api.insecure=true --providers.docker=true --entryPoints.web.address=:80 --entryPoints.websecure.address=:443 \
+        --providers.file.directory=/etc/traefik/conf --providers.file.watch=true';
 
     public function __construct(Shell $shell, Environment $environment, Docker $docker)
     {
@@ -57,7 +57,7 @@ class Traefik extends BaseService
 
         $this->prompts = array_map(function ($prompt) use ($home) {
             if ($prompt['shortname'] === 'config' && ! empty($home)) {
-                $prompt['default'] = "$home/.config/traefik";
+                $prompt['default'] = "{$home}/.config/traefik";
             }
 
             return $prompt;
@@ -66,20 +66,18 @@ class Traefik extends BaseService
 
     protected function homeDirectory(): ?string
     {
-        // Cannot use $_SERVER superglobal since that's empty during UnitUnishTestCase
-        // getenv('HOME') isn't set on Windows and generates a Notice.
+        // Cannot use $_SERVER superglobal since that's empty during
+        // UnitUnishTestCase; getenv('HOME') isn't set on Windows and generates
+        // a Notice.
         $home = getenv('HOME');
 
         if (! empty($home)) {
-            // home should never end with a trailing slash.
+            // Trim the trailing slash
             $home = rtrim($home, '/');
-        }
-
-        elseif (! empty($_SERVER['HOMEDRIVE']) && ! empty($_SERVER['HOMEPATH'])) {
-            // home on windows
+        } elseif (! empty($_SERVER['HOMEDRIVE']) && ! empty($_SERVER['HOMEPATH'])) {
+            // home directory on windows
             $home = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
-            // If HOMEPATH is a root directory the path can end with a slash. Make sure
-            // that doesn't happen.
+            // Trim the trailing slash
             $home = rtrim($home, '\\/');
         }
 

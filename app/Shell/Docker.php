@@ -15,8 +15,12 @@ class Docker
     protected $networking;
     protected $environment;
 
-    public function __construct(Shell $shell, DockerFormatter $formatter, DockerNetworking $networking, Environment $environment)
-    {
+    public function __construct(
+        Shell $shell,
+        DockerFormatter $formatter,
+        DockerNetworking $networking,
+        Environment $environment
+    ) {
         $this->shell = $shell;
         $this->formatter = $formatter;
         $this->networking = $networking;
