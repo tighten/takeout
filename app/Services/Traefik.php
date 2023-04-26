@@ -19,7 +19,7 @@ class Traefik extends BaseService
 
     protected $prompts = [
         [
-            'shortname' => 'config',
+            'shortname' => 'config_dir',
             'prompt' => 'What is the configuration directory?',
         ],
         [
@@ -35,7 +35,7 @@ class Traefik extends BaseService
     ];
 
     protected $dockerRunTemplate = '-p "${:port}":8080 -p "${:web_port}":80 -p "${:websecure_port}":443 \
-        -v "${:config}":/etc/traefik \
+        -v "${:config_dir}":/etc/traefik \
         -v /var/run/docker.sock:/var/run/docker.sock \
         "${:organization}"/"${:image_name}":"${:tag}" \
         --api.insecure=true --providers.docker=true --entryPoints.web.address=:80 --entryPoints.websecure.address=:443 --providers.file.directory=/etc/traefik/conf --providers.file.watch=true';
@@ -56,7 +56,7 @@ class Traefik extends BaseService
         }, $this->defaultPrompts);
 
         $this->prompts = array_map(function ($prompt) use ($home) {
-            if ($prompt['shortname'] === 'config' && !empty($home)) {
+            if ($prompt['shortname'] === 'config' && ! empty($home)) {
                 $prompt['default'] = "$home/.config/traefik";
             }
 
@@ -64,17 +64,18 @@ class Traefik extends BaseService
         }, $this->prompts);
     }
 
-    protected function homeDirectory(): ?string {
+    protected function homeDirectory(): ?string
+    {
         // Cannot use $_SERVER superglobal since that's empty during UnitUnishTestCase
         // getenv('HOME') isn't set on Windows and generates a Notice.
         $home = getenv('HOME');
 
-        if (!empty($home)) {
+        if (! empty($home)) {
             // home should never end with a trailing slash.
             $home = rtrim($home, '/');
         }
 
-        elseif (!empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH'])) {
+        elseif (! empty($_SERVER['HOMEDRIVE']) && ! empty($_SERVER['HOMEPATH'])) {
             // home on windows
             $home = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
             // If HOMEPATH is a root directory the path can end with a slash. Make sure
@@ -82,7 +83,7 @@ class Traefik extends BaseService
             $home = rtrim($home, '\\/');
         }
 
-        return empty($home) ? NULL : $home;
+        return empty($home) ? null : $home;
     }
 
     protected function prompts(): void
