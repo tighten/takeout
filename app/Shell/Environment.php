@@ -74,7 +74,7 @@ class Environment
 
         // Windows
         if (! empty($_SERVER['HOMEDRIVE']) && ! empty($_SERVER['HOMEPATH'])) {
-            return rtrim($_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'], '/');
+            return rtrim($_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'], '\\/');
         }
 
         return '~';
