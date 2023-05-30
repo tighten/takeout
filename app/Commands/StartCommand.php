@@ -31,7 +31,7 @@ class StartCommand extends Command
 
         if (filled($containers)) {
             foreach ($containers as $container) {
-                $this->start($container);
+                $this->startByServiceNameOrContainerId($container);
             }
 
             return;
@@ -66,6 +66,51 @@ class StartCommand extends Command
         }, collect())->toArray();
     }
 
+    public function startByServiceNameOrContainerId(string $serviceNameOrContainerId): void
+    {
+        $containersByServiceName = $this->docker->startableTakeoutContainers()
+            ->map(function ($container) {
+                return [
+                    'container' => $container,
+                    'label' => str_replace('TO--', '', $container['names']),
+                ];
+            })
+            ->filter(function ($item) use ($serviceNameOrContainerId) {
+                return Str::startsWith($item['label'], $serviceNameOrContainerId);
+            });
+
+        // If we don't get any container by the service name, that probably means
+        // the user is trying to start a container using its container ID, so
+        // we will just forward that down to the underlying start method.
+
+        if ($containersByServiceName->isEmpty()) {
+            $this->start($serviceNameOrContainerId);
+
+            return;
+        }
+
+        if ($containersByServiceName->count() === 1) {
+            $this->start($containersByServiceName->first()['container']['container_id']);
+
+            return;
+        }
+
+        $selectedItem = $this->loadMenu($containersByServiceName->map(function ($item) {
+            $label = $item['container']['container_id'] . ' - ' . $item['label'];
+
+            return [
+                $label,
+                $this->loadMenuItem($item['container'], $label),
+            ];
+        })->all());
+
+        if (! $selectedItem) {
+            return;
+        }
+
+        $this->start($selectedItem);
+    }
+
     public function start(string $container): void
     {
         if (Str::contains($container, ' -')) {
@@ -75,20 +120,18 @@ class StartCommand extends Command
         $this->docker->startContainer($container);
     }
 
-    private function loadMenu($startableContainers): void
+    private function loadMenu($startableContainers)
     {
         if ($this->environment->isWindowsOs()) {
-            $this->windowsMenu($startableContainers);
-
-            return;
+            return $this->windowsMenu($startableContainers);
         }
 
-        $this->defaultMenu($startableContainers);
+        return $this->defaultMenu($startableContainers);
     }
 
     private function defaultMenu($startableContainers)
     {
-        $this->menu(self::MENU_TITLE)
+        return $this->menu(self::MENU_TITLE)
             ->addItems($startableContainers)
             ->addLineBreak('', 1)
             ->open();
@@ -116,7 +159,7 @@ class StartCommand extends Command
             return $value[0] === $choice;
         });
 
-        call_user_func(array_values($chosenStartableContainer)[0][1]);
+        return call_user_func(array_values($chosenStartableContainer)[0][1]);
     }
 
     private function loadMenuItem($container, $label): callable
