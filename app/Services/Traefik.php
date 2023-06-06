@@ -68,7 +68,7 @@ class Traefik extends BaseService
     {
         parent::prompts();
 
-        if (empty($this->promptResponses['config'])) {
+        if (empty($this->promptResponses['config_dir'])) {
             throw new Exception('You must specify a configuration directory.');
         }
     }
