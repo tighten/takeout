@@ -26,7 +26,7 @@ class Soketi extends BaseService
 
     protected $dockerRunTemplate = '-p "${:port}":6001 \
         -p "${:metrics_port}":9601 \
-        -e METRICS_ENABLED=1 \
+        -e SOKETI_METRICS_ENABLED=1 \
         "${:organization}"/"${:image_name}":"${:tag}"';
 
     public function __construct(Shell $shell, Environment $environment, Docker $docker)
