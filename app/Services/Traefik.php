@@ -56,7 +56,7 @@ class Traefik extends BaseService
         }, $this->defaultPrompts);
 
         $this->prompts = array_map(function ($prompt) use ($home) {
-            if ($prompt['shortname'] === 'config' && ! empty($home)) {
+            if ($prompt['shortname'] === 'config_dir' && ! empty($home)) {
                 $prompt['default'] = "{$home}/.config/traefik";
             }
 
