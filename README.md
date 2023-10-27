@@ -17,7 +17,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 ## Installation
 
-Takeout works on macOS, Linux, and Windows. First of all, make sure you have [Docker installed](https://docs.docker.com/get-docker/).
+Takeout works on macOS, Linux, and Windows. To get started, make sure you have [Docker installed](https://docs.docker.com/get-docker/) on your system.
 
 You may use the dockerized version via an alias. Add this to your `~/.bashrc` (or similar):
 
