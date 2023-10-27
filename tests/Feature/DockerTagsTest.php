@@ -77,13 +77,16 @@ class DockerTagsTest extends TestCase
                     [
                         'name' => 'latest',
                         'images' => [
+                            ['architecture' => 'x86_64'],
                             ['architecture' => 'amd64'],
                             ['architecture' => 'arm64'],
+                            ['architecture' => 'aarch64'],
                         ],
                     ],
                     [
                         'name' => '1.0.0',
                         'images' => [
+                            ['architecture' => 'x86_64'],
                             ['architecture' => 'amd64'],
                         ],
                     ],
@@ -91,6 +94,7 @@ class DockerTagsTest extends TestCase
                         'name' => '1.0.0-arm64',
                         'images' => [
                             ['architecture' => 'arm64'],
+                            ['architecture' => 'aarch64'],
                         ],
                     ],
                 ],
