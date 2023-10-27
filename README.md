@@ -15,15 +15,19 @@ With `takeout enable mysql` you're running MySQL, and never have to worry about 
 
 But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, and more, with a simple command. For a current list of services, look at the classes available in this directory: https://github.com/tighten/takeout/tree/main/app/Services
 
-## Requirements
-
-- macOS, Linux, Windows 10 or WSL2
-- [Composer](https://getcomposer.org/) installed
-- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/), Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/))
-
 ## Installation
 
-Install Takeout with Composer by running:
+Takeout works on macOS, Linux, and Windows. First of all, make sure you have [Docker installed](https://docs.docker.com/get-docker/).
+
+You may use the dockerized version via an alias. Add this to your `~/.bashrc` (or similar):
+
+```bash
+alias takeout="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
+```
+
+This is the preffered way, since it doesn't require you to have PHP installed locally and, even if you have, doesn't conflict with your local PHP version.
+
+Otherwise, if you have PHP (8.0+) and [Composer](https://getcomposer.org/) installed locally, you may install Takeout globally with:
 
 ```bash
 composer global require tightenco/takeout
