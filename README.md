@@ -19,21 +19,11 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 Takeout works on macOS, Linux, and Windows. To get started, make sure you have [Docker installed](https://docs.docker.com/get-docker/) on your system.
 
-You may use the dockerized version via an alias. Add this to your `~/.bashrc` (or similar):
+To install Takeout locally, add this alias to your `.bashrc` (or similar):
 
 ```bash
 alias takeout="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
 ```
-
-This is the preffered way, since it doesn't require you to have PHP installed locally and, even if you have, doesn't conflict with your local PHP version.
-
-Otherwise, if you have PHP (8.0+) and [Composer](https://getcomposer.org/) installed locally, you may install Takeout globally with:
-
-```bash
-composer global require tightenco/takeout
-```
-
-Make sure the `~/.composer/vendor/bin` directory is in your system's "PATH".
 
 ## Usage
 
