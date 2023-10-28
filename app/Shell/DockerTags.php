@@ -44,8 +44,11 @@ class DockerTags
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
 
+        $platform = $this->platform();
+
         [$numericTags, $alphaTags] = collect($response['results'])
-            ->filter($this->onlySupportedImagesFilter())
+            ->when($this->isArm($platform), $this->onlyArmImagesFilter())
+            ->when(! $this->isArm($platform), $this->onlyNonArmImagesFilter())
             ->pluck('name')
             ->partition(function ($tag) {
                 return is_numeric($tag[0]);
@@ -62,20 +65,40 @@ class DockerTags
         return $sortedTags->values()->filter();
     }
 
-    protected function onlySupportedImagesFilter()
+    protected function onlyArmImagesFilter()
     {
-        $platform = $this->platform();
+        return function ($tags) {
+            return $tags->filter(function ($tag) {
+                return collect($tag['images'])
+                    ->pluck('architecture')
+                    ->first(function (string $platform) {
+                        return $this->isArm($platform);
+                    });
+            });
+        };
+    }
 
-        return function ($tag) use ($platform) {
-            return collect($tag['images'])
-                ->pluck('architecture')
-                ->contains($platform);
+    protected function onlyNonArmImagesFilter()
+    {
+        return function ($tags) {
+            return $tags->filter(function ($tag) {
+                return collect($tag['images'])
+                    ->pluck('architecture')
+                    ->first(function (string $platform) {
+                        return ! $this->isArm($platform);
+                    });
+            });
         };
     }
 
     protected function platform(): string
     {
         return php_uname('m');
+    }
+
+    protected function isArm(string $platform): bool
+    {
+        return in_array($platform, ['arm64', 'aarch64']);
     }
 
     protected function getTagsResponse(): StreamInterface
