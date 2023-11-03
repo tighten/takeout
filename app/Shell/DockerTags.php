@@ -47,8 +47,7 @@ class DockerTags
         $platform = $this->platform();
 
         [$numericTags, $alphaTags] = collect($response['results'])
-            ->when($this->isArm($platform), $this->onlyArmImagesFilter())
-            ->when(! $this->isArm($platform), $this->onlyNonArmImagesFilter())
+            ->when($this->isArm($platform), $this->onlyArmImagesFilter(), $this->onlyNonArmImagesFilter())
             ->pluck('name')
             ->partition(function ($tag) {
                 return is_numeric($tag[0]);
