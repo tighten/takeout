@@ -15,6 +15,14 @@ use Tests\TestCase;
 
 class DockerTagsTest extends TestCase
 {
+    public static function armPlatforms(): array
+    {
+        return [
+            [FakePlatformDockerTags::M1_ARM_PLATFORM],
+            [FakePlatformDockerTags::LINUX_ARM_PLATFORM],
+        ];
+    }
+
     /** @test */
     function it_gets_the_latest_tag_not_named_latest()
     {
@@ -68,14 +76,6 @@ class DockerTagsTest extends TestCase
         $dockerTags = (new FakePlatformDockerTags($client, app(MySql::class)))->withFakePlatform(FakePlatformDockerTags::INTEL_ARM_PLATFORM);
 
         $this->assertEquals('1.0.0', $dockerTags->getLatestTag());
-    }
-
-    public static function armPlatforms()
-    {
-        return [
-            [FakePlatformDockerTags::M1_ARM_PLATFORM],
-            [FakePlatformDockerTags::LINUX_ARM_PLATFORM],
-        ];
     }
 
     private function mockImagesResponseHandler()
