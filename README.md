@@ -265,4 +265,6 @@ This means that you first need to create a builder container, which you maydo li
 docker buildx create --use
 ```
 
-After that, retrying the `buildx` command should work. Please, note that building the contianer will simply copy the current version of the Takeout `phar` file at [builds/takeout](./builds/takeout) to inside the container and publish that, so make sure you have to most recently built phar file locally. If you don't, follow the release process to build the new version before building the Docker image.
+After that, retrying the `buildx` command should work.
+
+Please, note that building the contianer will simply copy the current version of the Takeout `phar` file at [builds/takeout](./builds/takeout) to inside the container and publish that, so make sure you have to most recently built phar file locally. If you don't, follow the release process to build the new version before building the Docker image.
