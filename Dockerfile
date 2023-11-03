@@ -1,5 +1,7 @@
 FROM php:8.1-cli-alpine
 
+ENV TAKEOUT_CONTAINER=1
+
 COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 
 # Install the PHP extensions & Docker
