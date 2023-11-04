@@ -22,7 +22,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 ## Installation
 
-To install Takeout locally, add this alias to your `.bashrc` (or similar):
+To install Takeout locally, add this alias to your `~/.bashrc` (or similar):
 
 ```bash
 alias takeout="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
