@@ -35,7 +35,7 @@ class GitHubDockerTags extends DockerTags
     {
         $image = $this->service->imageName();
 
-        $response = $this->guzzle->get("https://ghcr.io/token?" . http_build_query([
+        $response = $this->guzzle->get('https://ghcr.io/token?' . http_build_query([
             'scope' => "repository:{$image}:pull",
         ]));
 
