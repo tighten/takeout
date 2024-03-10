@@ -37,7 +37,9 @@ class GitHubDockerTags extends DockerTags
 
         $response = $this->guzzle->get('https://ghcr.io/token?' . http_build_query([
             'scope' => "repository:{$image}:pull",
-        ]));
+        ]), [
+            "http_errors" => false,
+        ]);
 
         if ($response->getStatusCode() !== 200) {
             throw new RuntimeException("Something went wrong getting the Token from GitHub's registry.");
