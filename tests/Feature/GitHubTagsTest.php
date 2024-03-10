@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Services\Buggregator;
-use App\Shell\DockerTags;
 use App\Shell\GitHubDockerTags;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -21,7 +20,7 @@ class GitHubTagsTest extends TestCase
         $handlerStack = HandlerStack::create($this->mockImagesResponseHandler());
         $client = new Client(['handler' => $handlerStack]);
 
-        /** @var DockerTags $dockerTags */
+        /** @var GitHubDockerTags $dockerTags */
         $dockerTags = M::mock(GitHubDockerTags::class, [$client, app(Buggregator::class)])->makePartial();
 
         $this->assertEquals('latest', $dockerTags->getLatestTag());
@@ -33,7 +32,7 @@ class GitHubTagsTest extends TestCase
         $handlerStack = HandlerStack::create($this->mockImagesResponseHandler(false));
         $client = new Client(['handler' => $handlerStack]);
 
-        /** @var DockerTags $dockerTags */
+        /** @var GitHubDockerTags $dockerTags */
         $dockerTags = M::mock(GitHubDockerTags::class, [$client, app(Buggregator::class)])->makePartial();
 
         $this->expectException(RuntimeException::class);
