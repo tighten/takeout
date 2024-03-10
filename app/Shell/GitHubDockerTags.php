@@ -8,6 +8,16 @@ use RuntimeException;
 
 class GitHubDockerTags extends DockerTags
 {
+    public function getTags(): Collection
+    {
+        return collect(json_decode($this->getTagsResponse(), true)['tags']);
+    }
+
+    public function getLatestTag(): string
+    {
+        return $this->getTags()->first();
+    }
+
     protected function getTagsResponse(): StreamInterface
     {
         $token = $this->getToken();
@@ -19,16 +29,6 @@ class GitHubDockerTags extends DockerTags
                 ],
             ])
             ->getBody();
-    }
-
-    public function getTags(): Collection
-    {
-        return collect(json_decode($this->getTagsResponse(), true)['tags']);
-    }
-
-    public function getLatestTag(): string
-    {
-        return $this->getTags()->first();
     }
 
     protected function getToken(): string
