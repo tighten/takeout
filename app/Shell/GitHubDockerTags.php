@@ -26,6 +26,11 @@ class GitHubDockerTags extends DockerTags
         return collect(json_decode($this->getTagsResponse(), true)['tags']);
     }
 
+    public function getLatestTag(): string
+    {
+        return $this->getTags()->first();
+    }
+
     protected function getToken(): string
     {
         $image = $this->service->imageName();

@@ -32,7 +32,7 @@ class Buggregator extends BaseService
         [
             'shortname' => 'network_alias',
             'prompt' => 'What network alias to you want to assign to this container? This alias can be used by other services on the same network.',
-            'default' => 'dump-server',
+            'default' => 'buggregator',
         ],
     ];
 
