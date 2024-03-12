@@ -6,9 +6,10 @@ class MySql extends BaseService
 {
     protected static $category = Category::DATABASE;
 
-    protected $organization = 'mysql';
-    protected $imageName = 'mysql-server';
+    protected $imageName = 'mysql';
+
     protected $defaultPort = 3306;
+
     protected $prompts = [
         [
             'shortname' => 'volume',
