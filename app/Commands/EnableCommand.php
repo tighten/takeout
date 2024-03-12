@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
+use function Laravel\Prompts\search;
 
 class EnableCommand extends Command
 {
@@ -47,8 +48,7 @@ class EnableCommand extends Command
         }
 
         $option = $this->selectService();
-
-        if (! $option) {
+        if (!$option) {
             return;
         }
 
@@ -87,7 +87,7 @@ class EnableCommand extends Command
      */
     public function extractPassthroughOptions(array $arguments): array
     {
-        if (! in_array('--', $arguments)) {
+        if (!in_array('--', $arguments)) {
             return [];
         }
 
@@ -130,18 +130,21 @@ class EnableCommand extends Command
 
     private function defaultMenu(): ?string
     {
-        $option = $this->menu(self::MENU_TITLE)->setTitleSeparator('=');
+        $servicesList = collect($this->enableableServicesByCategory())->flatMap(function ($services, $category) {
+            return collect($this->menuItemsForServices($services))->mapWithKeys(function ($row, $key) use ($category) {
+                return [$key => "{$category}: {$row}"];
+            })->toArray();
+        })->toArray();
 
-        foreach ($this->enableableServicesByCategory() as $category => $services) {
-            $separator = str_repeat('-', 1 + Str::length($category));
-
-            $option->addStaticItem("{$category}:")
-                ->addStaticItem($separator)
-                ->addOptions($this->menuItemsForServices($services))
-                ->addLineBreak('', 1);
-        }
-
-        return $option->open();
+        return search(
+            label: self::MENU_TITLE,
+            options: fn (string $value) => strlen($value) > 0
+                ?   collect($servicesList)->filter(function ($row) use ($value) {
+                    return str($row)->lower()->contains(str($value)->lower());
+                })->toArray()
+                : $servicesList,
+            scroll: 10
+        );
     }
 
     private function windowsMenu($category = null): ?string
