@@ -43,11 +43,11 @@ class DockerTags
     public function getTags(): Collection
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
+
         $platform = $this->platform();
 
         [$numericTags, $alphaTags] = collect($response['results'])
-            ->when($platform === 'arm64', $this->armSupportedImagesOnlyFilter())
-            ->when($platform !== 'arm64', $this->nonArmOnlySupportImagesFilter())
+            ->when($this->isArm($platform), $this->onlyArmImagesFilter(), $this->onlyNonArmImagesFilter())
             ->pluck('name')
             ->partition(function ($tag) {
                 return is_numeric($tag[0]);
@@ -64,41 +64,28 @@ class DockerTags
         return $sortedTags->values()->filter();
     }
 
-    /**
-     * Return a function intended to filter tags, ensuring images that do not support arm architecture are filtered out.
-     *
-     * @return callable
-     */
-    protected function armSupportedImagesOnlyFilter()
+    protected function onlyArmImagesFilter()
     {
         return function ($tags) {
             return $tags->filter(function ($tag) {
                 return collect($tag['images'])
                     ->pluck('architecture')
-                    ->contains('arm64');
+                    ->first(function (string $platform) {
+                        return $this->isArm($platform);
+                    });
             });
         };
     }
 
-    /**
-     * Return a function intended to filter tags, that ensures are arm-only images are filtered out.
-     *
-     * @return callable
-     */
-    protected function nonArmOnlySupportImagesFilter()
+    protected function onlyNonArmImagesFilter()
     {
         return function ($tags) {
             return $tags->filter(function ($tag) {
-                $supportedArchitectures = collect($tag['images'])
+                return collect($tag['images'])
                     ->pluck('architecture')
-                    ->unique()
-                    ->values();
-
-                // When removing the arm64 option from the list, there should
-                // still be other options in the supported architectures
-                // so we can consider that the tag is not arm-only.
-
-                return $supportedArchitectures->diff(['arm64'])->count() > 0;
+                    ->first(function (string $platform) {
+                        return ! $this->isArm($platform);
+                    });
             });
         };
     }
@@ -106,6 +93,11 @@ class DockerTags
     protected function platform(): string
     {
         return php_uname('m');
+    }
+
+    protected function isArm(string $platform): bool
+    {
+        return in_array($platform, ['arm64', 'aarch64']);
     }
 
     protected function getTagsResponse(): StreamInterface
