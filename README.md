@@ -186,6 +186,16 @@ Now, if you run `takeout list`, you'll see both services running at the same tim
 +--------------+----------------+---------------+-----------------------------------+
 ```
 
+## Network Details
+
+Takeout containers are automatically added to a Docker network named `takeout`. This allows you to use the same aliasing and base aliasing that is used for the other containers.
+
+Each container is given two aliases on this network:
+- A base_alias based on the core dependency name (e.g. mysql, postgres)
+- A full_alias combining the base alias and version (e.g. mysql8.0, postgres13)
+
+Other containers on the takeout network can access Takeout containers by their aliases. [Check this article on how you can use sail and takeout together](https://mattstauffer.com/blog/how-to-use-takeout-to-add-new-services-to-laravel-sail-and-save-ram/)
+
 ## FAQs
 
 <details>
