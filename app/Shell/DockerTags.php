@@ -46,23 +46,12 @@ class DockerTags
         $response = json_decode($this->getTagsResponse()->getContents(), true);
         $platform = $this->platform();
 
-        [$numericTags, $alphaTags] = collect($response['results'])
+        return collect($response['results'])
             ->when(in_array($platform, $this->armArchitectures, true), $this->armSupportedImagesOnlyFilter())
             ->when(! in_array($platform, $this->armArchitectures, true), $this->nonArmOnlySupportImagesFilter())
             ->pluck('name')
-            ->partition(function ($tag) {
-                return is_numeric($tag[0]);
-            });
-
-        $sortedTags = $alphaTags->sortDesc(SORT_NATURAL)
-                                ->concat($numericTags->sortDesc(SORT_NATURAL));
-
-        if ($sortedTags->contains('latest')) {
-            $sortedTags->splice($sortedTags->search('latest'), 1);
-            $sortedTags->prepend('latest');
-        }
-
-        return $sortedTags->values()->filter();
+            ->sort(new VersionComparator)
+            ->values();
     }
 
     /**

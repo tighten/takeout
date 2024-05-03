@@ -16,9 +16,16 @@ class VersionComparator
             return 1;
         }
 
+        $a = preg_replace('/^v/', '', $a);
+        $b = preg_replace('/^v/', '', $b);
+
         // If both versions are regular semver versions (numbers and dots only), we'll compare them as semver...
         if ($this->isSemver($a) && $this->isSemver($b)) {
             return $this->compareSemver($a, $b);
+        }
+
+        if ($this->startsAsSemver($a) && $this->startsAsSemver($b)) {
+            return $this->compareSemver($this->semverFragment($a), $this->semverFragment($b));
         }
 
         // Bump "a" if it is semver and "b" is not...
@@ -33,6 +40,26 @@ class VersionComparator
 
         // Otherwise, compare alphabetically...
         return strcmp($a, $b);
+    }
+
+    private function startsAsSemver(string $version): bool
+    {
+        return preg_match('/^[\d.]+/', $version);
+    }
+
+    private function semverFragment(string $version): string
+    {
+        // When comparing semver version with those containing letters, we'll
+        // append a ".99" to the ones with letters so the actual semver ones
+        // will be ranked higher than the ones with letters.
+
+        preg_match('/^[\d.]+/', $version, $matches);
+
+        if ($matches[0] === $version) {
+            return $version;
+        }
+
+        return $matches[0] . ".99";
     }
 
     private function isSemver(string $version): bool
