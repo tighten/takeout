@@ -21,7 +21,7 @@
         "ext-pcntl": "*",
         "ext-posix": "*",
         "guzzlehttp/psr7": "^1.7",
-        "laravel/prompts": "dev-support-older-php"
+        "laravel/prompts": "^0.1.21"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.5",
