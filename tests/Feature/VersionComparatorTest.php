@@ -29,5 +29,4 @@ class VersionComparatorTest extends TestCase
             ->values()
             ->all();
     }
-
 }
