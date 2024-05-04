@@ -13,9 +13,9 @@ class VersionComparatorTest extends TestCase
      * @testWith [["latest", "8.0"], ["latest", "8.0"]]
      *           [["8.0", "latest"], ["latest", "8.0"]]
      *           [["5.0", "8.0", "latest"], ["latest", "8.0", "5.0"]]
-     *           [["8.0.43", "8.0", "latest"], ["latest", "8.0", "8.0.43"]]
+     *           [["8.0.43", "8.0", "latest"], ["latest", "8.0.43", "8.0"]]
      *           [["8.0.4-oraclelinux8", "8.0.4", "latest"], ["latest", "8.0.4", "8.0.4-oraclelinux8"]]
-     *           [["8.0.4-oraclelinux8", "5.0.1", "8.0.4", "latest", "5.0.1-oraclelinux8"], ["latest", "8.0.4", "8.0.4-oraclelinux8", "5.0.1", "5.0.1-oraclelinux8"]]
+     *           [["8.0.4-oraclelinux8", "5.0.1", "8.0.4", "latest", "5.0.1-oraclelinux8"], ["latest", "8.0.4", "5.0.1", "8.0.4-oraclelinux8", "5.0.1-oraclelinux8"]]
      */
     public function compares($versions, $expectedOrder)
     {
