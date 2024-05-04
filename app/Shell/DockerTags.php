@@ -30,8 +30,8 @@ class DockerTags
 
     public function getLatestTag(): string
     {
-        $numericTags = $this->getTags()->reject(function ($tag) {
-            return ! is_numeric($tag[0]);
+        $numericTags = $this->getTags()->filter(function ($tag) {
+            return preg_match('/^v?\d/', $tag);
         });
 
         if ($numericTags->isEmpty()) {

@@ -9,18 +9,6 @@ class MailDev extends BaseService
     protected $organization = 'maildev';
     protected $imageName = 'maildev';
     protected $defaultPort = 1025;
-    protected $defaultPrompts = [
-        [
-            'shortname' => 'port',
-            'prompt' => 'Which host port would you like %s to use?',
-            // Default is set in the constructor
-        ],
-        [
-            'shortname' => 'tag',
-            'prompt' => 'Which tag (version) of %s would you like to use?',
-            'default' => '2.0.5',
-        ],
-    ];
     protected $prompts = [
         [
             'shortname' => 'web_port',
