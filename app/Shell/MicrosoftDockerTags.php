@@ -14,7 +14,7 @@ class MicrosoftDockerTags extends DockerTags
     public function getTags(): Collection
     {
         return collect(json_decode($this->getTagsResponse(), true)['tags'])
-            ->reverse()
+            ->sort(new VersionComparator)
             ->values();
     }
 

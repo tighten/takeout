@@ -11,6 +11,7 @@ class DockerTags
 {
     protected $guzzle;
     protected $service;
+    protected $armArchitectures = ['arm64', 'aarch64'];
 
     public function __construct(Client $guzzle, BaseService $service)
     {
@@ -29,8 +30,8 @@ class DockerTags
 
     public function getLatestTag(): string
     {
-        $numericTags = $this->getTags()->reject(function ($tag) {
-            return ! is_numeric($tag[0]);
+        $numericTags = $this->getTags()->filter(function ($tag) {
+            return preg_match('/^v?\d/', $tag);
         });
 
         if ($numericTags->isEmpty()) {
@@ -46,33 +47,27 @@ class DockerTags
 
         $platform = $this->platform();
 
-        [$numericTags, $alphaTags] = collect($response['results'])
-            ->when($this->isArm($platform), $this->onlyArmImagesFilter(), $this->onlyNonArmImagesFilter())
+        return collect($response['results'])
+            ->when(in_array($platform, $this->armArchitectures, true), $this->onlyArmImagesFilter())
+            ->when(! in_array($platform, $this->armArchitectures, true), $this->onlyNonArmImagesFilter())
             ->pluck('name')
-            ->partition(function ($tag) {
-                return is_numeric($tag[0]);
-            });
-
-        $sortedTags = $alphaTags->sortDesc(SORT_NATURAL)
-                                ->concat($numericTags->sortDesc(SORT_NATURAL));
-
-        if ($sortedTags->contains('latest')) {
-            $sortedTags->splice($sortedTags->search('latest'), 1);
-            $sortedTags->prepend('latest');
-        }
-
-        return $sortedTags->values()->filter();
+            ->sort(new VersionComparator)
+            ->values();
     }
 
     protected function onlyArmImagesFilter()
     {
         return function ($tags) {
             return $tags->filter(function ($tag) {
-                return collect($tag['images'])
-                    ->pluck('architecture')
-                    ->first(function (string $platform) {
-                        return $this->isArm($platform);
-                    });
+                $supportedArchs = collect($tag['images'])->pluck('architecture');
+
+                foreach ($this->armArchitectures as $arch) {
+                    if ($supportedArchs->contains($arch)) {
+                        return true;
+                    }
+                }
+
+                return false;
             });
         };
     }
@@ -81,11 +76,16 @@ class DockerTags
     {
         return function ($tags) {
             return $tags->filter(function ($tag) {
-                return collect($tag['images'])
+                $supportedArchitectures = collect($tag['images'])
                     ->pluck('architecture')
-                    ->first(function (string $platform) {
-                        return ! $this->isArm($platform);
-                    });
+                    ->unique()
+                    ->values();
+
+                // When removing the arm64 option from the list, there should
+                // still be other options in the supported architectures
+                // so we can consider that the tag is not arm-only.
+
+                return $supportedArchitectures->diff($this->armArchitectures)->count() > 0;
             });
         };
     }
@@ -93,11 +93,6 @@ class DockerTags
     protected function platform(): string
     {
         return php_uname('m');
-    }
-
-    protected function isArm(string $platform): bool
-    {
-        return in_array($platform, ['arm64', 'aarch64']);
     }
 
     protected function getTagsResponse(): StreamInterface
