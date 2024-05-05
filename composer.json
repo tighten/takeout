@@ -20,6 +20,7 @@
         "ext-json": "*",
         "ext-pcntl": "*",
         "ext-posix": "*",
+        "composer/semver": "^3.4",
         "guzzlehttp/psr7": "^2.6"
     },
     "require-dev": {

@@ -20,10 +20,7 @@ class QuayDockerTags extends DockerTags
     public function getTags(): Collection
     {
         return collect(json_decode($this->getTagsResponse()->getContents(), true)['tags'])
-            ->map(function ($release) {
-                return $release['name'];
-            })
-        ;
+            ->pluck('name');
     }
 
     protected function tagsUrlTemplate(): string

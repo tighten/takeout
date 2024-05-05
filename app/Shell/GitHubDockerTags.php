@@ -10,7 +10,9 @@ class GitHubDockerTags extends DockerTags
 {
     public function getTags(): Collection
     {
-        return collect(json_decode($this->getTagsResponse(), true)['tags']);
+        return collect(json_decode($this->getTagsResponse(), true)['tags'])
+            ->sort(new VersionComparator)
+            ->values();
     }
 
     public function getLatestTag(): string

@@ -14,7 +14,12 @@ class ElasticDockerTags extends DockerTags
             ->reverse()
             ->filter(function ($tag) {
                 return ! Str::contains($tag, 'SNAPSHOT');
-            });
+            })
+            ->filter(function ($tag) {
+                return ! Str::startsWith($tag, 'sha256-');
+            })
+            ->sort(new VersionComparator)
+            ->values();
     }
 
     protected function getAuthResponse(): StreamInterface

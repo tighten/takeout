@@ -29,23 +29,13 @@ class MinioDockerTags extends DockerTags
     public function getTags(): Collection
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
-        $tags = collect($response['results'])->map->name->reject(function ($tag) {
-            return Str::endsWith($tag, 'fips');
-        });
 
-        [$releaseTags, $otherTags] = $tags
-            ->partition(function ($tag) {
-                return Str::startsWith($tag, 'RELEASE.');
-            });
-
-        $sortedTags = $releaseTags->sortDesc(SORT_NATURAL)
-            ->concat($otherTags->sortDesc(SORT_NATURAL));
-
-        if ($sortedTags->contains('latest')) {
-            $sortedTags->splice($sortedTags->search('latest'), 1);
-            $sortedTags->prepend('latest');
-        }
-
-        return $sortedTags;
+        return collect($response['results'])
+            ->pluck('name')
+            ->reject(function ($tag) {
+                return Str::endsWith($tag, 'fips');
+            })
+            ->sort(new VersionComparator)
+            ->values();
     }
 }
