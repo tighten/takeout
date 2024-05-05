@@ -44,22 +44,18 @@ class DockerTags
     public function getTags(): Collection
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
+
         $platform = $this->platform();
 
         return collect($response['results'])
-            ->when(in_array($platform, $this->armArchitectures, true), $this->armSupportedImagesOnlyFilter())
-            ->when(! in_array($platform, $this->armArchitectures, true), $this->nonArmOnlySupportImagesFilter())
+            ->when(in_array($platform, $this->armArchitectures, true), $this->onlyArmImagesFilter())
+            ->when(! in_array($platform, $this->armArchitectures, true), $this->onlyNonArmImagesFilter())
             ->pluck('name')
             ->sort(new VersionComparator)
             ->values();
     }
 
-    /**
-     * Return a function intended to filter tags, ensuring images that do not support arm architecture are filtered out.
-     *
-     * @return callable
-     */
-    protected function armSupportedImagesOnlyFilter()
+    protected function onlyArmImagesFilter()
     {
         return function ($tags) {
             return $tags->filter(function ($tag) {
@@ -76,12 +72,7 @@ class DockerTags
         };
     }
 
-    /**
-     * Return a function intended to filter tags, that ensures are arm-only images are filtered out.
-     *
-     * @return callable
-     */
-    protected function nonArmOnlySupportImagesFilter()
+    protected function onlyNonArmImagesFilter()
     {
         return function ($tags) {
             return $tags->filter(function ($tag) {
