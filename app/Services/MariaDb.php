@@ -17,14 +17,24 @@ class MariaDb extends BaseService
         [
             'shortname' => 'root_password',
             'prompt' => 'What will the root password be?',
-            'default' => 'password',
+            'default' => '',
         ],
     ];
 
     protected $dockerRunTemplate = '-p "${:port}":3306 \
         -e MYSQL_ROOT_PASSWORD="${:root_password}" \
+        -e MYSQL_ALLOW_EMPTY_PASSWORD="${:allow_empty_password}" \
         -v "${:volume}":/var/lib/mysql \
         "${:organization}"/"${:image_name}":"${:tag}"';
 
     protected static $displayName = 'MariaDB';
+
+    protected function buildParameters(): array
+    {
+        $parameters = parent::buildParameters();
+
+        $parameters["allow_empty_password"] = $parameters["root_password"] === "" ? "yes" : "no";
+
+        return $parameters;
+    }
 }
