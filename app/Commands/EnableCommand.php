@@ -48,7 +48,7 @@ class EnableCommand extends Command
         }
 
         $option = $this->selectService();
-        if (!$option) {
+        if (! $option) {
             return;
         }
 
@@ -87,7 +87,7 @@ class EnableCommand extends Command
      */
     public function extractPassthroughOptions(array $arguments): array
     {
-        if (!in_array('--', $arguments)) {
+        if (! in_array('--', $arguments)) {
             return [];
         }
 
