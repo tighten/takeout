@@ -8,11 +8,6 @@ use App\Services;
 use App\Services\MeiliSearch;
 use App\Services\PostgreSql;
 use App\Shell\Docker;
-use Illuminate\Console\Command;
-use Laravel\Prompts\Prompt;
-use Laravel\Prompts\SearchPrompt;
-use NunoMaduro\LaravelConsoleMenu\Menu;
-use PHPUnit\Framework\Assert;
 use Tests\TestCase;
 
 class EnableCommandTest extends TestCase
@@ -66,7 +61,7 @@ class EnableCommandTest extends TestCase
                 'Database: PostgreSQL',
                 'Search: MeiliSearch',
                 'meilisearch',
-                'postgresql',
+                $postgres,
             ];
 
             $this->artisan('enable')
@@ -75,11 +70,11 @@ class EnableCommandTest extends TestCase
 
             $menuItems = [
                 'Database: PostgreSQL',
-                'postgresql',
+                $postgres,
             ];
 
             $this->artisan('enable')
-                ->expectsChoice('Takeout containers to enable', 'PostgreSQL', $menuItems)
+                ->expectsChoice('Takeout containers to enable', $postgres, $menuItems)
                 ->assertExitCode(0);
         }
     }
