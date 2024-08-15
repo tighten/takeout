@@ -55,7 +55,7 @@ class DisableCommandTest extends TestCase
             array_push($disableableServices, '<info>Exit</>');
 
             $this->artisan('disable')
-                ->expectsChoice('Takeout containers to disable', $postgressName, $disableableServices)
+                ->expectsChoice('Takeout containers to disable', $postgressName, array_values($disableableServices))
                 ->assertExitCode(0);
         } else {
             $menuMock = $this->mock(Menu::class, function ($mock) use ($postgressId) {
