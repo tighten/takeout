@@ -7,8 +7,11 @@ class OpenSearch extends BaseService
     protected static $category = Category::SEARCH;
 
     protected $organization = 'opensearchproject';
+
     protected $imageName = 'opensearch';
+
     protected $defaultPort = 9200;
+
     protected $prompts = [
         [
             'shortname' => 'volume',
@@ -23,7 +26,7 @@ class OpenSearch extends BaseService
         [
             'shortname' => 'disable_security',
             'prompt' => 'Disable security plugin (true or false)?',
-            'default' => 'false',
+            'default' => 'true',
         ],
     ];
 
