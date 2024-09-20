@@ -7,8 +7,11 @@ class EventStoreDB extends BaseService
     protected static $category = Category::DATABASE;
 
     protected $organization = 'eventstore';
+
     protected $imageName = 'eventstore';
+
     protected $defaultPort = 1113;
+
     protected $prompts = [
         [
             'shortname' => 'web_port',
@@ -25,7 +28,6 @@ class EventStoreDB extends BaseService
     protected $dockerRunTemplate = '-p "${:port}":1113 \
         -p "${:web_port}":2113 \
         -v "${:volume}":/var/lib/eventstore \
-        "${:organization}"/"${:image_name}":"${:tag}" \
-        --insecure --run-projections=All \
-        --enable-external-tcp --enable-atom-pub-over-http';
+        "${:organization}"/"${:image_name}":latest \
+        --insecure --run-projections=All';
 }
