@@ -169,6 +169,24 @@ takeout stop {container_id}
 takeout stop {container_id1} {container_id2}
 ```
 
+### Get a shell inside any Takeout container
+
+To get a shell inside any container that is started with Takeout, you may run:
+
+```bash
+takeout shell {service}
+```
+
+Here are some examples:
+
+```bash
+takeout shell mysql
+takeout shell neo4j
+takeotu shell pgvector
+```
+
+This will reuse the running container. Takeout will start either a `bash` or a `sh` process inside the container, depending on what the container supports (this is automatically handled by Takeout).
+
 ## Running multiple versions of a dependency
 
 Another of Takeout's benefits is that it allows you to have multiple versions of a dependency installed and running at the same time. That means, for example, that you can run both MySQL 5.7 and 8.0 at the same time, on different ports.
