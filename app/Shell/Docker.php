@@ -37,10 +37,10 @@ class Docker
             $this->stopContainer($containerId);
         }
 
-        $process = $this->shell->exec('docker rm '.$containerId);
+        $process = $this->shell->exec('docker rm ' . $containerId);
 
         if (! $process->isSuccessful()) {
-            throw new Exception('Failed removing container '.$containerId);
+            throw new Exception('Failed removing container ' . $containerId);
         }
     }
 
@@ -52,10 +52,10 @@ class Docker
             throw new DockerContainerMissingException($containerId);
         }
 
-        $process = $this->shell->exec('docker stop '.$containerId);
+        $process = $this->shell->exec('docker stop ' . $containerId);
 
         if (! $process->isSuccessful()) {
-            throw new Exception('Failed stopping container '.$containerId);
+            throw new Exception('Failed stopping container ' . $containerId);
         }
     }
 
@@ -67,10 +67,10 @@ class Docker
             throw new DockerContainerMissingException($containerId);
         }
 
-        $process = $this->shell->exec('docker logs -f '.$containerId);
+        $process = $this->shell->exec('docker logs -f ' . $containerId);
 
         if (! $process->isSuccessful()) {
-            throw new Exception('Failed to log container '.$containerId);
+            throw new Exception('Failed to log container ' . $containerId);
         }
     }
 
@@ -82,10 +82,10 @@ class Docker
             throw new DockerContainerMissingException($containerId);
         }
 
-        $process = $this->shell->exec('docker start '.$containerId);
+        $process = $this->shell->exec('docker start ' . $containerId);
 
         if (! $process->isSuccessful()) {
-            throw new Exception('Failed starting container '.$containerId);
+            throw new Exception('Failed starting container ' . $containerId);
         }
     }
 
@@ -171,7 +171,7 @@ class Docker
         $process = $this->shell->exec($command, $parameters);
 
         if (! $process->isSuccessful()) {
-            throw new Exception('Failed installing '.$parameters['image_name']);
+            throw new Exception('Failed installing ' . $parameters['image_name']);
         }
     }
 
@@ -198,7 +198,7 @@ class Docker
             $this->shell->execQuietly('systemctl stop docker');
         } else {
             // BSD, Solaris, Unknown
-            throw new Exception('Cannot stop Docker in PHP_OS_FAMILY '.PHP_OS_FAMILY);
+            throw new Exception('Cannot stop Docker in PHP_OS_FAMILY ' . PHP_OS_FAMILY);
         }
     }
 
@@ -206,7 +206,8 @@ class Docker
     {
         $command = $this->shell->buildProcess(sprintf(
             'docker exec -it "%s" %s',
-            $containerId, $shellCommand,
+            $containerId,
+            $shellCommand,
         ));
 
         $command->setTty(true);
