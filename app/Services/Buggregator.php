@@ -9,10 +9,15 @@ class Buggregator extends BaseService
     protected static $category = Category::TOOLS;
 
     protected $dockerTagsClass = GitHubDockerTags::class;
+
     protected $organization = 'ghcr.io';
+
     protected $imageName = 'buggregator/server';
+
     protected $tag = 'latest';
+
     protected $defaultPort = 8000;
+
     protected $prompts = [
         [
             'shortname' => 'smtp_port',
@@ -42,4 +47,9 @@ class Buggregator extends BaseService
         -p "${:monolog_port}":9913 \
         --network-alias "${:network_alias}" \
         "${:organization}"/"${:image_name}":"${:tag}"';
+
+    protected function shellCommand(): string
+    {
+        return 'sh';
+    }
 }

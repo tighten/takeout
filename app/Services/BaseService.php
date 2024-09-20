@@ -7,6 +7,7 @@ use App\Shell\DockerTags;
 use App\Shell\Environment;
 use App\Shell\Shell;
 use App\WritesToConsole;
+use Exception;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -15,14 +16,21 @@ abstract class BaseService
     use WritesToConsole;
 
     protected static $category;
+
     protected static $displayName;
 
     protected $organization = 'library'; // Official repositories use `library` as the organization name.
+
     protected $imageName;
+
     protected $dockerTagsClass = DockerTags::class;
+
     protected $tag;
+
     protected $dockerRunTemplate;
+
     protected $defaultPort;
+
     protected $defaultPrompts = [
         [
             'shortname' => 'port',
@@ -35,11 +43,17 @@ abstract class BaseService
             'default' => 'latest',
         ],
     ];
+
     protected $prompts = [];
+
     protected $promptResponses = [];
+
     protected $shell;
+
     protected $environment;
+
     protected $docker;
+
     protected $useDefaults = false;
 
     public function __construct(Shell $shell, Environment $environment, Docker $docker)
@@ -67,7 +81,7 @@ abstract class BaseService
         return static::$displayName ?? Str::afterLast(static::class, '\\');
     }
 
-    public function enable(bool $useDefaults = false, array $passthroughOptions = [], string $runOptions = null): void
+    public function enable(bool $useDefaults = false, array $passthroughOptions = [], ?string $runOptions = null): void
     {
         $this->useDefaults = $useDefaults;
 
@@ -79,7 +93,7 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                join(' ', array_filter([
+                implode(' ', array_filter([
                     $runOptions,
                     $this->sanitizeDockerRunTemplate($this->dockerRunTemplate),
                     $this->buildPassthroughOptionsString($passthroughOptions),
@@ -89,8 +103,30 @@ abstract class BaseService
 
             $this->info("\nService enabled!");
         } catch (Throwable $e) {
-            $this->error("\n" . $e->getMessage());
+            $this->error("\n".$e->getMessage());
         }
+    }
+
+    public function forwardShell(): void
+    {
+        if (! $this->docker->isDockerServiceRunning()) {
+            throw new Exception('Docker is not running.');
+        }
+
+        $service = $this->docker->takeoutContainers()->first(function ($container) {
+            return str_starts_with($container['names'], "TO--{$this->shortName()}--");
+        });
+
+        if (! $service) {
+            throw new Exception(sprintf('Service %s is not enabled.', $this->shortName()));
+        }
+
+        $this->docker->forwardShell($service['container_id'], $this->shellCommand());
+    }
+
+    protected function shellCommand(): string
+    {
+        return 'bash';
     }
 
     public function organization(): string
@@ -200,13 +236,13 @@ abstract class BaseService
         // Check if tag represents semantic version (v5.6.0, 5.7.4, or 8.0) and return major.minor
         // (eg mysql5.7) or return the actual tag prefixed by a dash (eg redis-buster)
         if (! preg_match('/v?(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?)/', $this->tag)) {
-            return $this->shortName() . "-{$this->tag}";
+            return $this->shortName()."-{$this->tag}";
         }
 
         $version = trim($this->tag, 'v');
         [$major, $minor] = explode('.', $version);
 
-        return $this->shortName() . "{$major}.{$minor}";
+        return $this->shortName()."{$major}.{$minor}";
     }
 
     protected function containerName(): string
@@ -218,7 +254,7 @@ abstract class BaseService
             }
         }
 
-        return 'TO--' . $this->shortName() . '--' . $this->tag . $portTag;
+        return 'TO--'.$this->shortName().'--'.$this->tag.$portTag;
     }
 
     public function sanitizeDockerRunTemplate($dockerRunTemplate): string
@@ -236,6 +272,6 @@ abstract class BaseService
             return '';
         }
 
-        return join(' ', $passthroughOptions);
+        return implode(' ', $passthroughOptions);
     }
 }

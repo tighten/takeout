@@ -64,6 +64,11 @@ class Traefik extends BaseService
         }, $this->prompts);
     }
 
+    protected function shellCommand(): string
+    {
+        return 'sh';
+    }
+
     protected function prompts(): void
     {
         parent::prompts();

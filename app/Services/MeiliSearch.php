@@ -7,8 +7,11 @@ class MeiliSearch extends BaseService
     protected static $category = Category::SEARCH;
 
     protected $organization = 'getmeili';
+
     protected $imageName = 'meilisearch';
+
     protected $defaultPort = 7700;
+
     protected $prompts = [
         [
             'shortname' => 'volume',
@@ -20,4 +23,9 @@ class MeiliSearch extends BaseService
     protected $dockerRunTemplate = '-p "${:port}":7700 \
         -v "${:volume}":/data.ms \
         "${:organization}"/"${:image_name}":"${:tag}"';
+
+    protected function shellCommand(): string
+    {
+        return 'sh';
+    }
 }
