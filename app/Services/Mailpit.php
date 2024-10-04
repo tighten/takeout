@@ -16,6 +16,7 @@ class Mailpit extends BaseService
             'default' => '8025',
         ],
     ];
+
     protected $dockerRunTemplate = '-p "${:port}":1025 \
         -p "${:web_port}":8025 \
         "${:organization}"/"${:image_name}":"${:tag}"';
