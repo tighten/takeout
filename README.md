@@ -182,10 +182,10 @@ Here are some examples:
 ```bash
 takeout shell mysql
 takeout shell neo4j
-takeotu shell pgvector
+takeout shell pgvector
 ```
 
-This will reuse the running container. Takeout will start either a `bash` or a `sh` process inside the container, depending on what the container supports (this is automatically handled by Takeout).
+This will open a shell inside the running container for the service you provide. Takeout will start either a `bash` or a `sh` process inside the container, depending on what the container supports.
 
 ## Running multiple versions of a dependency
 
