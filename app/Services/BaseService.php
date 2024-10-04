@@ -17,6 +17,7 @@ abstract class BaseService
 
     protected static $category;
     protected static $displayName;
+
     protected $organization = 'library'; // Official repositories use `library` as the organization name.
     protected $imageName;
     protected $dockerTagsClass = DockerTags::class;
@@ -67,7 +68,7 @@ abstract class BaseService
         return static::$displayName ?? Str::afterLast(static::class, '\\');
     }
 
-    public function enable(bool $useDefaults = false, array $passthroughOptions = [], ?string $runOptions = null): void
+    public function enable(bool $useDefaults = false, array $passthroughOptions = [], string $runOptions = null): void
     {
         $this->useDefaults = $useDefaults;
 
@@ -79,7 +80,7 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                implode(' ', array_filter([
+                join(' ', array_filter([
                     $runOptions,
                     $this->sanitizeDockerRunTemplate($this->dockerRunTemplate),
                     $this->buildPassthroughOptionsString($passthroughOptions),
@@ -258,6 +259,6 @@ abstract class BaseService
             return '';
         }
 
-        return implode(' ', $passthroughOptions);
+        return join(' ', $passthroughOptions);
     }
 }
