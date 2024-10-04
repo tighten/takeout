@@ -10,11 +10,8 @@ use Illuminate\Support\Str;
 class Docker
 {
     protected $shell;
-
     protected $formatter;
-
     protected $networking;
-
     protected $environment;
 
     public function __construct(

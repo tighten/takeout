@@ -13,7 +13,6 @@ class ShellCommand extends Command
     const MENU_TITLE = 'Get a shell inside a running Takeout container.';
 
     protected $signature = 'shell {service}';
-
     protected $description = 'Get a shell inside a running Takeout container.';
 
     public function handle(Services $services): int

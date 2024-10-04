@@ -5,13 +5,9 @@ namespace App\Services;
 class EventStoreDB extends BaseService
 {
     protected static $category = Category::DATABASE;
-
     protected $organization = 'eventstore';
-
     protected $imageName = 'eventstore';
-
     protected $defaultPort = 1113;
-
     protected $prompts = [
         [
             'shortname' => 'web_port',
@@ -24,7 +20,6 @@ class EventStoreDB extends BaseService
             'default' => 'eventstore_data',
         ],
     ];
-
     protected $dockerRunTemplate = '-p "${:port}":1113 \
         -p "${:web_port}":2113 \
         -v "${:volume}":/var/lib/eventstore \

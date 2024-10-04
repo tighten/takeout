@@ -16,21 +16,13 @@ abstract class BaseService
     use WritesToConsole;
 
     protected static $category;
-
     protected static $displayName;
-
     protected $organization = 'library'; // Official repositories use `library` as the organization name.
-
     protected $imageName;
-
     protected $dockerTagsClass = DockerTags::class;
-
     protected $tag;
-
     protected $dockerRunTemplate;
-
     protected $defaultPort;
-
     protected $defaultPrompts = [
         [
             'shortname' => 'port',
@@ -43,17 +35,11 @@ abstract class BaseService
             'default' => 'latest',
         ],
     ];
-
     protected $prompts = [];
-
     protected $promptResponses = [];
-
     protected $shell;
-
     protected $environment;
-
     protected $docker;
-
     protected $useDefaults = false;
 
     public function __construct(Shell $shell, Environment $environment, Docker $docker)

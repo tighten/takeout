@@ -7,17 +7,11 @@ use App\Shell\GitHubDockerTags;
 class Buggregator extends BaseService
 {
     protected static $category = Category::TOOLS;
-
     protected $dockerTagsClass = GitHubDockerTags::class;
-
     protected $organization = 'ghcr.io';
-
     protected $imageName = 'buggregator/server';
-
     protected $tag = 'latest';
-
     protected $defaultPort = 8000;
-
     protected $prompts = [
         [
             'shortname' => 'smtp_port',
@@ -40,7 +34,6 @@ class Buggregator extends BaseService
             'default' => 'buggregator',
         ],
     ];
-
     protected $dockerRunTemplate = '-p "${:port}":8000 \
         -p "${:smtp_port}":1025 \
         -p "${:var_dumper_port}":9912 \

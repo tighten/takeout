@@ -12,15 +12,10 @@ class Soketi extends BaseService
     protected static $category = Category::SOCKET;
 
     protected $dockerTagsClass = QuayDockerTags::class;
-
     protected $organization = 'quay.io';
-
     protected $imageName = 'soketi/soketi';
-
     protected $tag = 'latest-16-alpine';
-
     protected $defaultPort = 6001;
-
     protected $prompts = [
         [
             'shortname' => 'metrics_port',
