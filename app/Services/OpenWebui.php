@@ -25,9 +25,9 @@ class OpenWebui extends BaseService
             'default' => 'webui_data',
         ],
         [
-            'shortname' => 'cpu_only',
-            'prompt' => 'CPU only? Leave blank for yes. (Docker does not support GPUs on Mac)',
-            'default' => '',
+            'shortname' => 'use_gpu',
+            'prompt' => 'Do want to GPUs? Docker on Mac doesn\'t support GPUs. Default is "no", meaning CPU-only. To use GPUs, answer "yes".',
+            'default' => 'no',
         ],
         [
             'shortname' => 'ollama_server',
@@ -36,13 +36,18 @@ class OpenWebui extends BaseService
         ],
     ];
 
-    protected $dockerRunTemplate = '-d --add-host=host.docker.internal:host-gateway -e OLLAMA_BASE_URL="${:ollama_server}" -e WEBUI_AUTH=False -v "${:volume}":/app/backend/data -p "${:port}":8080 "${:organization}"/"${:image_name}":"${:tag}"';
+    protected $dockerRunTemplate = '-d --add-host=host.docker.internal:host-gateway \
+        -e OLLAMA_BASE_URL="${:ollama_server}" \
+        -e WEBUI_AUTH=False \
+        -v "${:volume}":/app/backend/data \
+        -p "${:port}":8080 \
+        "${:organization}"/"${:image_name}":"${:tag}"';
 
     protected function prompts(): void
     {
         parent::prompts();
 
-        if (trim($this->promptResponses['cpu_only']) !== '') {
+        if (! in_array(strtolower(trim($this->promptResponses['use_gpu'])), ['no', 'n', '0', 'false', ''])) {
             $this->dockerRunTemplate = '--gpus=all '.$this->dockerRunTemplate;
         }
     }
