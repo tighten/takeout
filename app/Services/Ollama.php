@@ -36,7 +36,7 @@ class Ollama extends BaseService
         parent::prompts();
 
         if (! in_array(strtolower(trim($this->promptResponses['use_gpu'])), ['no', 'n', '0', 'false', ''])) {
-            $this->dockerRunTemplate = '--gpus=all '.$this->dockerRunTemplate;
+            $this->dockerRunTemplate = '--gpus=all ' . $this->dockerRunTemplate;
         }
     }
 }

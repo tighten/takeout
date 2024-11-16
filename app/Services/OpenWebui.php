@@ -22,7 +22,7 @@ class OpenWebui extends BaseService
         [
             'shortname' => 'volume',
             'prompt' => 'Volume Name (to store your app data, like chats, customizations, etc.)',
-            'default' => 'webui_data',
+            'default' => 'openwebui_data',
         ],
         [
             'shortname' => 'use_gpu',
@@ -48,7 +48,7 @@ class OpenWebui extends BaseService
         parent::prompts();
 
         if (! in_array(strtolower(trim($this->promptResponses['use_gpu'])), ['no', 'n', '0', 'false', ''])) {
-            $this->dockerRunTemplate = '--gpus=all '.$this->dockerRunTemplate;
+            $this->dockerRunTemplate = '--gpus=all ' . $this->dockerRunTemplate;
         }
     }
 }
