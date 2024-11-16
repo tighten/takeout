@@ -42,7 +42,7 @@ class DockerTagsTest extends TestCase
         $tags = collect($dockerTags->getTags());
 
         $this->assertEquals('latest', $tags->shift());
-        $this->assertEquals('16.3', $tags->shift());
+        $this->assertEquals('17.1', $tags->shift());
     }
 
     /** @test */
