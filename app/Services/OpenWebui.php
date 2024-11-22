@@ -26,7 +26,7 @@ class OpenWebui extends BaseService
         ],
         [
             'shortname' => 'use_gpu',
-            'prompt' => 'Do want to GPUs? Docker on Mac doesn\'t support GPUs. Default is "no", meaning CPU-only. To use GPUs, answer "yes".',
+            'prompt' => 'Do want to use your GPUs? Docker on Mac doesn\'t support GPUs. Default is "no", meaning CPU-only. To use GPUs, answer "yes".',
             'default' => 'no',
         ],
         [
@@ -48,7 +48,7 @@ class OpenWebui extends BaseService
         parent::prompts();
 
         if (! in_array(strtolower(trim($this->promptResponses['use_gpu'])), ['no', 'n', '0', 'false', ''])) {
-            $this->dockerRunTemplate = '--gpus=all ' . $this->dockerRunTemplate;
+            $this->dockerRunTemplate = '--gpus=all '.$this->dockerRunTemplate;
         }
     }
 }
