@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Services;
+use App\Services\Category;
 use Exception;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -67,5 +68,16 @@ class ServicesTest extends TestCase
 
         $services = app(Services::class);
         $services->get('asdfasdfsdf');
+    }
+
+    /** @test */
+    function lists_all_by_category(): void
+    {
+        $this->assertEquals(
+            collect((new Services)->all())->mapWithKeys(fn ($class, $serviceName) => [
+                strtolower($serviceName) => ucfirst(Category::fromServiceName($serviceName)),
+            ])->all(),
+            (new Services)->allByCategory(),
+        );
     }
 }
