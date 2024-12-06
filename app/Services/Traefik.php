@@ -12,11 +12,8 @@ class Traefik extends BaseService
     protected static $category = Category::TOOLS;
 
     protected $imageName = 'traefik';
-
     protected $defaultTag = 'v2.10';
-
     protected $defaultPort = 8080;
-
     protected $prompts = [
         [
             'shortname' => 'config_dir',
@@ -62,6 +59,11 @@ class Traefik extends BaseService
 
             return $prompt;
         }, $this->prompts);
+    }
+
+    protected function shellCommand(): string
+    {
+        return 'sh';
     }
 
     protected function prompts(): void
