@@ -12,17 +12,27 @@ class Docker
     protected $shell;
     protected $formatter;
     protected $networking;
+    protected $environment;
 
-    public function __construct(Shell $shell, DockerFormatter $formatter, DockerNetworking $networking)
-    {
+    public function __construct(
+        Shell $shell,
+        DockerFormatter $formatter,
+        DockerNetworking $networking,
+        Environment $environment
+    ) {
         $this->shell = $shell;
         $this->formatter = $formatter;
         $this->networking = $networking;
+        $this->environment = $environment;
     }
 
     public function removeContainer(string $containerId): void
     {
-        $this->stopContainer($containerId);
+        if ($this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
+            return $container['container_id'] === $containerId;
+        })) {
+            $this->stopContainer($containerId);
+        }
 
         $process = $this->shell->exec('docker rm ' . $containerId);
 
@@ -43,6 +53,21 @@ class Docker
 
         if (! $process->isSuccessful()) {
             throw new Exception('Failed stopping container ' . $containerId);
+        }
+    }
+
+    public function logContainer(string $containerId): void
+    {
+        if (! $this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
+            return $container['container_id'] === $containerId;
+        })) {
+            throw new DockerContainerMissingException($containerId);
+        }
+
+        $process = $this->shell->exec('docker logs -f ' . $containerId);
+
+        if (! $process->isSuccessful()) {
+            throw new Exception('Failed to log container ' . $containerId);
         }
     }
 
@@ -76,9 +101,9 @@ class Docker
     public function takeoutContainers(): Collection
     {
         $process = sprintf(
-            "docker ps -a --filter 'name=TO-' --format 'table %s|%s'",
+            'docker ps -a --filter "name=TO-" --format "table %s|%s"',
             '{{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}',
-            '{{.Label "com.tighten.takeout.Base_Alias"}}|{{.Label "com.tighten.takeout.Full_Alias"}}'
+            '{{.Label \"com.tighten.takeout.Base_Alias\"}}|{{.Label \"com.tighten.takeout.Full_Alias\"}}'
         );
 
         return $this->runAndParseTable($process);
@@ -161,7 +186,30 @@ class Docker
 
     public function stopDockerService(): void
     {
-        $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
+        if ($this->environment->isWindowsOs()) {
+            $this->shell->execQuietly('wsl -t docker-desktop');
+            $this->shell->execQuietly('wsl -t docker-desktop-data');
+        } elseif ($this->environment->isMacOs()) {
+            $this->shell->execQuietly("test -z $(docker ps -q 2>/dev/null) && osascript -e 'quit app \"Docker\"'");
+        } elseif ($this->environment->isLinuxOs()) {
+            $this->shell->execQuietly('systemctl stop docker');
+        } else {
+            // BSD, Solaris, Unknown
+            throw new Exception('Cannot stop Docker in PHP_OS_FAMILY ' . PHP_OS_FAMILY);
+        }
+    }
+
+    public function forwardShell(string $containerId, string $shellCommand): void
+    {
+        $command = $this->shell->buildProcess(sprintf(
+            'docker exec -it "%s" %s',
+            $containerId,
+            $shellCommand,
+        ));
+
+        $command->setTty(true);
+        $command->setTimeout(null);
+        $command->run();
     }
 
     protected function runAndParseTable(string $command): Collection

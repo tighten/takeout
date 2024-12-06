@@ -4,3 +4,5 @@
 /.vagrant
 .phpunit.result.cache
 /storage
+phpunit.xml
+composer.lock
