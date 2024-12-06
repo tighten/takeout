@@ -20,4 +20,9 @@ class MailDev extends BaseService
     protected $dockerRunTemplate = '-p "${:port}":1025 \
         -p "${:web_port}":1080 \
         "${:organization}"/"${:image_name}":"${:tag}"';
+
+    protected function shellCommand(): string
+    {
+        return 'sh';
+    }
 }

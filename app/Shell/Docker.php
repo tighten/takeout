@@ -3,7 +3,6 @@
 namespace App\Shell;
 
 use App\Exceptions\DockerContainerMissingException;
-use App\Shell\Environment;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -198,6 +197,19 @@ class Docker
             // BSD, Solaris, Unknown
             throw new Exception('Cannot stop Docker in PHP_OS_FAMILY ' . PHP_OS_FAMILY);
         }
+    }
+
+    public function forwardShell(string $containerId, string $shellCommand): void
+    {
+        $command = $this->shell->buildProcess(sprintf(
+            'docker exec -it "%s" %s',
+            $containerId,
+            $shellCommand,
+        ));
+
+        $command->setTty(true);
+        $command->setTimeout(null);
+        $command->run();
     }
 
     protected function runAndParseTable(string $command): Collection

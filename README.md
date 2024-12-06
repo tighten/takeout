@@ -17,18 +17,33 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 
 ## Requirements
 
-- macOS, Linux, Windows 10 or WSL2
-- Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/), Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/))
+-   macOS, Linux, Windows 10 or WSL2
+-   Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/), Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/))
+
+If you opt for the PHP/Composer installation, you also need:
+
+-   PHP installed (latest major version)
+-   Composer installed
 
 ## Installation
 
-To install Takeout locally, add this alias to your `~/.bashrc` (or similar):
+The recommended way to install Takeout is the dockerized version via an alias (add this to your `~/.bashrc`, `~/.zshrc` or equivalent):
 
 ```bash
 alias takeout="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
 ```
 
-_Note: Previous versions of Takeout required installing it via `composer global require`. That's discouraged now and the Docker image is the preferred way._
+That's it. You can now use Takeout like normal. The first time you use this alias, it will pull the Takeout image from Docker Hub.
+
+To update the image, run `docker pull tighten/takeout` when you want to get the newest release.
+
+Otherwise, if you have a PHP environment available, you may install Takeout via Composer:
+
+```bash
+composer global require "tightenco/takeout:~2.8"
+```
+
+If you use the Composer installation path, make sure you're on the latest PHP version, as we'll try to keep it always up-to-date. We'll reserve the rights to only support the latest major version, and we'll try to keep up-to-date with PHP's release.
 
 ## Usage
 
@@ -118,7 +133,6 @@ takeout disable mysql
 takeout disable redis meilisearch
 ```
 
-
 ### Disable all services
 
 ```bash
@@ -146,6 +160,7 @@ takeout start {container_id1} {container_id2}
 ### Start all containers
 
 You may pass the `-all` flag to start all enabled containers.
+
 ```bash
 takeout start --all
 ```
@@ -167,6 +182,24 @@ takeout stop {container_id}
 
 takeout stop {container_id1} {container_id2}
 ```
+
+### Get a shell inside any Takeout container
+
+To get a shell inside any container that is started with Takeout, you may run:
+
+```bash
+takeout shell {service}
+```
+
+Here are some examples:
+
+```bash
+takeout shell mysql
+takeout shell neo4j
+takeout shell pgvector
+```
+
+This will open a shell inside the running container for the service you provide. Takeout will start either a `bash` or a `sh` process inside the container, depending on what the container supports.
 
 ## Running multiple versions of a dependency
 
@@ -190,8 +223,9 @@ Now, if you run `takeout list`, you'll see both services running at the same tim
 Takeout containers are automatically added to a Docker network named `takeout`. This allows you to use the same aliasing and base aliasing that is used for the other containers.
 
 Each container is given two aliases on this network:
-- A base_alias based on the core dependency name (e.g. mysql, postgres)
-- A full_alias combining the base alias and version (e.g. mysql8.0, postgres13)
+
+-   A base_alias based on the core dependency name (e.g. mysql, postgres)
+-   A full_alias combining the base alias and version (e.g. mysql8.0, postgres13)
 
 Other containers on the takeout network can access Takeout containers by their aliases. [Check this article on how you can use sail and takeout together](https://mattstauffer.com/blog/how-to-use-takeout-to-add-new-services-to-laravel-sail-and-save-ram/)
 
@@ -201,6 +235,7 @@ Other containers on the takeout network can access Takeout containers by their a
 <summary><strong>Will this enable the PHP drivers for me via PECL?</strong></summary>
 
 Sadly, no.
+
 </details>
 <details>
 <summary><strong>If I disable a service but Takeout still shows the port as taken, how do I proceed?</strong></summary>
@@ -213,11 +248,13 @@ If you see output like this:
     TablePlus 96155 mattstauffer   16u  IPv4 0xc0d6f0b0b6dccf6b      0t0  TCP localhost:62919->localhost:mysql (CLOSE_WAIT)
 
 The solution is to just close your database GUI, and then it should be released.
+
 </details>
 <details>
 <summary><strong>Why would you use this instead of `docker-compose`?</strong></summary>
 
 Using `docker-compose` sets up your dependencies on a project-by-project basis, which is a perfectly fine way to do things. If it makes more sense to you to have a single copy of each of your dependencies for your entire global environment, Takeout makes more sense.
+
 </details>
 <details>
 <summary><strong>Will disabling a service permanently delete my databases?</strong></summary>
@@ -225,18 +262,19 @@ Using `docker-compose` sets up your dependencies on a project-by-project basis, 
 Nope! Your data will stick around! By default almost all of our services use a "volume" to attach your data to for exactly this reason.
 
 So, when you disable the MySQL service, for example, that volume--with all your data in it--will just sit there quietly. And when you re-enable, as long as you attach it to the same volume, all your data will still be there.
+
 </details>
 
 ## Future plans
 
 The best way to see our future plans is to check out the [Projects Board](https://github.com/tighten/takeout/projects/1), but here are a few plans for the future:
 
-- Electron-based GUI
-- `self-remove` command: Deletes all enabled services and then maybe self-uninstalls?
-- `upgrade`: destroys the old container, brings up a new one with a newly-specified tag (prompt user for it, default `latest`) and keeps all other parameters (e.g. port, volume) exactly the same as the old one
-- `pt/passthrough`: proxy commands through to docker (`./takeout pt mysql stop`)
-- Deliver package in a way that's friendly to non-PHP developers (Homebrew? NPM?)
-- Allow other people to extend Takeout by adding their own plugins (thanks to @angrybrad for the idea!)
+-   Electron-based GUI
+-   `self-remove` command: Deletes all enabled services and then maybe self-uninstalls?
+-   `upgrade`: destroys the old container, brings up a new one with a newly-specified tag (prompt user for it, default `latest`) and keeps all other parameters (e.g. port, volume) exactly the same as the old one
+-   `pt/passthrough`: proxy commands through to docker (`./takeout pt mysql stop`)
+-   Deliver package in a way that's friendly to non-PHP developers (Homebrew? NPM?)
+-   Allow other people to extend Takeout by adding their own plugins (thanks to @angrybrad for the idea!)
 
 ## Process for release
 
