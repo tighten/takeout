@@ -23,7 +23,7 @@ class OpenSearch extends BaseService
         [
             'shortname' => 'disable_security',
             'prompt' => 'Disable security plugin (true or false)?',
-            'default' => 'false',
+            'default' => 'true',
         ],
     ];
 
