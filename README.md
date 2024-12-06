@@ -33,7 +33,7 @@ The recommended way to install Takeout is the dockerized version via an alias (a
 alias takeout="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
 ```
 
-That's it. You can now use Takeout like normal. The first time you use this alias, it will pull the Takeout image from Docker Hub.
+That's it. You may now use Takeout on your terminal. The first time you use this alias, it will pull the Takeout image from Docker Hub.
 
 To update the image, run `docker pull tighten/takeout` when you want to get the newest release.
 
