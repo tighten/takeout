@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Services;
-use App\Services\Category;
 use Exception;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -75,7 +74,7 @@ class ServicesTest extends TestCase
     {
         $this->assertEquals(
             collect((new Services)->all())->mapWithKeys(fn ($class, $serviceName) => [
-                strtolower($serviceName) => ucfirst(Category::fromServiceName($serviceName)),
+                strtolower($serviceName) => $class::category(),
             ])->all(),
             (new Services)->allByCategory(),
         );
