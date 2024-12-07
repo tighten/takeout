@@ -27,10 +27,18 @@ If you opt for the PHP/Composer installation, you also need:
 
 ## Installation
 
-The recommended way to install Takeout is the dockerized version via an alias (add this to your `~/.bashrc`, `~/.zshrc` or equivalent):
+The recommended way to install Takeout is the dockerized version via an alias (add this to your `~/.bashrc`, `~/.zshrc` or equivalent).
+
+On Linux or macOS, use:
 
 ```bash
 alias takeout="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
+```
+
+On Windows, use:
+
+```bash
+alias takeout="docker run --rm -v //var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
 ```
 
 That's it. You may now use Takeout on your terminal. The first time you use this alias, it will pull the Takeout image from Docker Hub.
