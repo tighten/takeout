@@ -51,7 +51,7 @@ Otherwise, if you have a PHP environment available, you may install Takeout via 
 composer global require "tightenco/takeout:~2.8"
 ```
 
-If you use the Composer installation path, make sure you're on the latest PHP version, as we'll try to keep it always up-to-date. We'll reserve the rights to only support the latest major version, and we'll try to keep up-to-date with PHP's release.
+If you use the PHP/Composer installation, make sure you're on the latest version of PHP. We'll only support the current major version of PHP using this installation approach.
 
 ## Usage
 
