@@ -1,8 +1,1 @@
-/vendor
-/.idea
-/.vscode
-/.vagrant
-.phpunit.result.cache
-/storage
-phpunit.xml
-composer.lock
+eyud
