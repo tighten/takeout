@@ -54,7 +54,7 @@ To update the image, run `docker pull tighten/takeout` when you want to get the 
 Otherwise, if you have a PHP environment available, you may install Takeout via Composer:
 
 ```bash
-composer global require "tightenco/takeout:~2.8"
+composer global require "tightenco/takeout:~2.9"
 ```
 
 If you use the PHP/Composer installation, make sure you're on the latest version of PHP. We'll only support the current major version of PHP using this installation approach.
