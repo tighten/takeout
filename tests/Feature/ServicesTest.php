@@ -68,4 +68,15 @@ class ServicesTest extends TestCase
         $services = app(Services::class);
         $services->get('asdfasdfsdf');
     }
+
+    /** @test */
+    function lists_all_by_category(): void
+    {
+        $this->assertEquals(
+            collect((new Services)->all())->mapWithKeys(fn ($class, $serviceName) => [
+                strtolower($serviceName) => $class::category(),
+            ])->all(),
+            (new Services)->allByCategory(),
+        );
+    }
 }

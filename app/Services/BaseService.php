@@ -7,6 +7,7 @@ use App\Shell\DockerTags;
 use App\Shell\Environment;
 use App\Shell\Shell;
 use App\WritesToConsole;
+use Exception;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -91,6 +92,28 @@ abstract class BaseService
         } catch (Throwable $e) {
             $this->error("\n" . $e->getMessage());
         }
+    }
+
+    public function forwardShell(): void
+    {
+        if (! $this->docker->isDockerServiceRunning()) {
+            throw new Exception('Docker is not running.');
+        }
+
+        $service = $this->docker->takeoutContainers()->first(function ($container) {
+            return str_starts_with($container['names'], "TO--{$this->shortName()}--");
+        });
+
+        if (! $service) {
+            throw new Exception(sprintf('Service %s is not enabled.', $this->shortName()));
+        }
+
+        $this->docker->forwardShell($service['container_id'], $this->shellCommand());
+    }
+
+    protected function shellCommand(): string
+    {
+        return 'bash';
     }
 
     public function organization(): string

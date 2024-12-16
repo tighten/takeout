@@ -11,6 +11,7 @@ class DockerTags
 {
     protected $guzzle;
     protected $service;
+    protected $armArchitectures = ['arm64', 'aarch64'];
 
     public function __construct(Client $guzzle, BaseService $service)
     {
@@ -29,8 +30,8 @@ class DockerTags
 
     public function getLatestTag(): string
     {
-        $numericTags = $this->getTags()->reject(function ($tag) {
-            return ! is_numeric($tag[0]);
+        $numericTags = $this->getTags()->filter(function ($tag) {
+            return preg_match('/^v?\d/', $tag);
         });
 
         if ($numericTags->isEmpty()) {
@@ -43,49 +44,35 @@ class DockerTags
     public function getTags(): Collection
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
+
         $platform = $this->platform();
 
-        [$numericTags, $alphaTags] = collect($response['results'])
-            ->when($platform === 'arm64', $this->armSupportedImagesOnlyFilter())
-            ->when($platform !== 'arm64', $this->nonArmOnlySupportImagesFilter())
+        return collect($response['results'])
+            ->when(in_array($platform, $this->armArchitectures, true), $this->onlyArmImagesFilter())
+            ->when(! in_array($platform, $this->armArchitectures, true), $this->onlyNonArmImagesFilter())
             ->pluck('name')
-            ->partition(function ($tag) {
-                return is_numeric($tag[0]);
-            });
-
-        $sortedTags = $alphaTags->sortDesc(SORT_NATURAL)
-                                ->concat($numericTags->sortDesc(SORT_NATURAL));
-
-        if ($sortedTags->contains('latest')) {
-            $sortedTags->splice($sortedTags->search('latest'), 1);
-            $sortedTags->prepend('latest');
-        }
-
-        return $sortedTags->values()->filter();
+            ->sort(new VersionComparator)
+            ->values();
     }
 
-    /**
-     * Return a function intended to filter tags, ensuring images that do not support arm architecture are filtered out.
-     *
-     * @return callable
-     */
-    protected function armSupportedImagesOnlyFilter()
+    protected function onlyArmImagesFilter()
     {
         return function ($tags) {
             return $tags->filter(function ($tag) {
-                return collect($tag['images'])
-                    ->pluck('architecture')
-                    ->contains('arm64');
+                $supportedArchs = collect($tag['images'])->pluck('architecture');
+
+                foreach ($this->armArchitectures as $arch) {
+                    if ($supportedArchs->contains($arch)) {
+                        return true;
+                    }
+                }
+
+                return false;
             });
         };
     }
 
-    /**
-     * Return a function intended to filter tags, that ensures are arm-only images are filtered out.
-     *
-     * @return callable
-     */
-    protected function nonArmOnlySupportImagesFilter()
+    protected function onlyNonArmImagesFilter()
     {
         return function ($tags) {
             return $tags->filter(function ($tag) {
@@ -98,7 +85,7 @@ class DockerTags
                 // still be other options in the supported architectures
                 // so we can consider that the tag is not arm-only.
 
-                return $supportedArchitectures->diff(['arm64'])->count() > 0;
+                return $supportedArchitectures->diff($this->armArchitectures)->count() > 0;
             });
         };
     }

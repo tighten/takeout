@@ -11,10 +11,11 @@ class MongoDockerTags extends DockerTags
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
         return collect($response['results'])
-            ->map
-            ->name
+            ->pluck('name')
+            ->sort(new VersionComparator)
             ->filter(function ($tag) {
                 return ! Str::contains($tag, 'windowsservercore');
-            });
+            })
+            ->values();
     }
 }

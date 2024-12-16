@@ -10,12 +10,19 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Mockery as M;
-use Tests\Support\IntelDockerTags;
-use Tests\Support\M1DockerTags;
+use Tests\Support\FakePlatformDockerTags;
 use Tests\TestCase;
 
 class DockerTagsTest extends TestCase
 {
+    public static function armPlatforms(): array
+    {
+        return [
+            [FakePlatformDockerTags::M1_ARM_PLATFORM],
+            [FakePlatformDockerTags::LINUX_ARM_PLATFORM],
+        ];
+    }
+
     /** @test */
     function it_gets_the_latest_tag_not_named_latest()
     {
@@ -42,17 +49,20 @@ class DockerTagsTest extends TestCase
         $tags = collect($dockerTags->getTags());
 
         $this->assertEquals('latest', $tags->shift());
-        $this->assertEquals('bullseye', $tags->shift());
+        $this->assertEquals('17.2', $tags->shift());
     }
 
-    /** @test */
-    function it_detects_arm64_based_images_when_running_on_arm64_based_host()
+    /**
+     * @test
+     *
+     * @dataProvider armPlatforms
+     */
+    function it_detects_arm_based_images_when_running_on_arm64_based_host($platform)
     {
         $handlerStack = HandlerStack::create($this->mockImagesResponseHandler());
         $client = new Client(['handler' => $handlerStack]);
 
-        /** @var DockerTags $dockerTags */
-        $dockerTags = M::mock(M1DockerTags::class, [$client, app(MySql::class)])->makePartial();
+        $dockerTags = (new FakePlatformDockerTags($client, app(MySql::class)))->withFakePlatform($platform);
 
         $this->assertEquals('1.0.0-arm64', $dockerTags->getLatestTag());
     }
@@ -63,8 +73,7 @@ class DockerTagsTest extends TestCase
         $handlerStack = HandlerStack::create($this->mockImagesResponseHandler());
         $client = new Client(['handler' => $handlerStack]);
 
-        /** @var DockerTags $dockerTags */
-        $dockerTags = M::mock(IntelDockerTags::class, [$client, app(MySql::class)])->makePartial();
+        $dockerTags = (new FakePlatformDockerTags($client, app(MySql::class)))->withFakePlatform(FakePlatformDockerTags::INTEL_ARM_PLATFORM);
 
         $this->assertEquals('1.0.0', $dockerTags->getLatestTag());
     }
@@ -77,13 +86,14 @@ class DockerTagsTest extends TestCase
                     [
                         'name' => 'latest',
                         'images' => [
+                            ['architecture' => 'x86_64'],
                             ['architecture' => 'amd64'],
-                            ['architecture' => 'arm64'],
                         ],
                     ],
                     [
                         'name' => '1.0.0',
                         'images' => [
+                            ['architecture' => 'x86_64'],
                             ['architecture' => 'amd64'],
                         ],
                     ],
@@ -91,6 +101,7 @@ class DockerTagsTest extends TestCase
                         'name' => '1.0.0-arm64',
                         'images' => [
                             ['architecture' => 'arm64'],
+                            ['architecture' => 'aarch64'],
                         ],
                     ],
                 ],

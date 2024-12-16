@@ -12,4 +12,9 @@ class Beanstalkd extends BaseService
 
     protected $dockerRunTemplate = '-p "${:port}":11300 \
         "${:organization}"/"${:image_name}":"${:tag}"';
+
+    protected function shellCommand(): string
+    {
+        return 'sh';
+    }
 }
