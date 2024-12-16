@@ -41,4 +41,9 @@ class Soketi extends BaseService
             return $prompt;
         }, $this->defaultPrompts);
     }
+
+    protected function shellCommand(): string
+    {
+        return 'sh';
+    }
 }

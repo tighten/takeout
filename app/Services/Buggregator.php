@@ -42,4 +42,9 @@ class Buggregator extends BaseService
         -p "${:monolog_port}":9913 \
         --network-alias "${:network_alias}" \
         "${:organization}"/"${:image_name}":"${:tag}"';
+
+    protected function shellCommand(): string
+    {
+        return 'sh';
+    }
 }
