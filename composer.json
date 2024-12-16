@@ -49,10 +49,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true,
-        "platform-check": false,
-        "platform": {
-            "php": "8.2"
-        }
+        "platform-check": false
     },
     "scripts": {
         "lint:check": [
