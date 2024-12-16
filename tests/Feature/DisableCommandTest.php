@@ -3,10 +3,7 @@
 namespace Tests\Feature;
 
 use App\Shell\Docker;
-use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use NunoMaduro\LaravelConsoleMenu\Menu;
-use PHPUnit\Framework\Assert;
 use Tests\TestCase;
 
 class DisableCommandTest extends TestCase

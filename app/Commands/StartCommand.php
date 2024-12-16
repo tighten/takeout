@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use PhpSchool\CliMenu\CliMenu;
 
+use function Laravel\Prompts\select;
+
 class StartCommand extends Command
 {
     use InitializesCommands;
@@ -56,12 +58,9 @@ class StartCommand extends Command
 
     public function startableContainers(): array
     {
-        return $this->docker->startableTakeoutContainers()->map(function ($container) {
-            $label = sprintf('%s - %s', $container['container_id'], $container['names']);
-
+        return $this->docker->startableTakeoutContainers()->mapWithKeys(function ($container) {
             return [
-                $label,
-                $this->loadMenuItem($container, $label),
+                $container['container_id'] => $container['names'],
             ];
         }, collect())->toArray();
     }
@@ -122,11 +121,12 @@ class StartCommand extends Command
 
     private function loadMenu($startableContainers)
     {
-        if ($this->environment->isWindowsOs()) {
-            return $this->windowsMenu($startableContainers);
-        }
+        $container = select(
+            label: self::MENU_TITLE,
+            options: $startableContainers
+        );
 
-        return $this->defaultMenu($startableContainers);
+        $this->docker->startContainer($container);
     }
 
     private function defaultMenu($startableContainers)

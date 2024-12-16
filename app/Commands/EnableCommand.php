@@ -5,9 +5,7 @@ namespace App\Commands;
 use App\InitializesCommands;
 use App\Services;
 use App\Shell\Environment;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use function Laravel\Prompts\search;
 
