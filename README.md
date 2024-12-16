@@ -20,7 +20,7 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 -   macOS, Linux, Windows 10 or WSL2
 -   Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/), Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/))
 
-If you opt for the PHP/Composer installation, you also need:
+If you opt for the PHP/Composer installation (not recommended), you also need:
 
 -   PHP installed (latest major version)
 -   Composer installed
