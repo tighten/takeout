@@ -12,16 +12,6 @@ use Tests\TestCase;
 
 class EnableCommandTest extends TestCase
 {
-    function isWindows()
-    {
-        return PHP_OS_FAMILY === 'Windows';
-    }
-
-    function isLinux()
-    {
-        return PHP_OS_FAMILY === 'Linux';
-    }
-
     /** @test */
     function it_can_enable_a_service_from_menu()
     {
@@ -44,77 +34,25 @@ class EnableCommandTest extends TestCase
             $mock->shouldReceive('enable')->once();
         });
 
-        if ($this->isWindows()) {
-            $menuItems = [
-                '<fg=white;bg=blue;options=bold> DATABASE </>',
-                'PostgreSQL',
-                '<fg=white;bg=blue;options=bold> SEARCH </>',
-                'MeiliSearch',
-                '<info>Exit</>',
-            ];
+        $menuItems = [
+            'Database: PostgreSQL',
+            'Search: MeiliSearch',
+            'meilisearch',
+            $postgres,
+        ];
 
-            $this->artisan('enable')
-                ->expectsChoice('Takeout containers to enable', 'PostgreSQL', $menuItems)
-                ->assertExitCode(0);
-        } else {
-            $menuItems = [
-                'Database: PostgreSQL',
-                'Search: MeiliSearch',
-                'meilisearch',
-                $postgres,
-            ];
+        $this->artisan('enable')
+            ->expectsChoice('Takeout containers to enable', '', $menuItems)
+            ->assertExitCode(0);
 
-            $this->artisan('enable')
-                ->expectsChoice('Takeout containers to enable', '', $menuItems)
-                ->assertExitCode(0);
+        $menuItems = [
+            'Database: PostgreSQL',
+            $postgres,
+        ];
 
-            $menuItems = [
-                'Database: PostgreSQL',
-                $postgres,
-            ];
-
-            $this->artisan('enable')
-                ->expectsChoice('Takeout containers to enable', $postgres, $menuItems)
-                ->assertExitCode(0);
-        }
-    }
-
-    /** @test */
-    function it_can_navigate_a_submenu_in_windows()
-    {
-        if ($this->isWindows()) {
-            $services = [
-                'meilisearch' => 'App\Services\MeiliSearch',
-                'postgresql' => 'App\Services\PostgreSql',
-            ];
-
-            $menuItems = [
-                $category = '<fg=white;bg=blue;options=bold> DATABASE </>',
-                'PostgreSQL',
-                '<fg=white;bg=blue;options=bold> SEARCH </>',
-                'MeiliSearch',
-                $exit = '<info>Exit</>',
-            ];
-
-            $submenuItems = [
-                '<fg=white;bg=blue;options=bold> DATABASE </>',
-                'PostgreSQL',
-                $back = '<info>Back</>',
-                '<info>Exit</>',
-            ];
-
-            $this->mock(Services::class, function ($mock) use ($services) {
-                $mock->shouldReceive('all')->andReturn($services);
-            });
-
-            $this->artisan('enable')
-                    ->expectsChoice('Takeout containers to enable', $category, $menuItems)
-                    ->expectsChoice('Takeout containers to enable', $back, $submenuItems)
-                    ->expectsChoice('Takeout containers to enable', $exit, $menuItems)
-                    ->assertExitCode(0);
-        } else {
-            $this->assertTrue(true);
-        }
+        $this->artisan('enable')
+            ->expectsChoice('Takeout containers to enable', $postgres, $menuItems)
+            ->assertExitCode(0);
     }
 
     /** @test */

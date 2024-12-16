@@ -121,10 +121,6 @@ class EnableCommand extends Command
 
     private function selectService(): ?string
     {
-        if ($this->environment->isWindowsOs()) {
-            return $this->windowsMenu();
-        }
-
         return $this->defaultMenu();
     }
 
@@ -145,51 +141,6 @@ class EnableCommand extends Command
                 : $servicesList,
             scroll: 10
         );
-    }
-
-    private function windowsMenu($category = null): ?string
-    {
-        $choices = [];
-        $groupedServices = $this->enableableServicesByCategory();
-
-        if ($category) {
-            $groupedServices = Arr::where($groupedServices, function ($value, $key) use ($category) {
-                return Str::contains($category, strtoupper($key));
-            });
-        }
-
-        foreach ($groupedServices as $serviceCategory => $services) {
-            $serviceCategoryMenuItem = '<fg=white;bg=blue;options=bold> ' . (Str::upper($serviceCategory)) . ' </>';
-            array_push($choices, $serviceCategoryMenuItem);
-
-            foreach ($this->menuItemsForServices($services) as $menuItemKey => $menuItemName) {
-                array_push($choices, $menuItemName);
-            }
-        }
-
-        if ($category) {
-            array_push($choices, '<info>Back</>');
-        }
-
-        array_push($choices, '<info>Exit</>');
-
-        $choice = $this->choice(self::MENU_TITLE, $choices);
-
-        if (Str::contains($choice, 'Back')) {
-            return $this->windowsMenu();
-        }
-
-        if (Str::contains($choice, 'Exit')) {
-            return null;
-        }
-
-        foreach ($this->enableableServices() as $shortName => $fqcn) {
-            if ($choice === $fqcn) {
-                return $shortName;
-            }
-        }
-
-        return $this->windowsMenu($choice);
     }
 
     private function menuItemsForServices($services): array
