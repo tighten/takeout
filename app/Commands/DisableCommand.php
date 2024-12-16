@@ -8,6 +8,9 @@ use App\Shell\Environment;
 use LaravelZero\Framework\Commands\Command;
 use Throwable;
 
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\select;
+
 class DisableCommand extends Command
 {
     use InitializesCommands;
@@ -85,19 +88,17 @@ class DisableCommand extends Command
         $this->disableByContainerId($serviceContainerId);
     }
 
-    public function showDisableServiceMenu($disableableServices = null): void
+    public function showDisableServiceMenu(): void
     {
-        if ($serviceContainerId = $this->selectMenu($disableableServices ?? $this->disableableServices)) {
-            $this->disableByContainerId($serviceContainerId);
-        }
+        $serviceContainerId = select(
+            label: self::MENU_TITLE,
+            options: $this->disableableServices
+        );
+        $this->disableByContainerId($serviceContainerId);
     }
 
     private function selectMenu($disableableServices): ?string
     {
-        if ($this->environment->isWindowsOs()) {
-            return $this->windowsMenu($disableableServices);
-        }
-
         return $this->defaultMenu($disableableServices);
     }
 
@@ -107,15 +108,6 @@ class DisableCommand extends Command
             ->addLineBreak('', 1)
             ->setPadding(2, 5)
             ->open();
-    }
-
-    private function windowsMenu($disableableServices): ?string
-    {
-        array_push($disableableServices, '<info>Exit</>');
-
-        $choice = $this->choice(self::MENU_TITLE, array_values($disableableServices));
-
-        return array_search($choice, $disableableServices);
     }
 
     public function disableByContainerId(string $containerId): void
@@ -134,18 +126,9 @@ class DisableCommand extends Command
             if (count($this->docker->allContainers()) === 0) {
                 $question = 'No containers are running. Turn off Docker?';
 
-                if ($this->environment->isWindowsOs()) {
-                    $option = $this->confirm($question);
-                } else {
-                    $option = $this->menu($question, [
-                        'Yes',
-                        'No',
-                    ])->disableDefaultItems()->open();
-                }
-
-                if ($option === 0 || $option === true) {
+                if (confirm($question)) {
                     $this->task('Stopping Docker service ', $this->docker->stopDockerService());
-                }
+               }
             }
         } catch (Throwable $e) {
             $this->error('Disabling failed! Error: ' . $e->getMessage());
