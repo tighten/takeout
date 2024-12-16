@@ -18,18 +18,46 @@ But you can also easily enable ElasticSearch, PostgreSQL, MSSQL, Mongo, Redis, a
 ## Requirements
 
 -   macOS, Linux, Windows 10 or WSL2
--   [Composer](https://getcomposer.org/) installed
 -   Docker installed (macOS: [Docker for Mac](https://docs.docker.com/docker-for-mac/), Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/))
+
+If you opt for the PHP/Composer installation (not recommended), you also need:
+
+-   PHP installed (latest major version)
+-   Composer installed
 
 ## Installation
 
-Install Takeout with Composer by running:
+The recommended way to install Takeout is the dockerized version via an alias (add this to your `~/.bashrc`, `~/.zshrc` or equivalent).
+
+On Linux or macOS, use:
 
 ```bash
-composer global require "tightenco/takeout:~2.8"
+alias takeout="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
 ```
 
-Make sure the `~/.composer/vendor/bin` directory is in your system's "PATH".
+On Windows 10, if you're using Bash, use:
+
+```bash
+alias takeout="docker run --rm -v //var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
+```
+
+On Windows 10, if you're using PowerShell, use:
+
+```bash
+function takeout { docker run --rm -v //var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest $args }
+```
+
+That's it. You may now use Takeout on your terminal. The first time you use this alias, it will pull the Takeout image from Docker Hub.
+
+To update the image, run `docker pull tighten/takeout` when you want to get the newest release.
+
+Otherwise, if you have a PHP environment available, you may install Takeout via Composer:
+
+```bash
+composer global require "tightenco/takeout:~2.9"
+```
+
+If you use the PHP/Composer installation, make sure you're on the latest version of PHP. We'll only support the current major version of PHP using this installation approach.
 
 ## Usage
 
@@ -274,4 +302,31 @@ If you're working with us and are assigned to push a release, here's the easiest
 6. [Draft a new release](https://github.com/tighten/takeout/releases/new) with both the tag version and release title of your tag (e.g. `v1.5.1`)
 7. Use the "Generate release notes" button to generate release notes from the merged PRs.
 8. Hit `Publish release`
-9. Profit 😆
+9. The new tag and release will trigger the [`docker-publish.yml`](.github/workflows/docker-publish.yml) workflow, which should take care of building and pushing the new image of the Docker container (see the "Building The Docker Image Manually" section below)
+10. Profit 😆
+
+## Building The Docker Image Manually
+
+The important thing is to remember to build both `linux/amd64` and `linux/arm64` images. We rely on Docker's `buildx` command, which uses Docker's [BuildKit](https://github.com/moby/buildkit) behind the scenes, which allows us to build for multiple platforms, independently of the platform of the machine building the image.
+
+You may build and publish a new version of the docker image using the following command:
+
+```bash
+docker buildx build --platform=linux/amd64,linux/arm64 -t tighten/takeout:latest --push .
+```
+
+If it's the first time you're building the image, you may get the following error:
+
+```
+ERROR: Multiple platforms feature is currently not supported for docker driver. Please switch to a different driver (eg. "docker buildx create --use")
+```
+
+This means that you first need to create a builder container, which you maydo like so:
+
+```bash
+docker buildx create --use
+```
+
+After that, retrying the `buildx` command should work.
+
+Please, note that building the container will simply copy the current version of the Takeout `phar` file at [builds/takeout](./builds/takeout) to inside the container and publish that, so make sure you have to most recent version built locally. If you don't, follow the release process to build the new version before building the Docker image.
