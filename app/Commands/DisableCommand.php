@@ -128,7 +128,7 @@ class DisableCommand extends Command
 
                 if (confirm($question)) {
                     $this->task('Stopping Docker service ', $this->docker->stopDockerService());
-               }
+                }
             }
         } catch (Throwable $e) {
             $this->error('Disabling failed! Error: ' . $e->getMessage());

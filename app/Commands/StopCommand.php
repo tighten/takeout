@@ -31,7 +31,6 @@ class StopCommand extends Command
         $containers = $this->argument('containerId');
 
         if (filled($containers)) {
-
             foreach ($containers as $container) {
                 $this->stopByServiceNameOrContainerId($container);
             }
