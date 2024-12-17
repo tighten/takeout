@@ -165,10 +165,18 @@ abstract class BaseService
         foreach ($questions as $prompt) {
             $items[] = match (true) {
                 Str::contains($prompt['shortname'], 'port') => $this->askQuestion($prompt, $this->useDefaults, validate: function (string $port) {
-                    return $this->environment->portIsAvailable($port) ? null : "Port {$port} is already in use. Please select a different port.";
+                    if (! $this->environment->portIsAvailable($port)) {
+                        return "Port {$port} is already in use. Please select a different port.";
+                    }
+
+                    return null;
                 }),
                 Str::contains($prompt['shortname'], 'volume') => $this->askQuestion($prompt, $this->useDefaults, validate: function (string $volume) {
-                    return $this->docker->volumeIsAvailable($volume) ? null : "Volume {$volume} is already in use. Please select a different volume.";
+                    if (! $this->docker->volumeIsAvailable($volume)) {
+                        return "Volume {$volume} is already in use. Please select a different volume.";
+                    }
+
+                    return null;
                 }),
                 default => $this->askQuestion($prompt, $this->useDefaults),
             };
