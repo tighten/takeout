@@ -30,33 +30,19 @@ class Environment
 
     public function portIsAvailable($port): bool
     {
-        // E.g. Win/Linux: 127.0.0.1:3306 , macOS: 127.0.0.1.3306
-        $portText = $this->isLinuxOs() ? "\:{$port}\s" : "\.{$port}\s";
+        // To check if the socket is available, we'll attempt to open a socket on the port.
+        // If we cannot open the socket, it means there's nothing running on it, so the
+        // port is available. If we are successful, that means it is already in use.
 
-        $netstatCmd = $this->netstatCmd();
+        $socket = @fsockopen('localhost', $port, $errorCode, $errorMessage, timeout: 5);
 
-        // Check to see if the system is running a service with the desired port
-        $process = $this->shell->execQuietly("{$netstatCmd} -vanp tcp \n
-            | grep '{$portText}' | grep -v 'TIME_WAIT' | grep -v 'CLOSE_WAIT' | grep -v 'FIN_WAIT'");
-
-        // A successful netstat command means a port in use was found
-        return ! $process->isSuccessful();
-    }
-
-    public function netstatCmd(): string
-    {
-        $netstatCmd = 'netstat';
-
-        if ($this->isLinuxOs()) {
-            $linuxVersion = $this->shell->execQuietly('cat /proc/version');
-            $isWSL = Str::contains($linuxVersion->getOutput(), 'microsoft');
-
-            if ($isWSL) {
-                $netstatCmd = 'netstat.exe';
-            }
+        if (! $socket) {
+            return true;
         }
 
-        return $netstatCmd;
+        fclose($socket);
+
+        return false;
     }
 
     public function userIsInDockerGroup(): bool
