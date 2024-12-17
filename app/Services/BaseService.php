@@ -160,29 +160,18 @@ abstract class BaseService
     {
         $items = [];
 
-        foreach ($this->defaultPrompts as $prompt) {
-            $this->askQuestion($prompt, $this->useDefaults);
+        $questions = array_merge($this->defaultPrompts, $this->prompts);
 
-            while ($prompt['shortname'] === 'port' && ! $this->environment->portIsAvailable($this->promptResponses['port'])) {
-                app('console')->error("Port {$this->promptResponses['port']} is already in use. Please select a different port.");
-                $this->askQuestion($prompt);
-            }
-        }
-
-        foreach ($this->prompts as $prompt) {
-            $this->askQuestion($prompt, $this->useDefaults);
-
-            while ($prompt['shortname'] === 'volume' && ! $this->docker->volumeIsAvailable($this->promptResponses['volume'])) {
-                app('console')->error("Volume {$this->promptResponses['volume']} is already in use. Please select a different volume.");
-                $this->askQuestion($prompt);
-            }
-
-            while (Str::contains($prompt['shortname'], 'port') && ! $this->environment->portIsAvailable($this->promptResponses[$prompt['shortname']])) {
-                app('console')->error("Port {$this->promptResponses[$prompt['shortname']]} is already in use. Please select a different port.");
-                $this->askQuestion($prompt);
-            }
-
-            $items[] = $prompt;
+        foreach ($questions as $prompt) {
+            $items[] = match (true) {
+                Str::contains($prompt['shortname'], 'port') => $this->askQuestion($prompt, $this->useDefaults, validate: function (string $port) {
+                    return $this->environment->portIsAvailable($port) ? null : "Port {$port} is already in use. Please select a different port.";
+                }),
+                Str::contains($prompt['shortname'], 'volume') => $this->askQuestion($prompt, $this->useDefaults, validate: function (string $volume) {
+                    return $this->docker->volumeIsAvailable($volume) ? null : "Volume {$volume} is already in use. Please select a different volume.";
+                }),
+                default => $this->askQuestion($prompt, $this->useDefaults),
+            };
         }
 
         // Allow users to pass custom docker images (e.g. "postgis/postgis:latest") when we ask for the tag
@@ -194,12 +183,12 @@ abstract class BaseService
         $this->tag = $this->resolveTag($this->promptResponses['tag']);
     }
 
-    protected function askQuestion(array $prompt, $useDefaults = false): void
+    protected function askQuestion(array $prompt, $useDefaults = false, $validate = null): void
     {
         $this->promptResponses[$prompt['shortname']] = $prompt['default'] ?? null;
 
         if (! $useDefaults) {
-            $this->promptResponses[$prompt['shortname']] = $this->ask(sprintf($prompt['prompt'], $this->imageName), $prompt['default'] ?? null);
+            $this->promptResponses[$prompt['shortname']] = $this->ask(sprintf($prompt['prompt'], $this->imageName), $prompt['default'] ?? null, $validate);
         }
     }
 

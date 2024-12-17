@@ -6,6 +6,7 @@ use App\Exceptions\DockerMissingException;
 use App\Exceptions\DockerNotAvailableException;
 use App\Shell\Docker;
 
+use function Laravel\Prompts\error;
 use function Laravel\Prompts\text;
 
 trait InitializesCommands
@@ -25,14 +26,14 @@ trait InitializesCommands
         }
     }
 
-    public function askPromptQuestion(string $question, $default = null)
+    public function askPromptQuestion(string $question, $default = null, $validate = null)
     {
-        return text(label: $question, default: $default);
+        return text(label: $question, default: $default, validate: $validate);
     }
 
     public function errorPrompt(string $message): void
     {
-        $this->components->error($message);
+        error($message);
     }
 
     public function alertPrompt(string $message): void

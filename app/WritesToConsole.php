@@ -34,8 +34,8 @@ trait WritesToConsole
         app('console')->taskPrompt($message, $callable);
     }
 
-    public function ask(string $message, $default = null)
+    public function ask(string $message, $default = null, $validate = null)
     {
-        return app('console')->askPromptQuestion($message, $default);
+        return app('console')->askPromptQuestion($message, $default, $validate);
     }
 }
