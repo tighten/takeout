@@ -81,7 +81,7 @@ class EnableCommand extends Command
      * @param array $arguments
      * @return array
      */
-    private function extractPassthroughOptions(array $arguments): array
+    public function extractPassthroughOptions(array $arguments): array
     {
         if (! in_array('--', $arguments)) {
             return [];
@@ -97,10 +97,10 @@ class EnableCommand extends Command
      * @param array $arguments
      * @return array
      */
-    private function removeOptions(array $arguments): array
+    public function removeOptions(array $arguments): array
     {
         $arguments = collect($arguments)
-            ->reject(fn ($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)
+            ->reject(fn($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)
             ->values()
             ->toArray();
 
@@ -128,9 +128,9 @@ class EnableCommand extends Command
     {
         return search(
             label: self::MENU_TITLE,
-            options: fn (string $value) => strlen($value) > 0
+            options: fn(string $value) => strlen($value) > 0
                 ? $servicesList->filter(function ($row) use ($value) {
-                        return str($row)->lower()->contains(str($value)->lower());
+                    return str($row)->lower()->contains(str($value)->lower());
                 })->toArray()
                 : $servicesList->toArray(),
             scroll: 10

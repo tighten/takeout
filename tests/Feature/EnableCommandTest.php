@@ -13,7 +13,7 @@ use Tests\TestCase;
 class EnableCommandTest extends TestCase
 {
     /** @test */
-    function it_can_enable_a_service_from_menu()
+    function it_can_filter_options_based_on_search_term()
     {
         $services = [
             'meilisearch' => 'App\Services\MeiliSearch',
@@ -35,20 +35,11 @@ class EnableCommandTest extends TestCase
         });
 
         $menuItems = [
-           $postgres => 'Database: PostgreSQL',
-           'meilisearch' => 'Search: MeiliSearch',
-        ];
-
-        $this->artisan('enable')
-            ->expectsChoice('Takeout containers to enable', '', $menuItems, true)
-            ->assertExitCode(0);
-
-        $menuItems = [
             $postgres => 'Database: PostgreSQL',
         ];
 
         $this->artisan('enable')
-            ->expectsChoice('Takeout containers to enable', $postgres, $menuItems, true)
+            ->expectsSearch('Takeout containers to enable', $postgres, 'postgres', $menuItems)
             ->assertExitCode(0);
     }
 
