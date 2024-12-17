@@ -14,10 +14,10 @@ class DisableCommandTest extends TestCase
         $services = Collection::make([
             [
                 'container_id' =>  $postgressId =  '1234',
-                'names' => $postgressName = 'postgress',
+                'names' => 'postgress',
             ],
             [
-                'container_id' =>'12345',
+                'container_id' => '12345',
                 'names' => 'meilisearch',
             ],
         ]);

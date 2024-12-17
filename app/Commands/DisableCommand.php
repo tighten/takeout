@@ -5,8 +5,10 @@ namespace App\Commands;
 use App\InitializesCommands;
 use App\Shell\Docker;
 use App\Shell\Environment;
+use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
 use Throwable;
+use Illuminate\Support\Str;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\select;
@@ -28,17 +30,18 @@ class DisableCommand extends Command
         $this->docker = $docker;
         $this->environment = $environment;
         $this->initializeCommand();
-        $this->disableableServices = $this->disableableServices();
+
+        $disableableServices = $this->disableableServices();
 
         if ($this->option('all')) {
-            foreach ($this->disableableServices as $containerId => $name) {
+            $disableableServices->keys()->each(function ($containerId) {
                 $this->disableByContainerId($containerId);
-            }
+            });
 
             return;
         }
 
-        if (empty($this->disableableServices)) {
+        if ($disableableServices->isEmpty()) {
             $this->info("There are no containers to disable.\n");
 
             return;
@@ -46,71 +49,57 @@ class DisableCommand extends Command
 
         if (filled($services = $this->argument('serviceNames'))) {
             foreach ($services as $service) {
-                $this->disableByServiceName($service);
+                $this->disableByServiceName($service, $disableableServices);
             }
 
             return;
         }
 
-        $this->showDisableServiceMenu();
+        $this->disableByContainerId(
+            $this->selectOptions($disableableServices),
+        );
     }
 
-    public function disableableServices(): array
+    private function disableableServices(): Collection
     {
         return $this->docker->takeoutContainers()->mapWithKeys(function ($container) {
             return [$container['container_id'] => str_replace('TO--', '', $container['names'])];
-        })->toArray();
+        });
     }
 
-    public function disableByServiceName(string $service): void
+    private function disableByServiceName(string $service, Collection $disableableServices): void
     {
-        $serviceMatches = collect($this->disableableServices)
+        $serviceMatches = collect($disableableServices)
             ->filter(function ($containerName) use ($service) {
-                return substr($containerName, 0, strlen($service)) === $service;
+                return Str::startsWith($service, $containerName);
             });
 
-        switch ($serviceMatches->count()) {
-            case 0:
-                $this->error("\nCannot find a Takeout-managed instance of {$service}.");
+        if ($serviceMatches->isEmpty()) {
+            $this->error("\nCannot find a Takeout-managed instance of {$service}.");
 
-                return;
-            case 1:
-                $serviceContainerId = $serviceMatches->flip()->first();
-                break;
-            default: // > 1
-                $serviceContainerId = $this->selectMenu($this->disableableServices);
-
-                if (! $serviceContainerId) {
-                    return;
-                }
+            return;
         }
 
-        $this->disableByContainerId($serviceContainerId);
-    }
+        if ($serviceMatches->count() === 1) {
+            $this->disableByContainerId($serviceMatches->flip()->first());
 
-    public function showDisableServiceMenu(): void
-    {
-        $serviceContainerId = select(
-            label: self::MENU_TITLE,
-            options: $this->disableableServices
+            return;
+        }
+
+        $this->disableByContainerId(
+            $this->selectOptions($disableableServices),
         );
-        $this->disableByContainerId($serviceContainerId);
     }
 
-    private function selectMenu($disableableServices): ?string
+    private function selectOptions(Collection $disableableServices)
     {
-        return $this->defaultMenu($disableableServices);
+        return select(
+            label: self::MENU_TITLE,
+            options: $disableableServices
+        );
     }
 
-    private function defaultMenu($disableableServices): ?string
-    {
-        return $this->menu(self::MENU_TITLE, $disableableServices)
-            ->addLineBreak('', 1)
-            ->setPadding(2, 5)
-            ->open();
-    }
-
-    public function disableByContainerId(string $containerId): void
+    private function disableByContainerId(string $containerId): void
     {
         try {
             $volumeName = $this->docker->attachedVolumeName($containerId);
