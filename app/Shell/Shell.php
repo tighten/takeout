@@ -48,7 +48,7 @@ class Shell
         return $this->exec($command, $parameters, $quiet = true);
     }
 
-    public function formatMessage(string $buffer): string
+    private function formatMessage(string $buffer): string
     {
         return rtrim(collect(explode("\n", trim($buffer)))->reduce(function ($carry, $line) {
             return $carry .= trim($line) . "\n";
