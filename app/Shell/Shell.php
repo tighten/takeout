@@ -54,9 +54,4 @@ class Shell
             return $carry .= trim($line) . "\n";
         }, ''));
     }
-
-    public function formatErrorMessage(string $buffer)
-    {
-        return $this->formatMessage($buffer, true);
-    }
 }
