@@ -5,6 +5,9 @@ namespace App\Shell;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Process\Process;
 
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\note;
+
 class Shell
 {
     protected $output;
@@ -16,21 +19,18 @@ class Shell
 
     public function exec(string $command, array $parameters = [], bool $quiet = false): Process
     {
-        $didAnything = false;
-
         $process = $this->buildProcess($command);
-        $process->run(function ($type, $buffer) use ($quiet, &$didAnything) {
+        $process->run(function ($type, $buffer) use ($quiet) {
             if (empty($buffer) || $buffer === PHP_EOL || $quiet) {
                 return;
+            };
+
+            if ($type === Process::ERR) {
+                error('Something went wrong.');
             }
 
-            $this->output->writeLn($this->formatMessage($buffer, $type === process::ERR));
-            $didAnything = true;
+            note($this->formatMessage($buffer));
         }, $parameters);
-
-        if ($didAnything) {
-            $this->output->writeLn("\n");
-        }
 
         return $process;
     }
@@ -48,12 +48,10 @@ class Shell
         return $this->exec($command, $parameters, $quiet = true);
     }
 
-    public function formatMessage(string $buffer, $isError = false): string
+    public function formatMessage(string $buffer): string
     {
-        $pre = $isError ? '<bg=red;fg=white> ERR </> %s' : '<bg=green;fg=white> OUT </> %s';
-
-        return rtrim(collect(explode("\n", trim($buffer)))->reduce(function ($carry, $line) use ($pre) {
-            return $carry .= trim(sprintf($pre, $line)) . "\n";
+        return rtrim(collect(explode("\n", trim($buffer)))->reduce(function ($carry, $line) {
+            return $carry .= trim($line) . "\n";
         }, ''));
     }
 
