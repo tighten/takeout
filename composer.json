@@ -22,7 +22,7 @@
         "ext-posix": "*",
         "composer/semver": "^3.4",
         "guzzlehttp/psr7": "^2.6",
-        "laravel/prompts": "^0.1.24"
+        "laravel/prompts": "^0.3.2"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.5",
