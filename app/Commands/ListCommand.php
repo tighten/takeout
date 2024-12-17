@@ -34,7 +34,7 @@ class ListCommand extends Command
         }
 
         if ($containersCollection->isEmpty()) {
-            info("No Takeout containers are enabled.");
+            info('No Takeout containers are enabled.');
 
             return;
         }
