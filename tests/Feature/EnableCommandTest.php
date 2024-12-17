@@ -35,23 +35,20 @@ class EnableCommandTest extends TestCase
         });
 
         $menuItems = [
-            'Database: PostgreSQL',
-            'Search: MeiliSearch',
-            'meilisearch',
-            $postgres,
+           $postgres => 'Database: PostgreSQL',
+           'meilisearch' => 'Search: MeiliSearch',
         ];
 
         $this->artisan('enable')
-            ->expectsChoice('Takeout containers to enable', '', $menuItems)
+            ->expectsChoice('Takeout containers to enable', '', $menuItems, true)
             ->assertExitCode(0);
 
         $menuItems = [
-            'Database: PostgreSQL',
-            $postgres,
+            $postgres => 'Database: PostgreSQL',
         ];
 
         $this->artisan('enable')
-            ->expectsChoice('Takeout containers to enable', $postgres, $menuItems)
+            ->expectsChoice('Takeout containers to enable', $postgres, $menuItems, true)
             ->assertExitCode(0);
     }
 

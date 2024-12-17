@@ -71,7 +71,7 @@ class DisableCommand extends Command
     {
         $serviceMatches = collect($disableableServices)
             ->filter(function ($containerName) use ($service) {
-                return Str::startsWith($service, $containerName);
+                return Str::startsWith($containerName, $service);
             });
 
         if ($serviceMatches->isEmpty()) {

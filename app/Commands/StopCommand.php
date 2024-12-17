@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\InitializesCommands;
 use App\Shell\Docker;
 use App\Shell\Environment;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
@@ -27,76 +28,60 @@ class StopCommand extends Command
         $this->docker = $docker;
         $this->environment = $environment;
         $this->initializeCommand();
-
-        $containers = $this->argument('containerId');
-
-        if (filled($containers)) {
-            foreach ($containers as $container) {
-                $this->stopByServiceNameOrContainerId($container);
-            }
-
-            return;
-        }
+        $stoppableContainers = $this->stoppableContainers();
 
         if ($this->option('all')) {
-            foreach ($this->docker->stoppableTakeoutContainers() as $stoppableContainer) {
-                $this->stop($stoppableContainer['container_id']);
-            }
+            $stoppableContainers->keys()->each(function ($containerId) {
+                $this->stop($containerId);
+            });
 
             return;
         }
 
-        if (! $stoppableContainers = $this->stoppableContainers()) {
+        if ($stoppableContainers->isEmpty()) {
             $this->info("No Takeout containers available to stop.\n");
 
             return;
         }
 
-        $containerId = $this->loadMenu($stoppableContainers);
+        if (filled($services = $this->argument('containerId'))) {
+            foreach ($services as $service) {
+                $this->stopByServiceNameOrContainerId($service, $stoppableContainers);
+            }
 
-        $this->stop($containerId);
+            return;
+        }
+
+        $this->stop($this->selectOptions($stoppableContainers));
     }
 
-    public function stoppableContainers(): array
+    private function stoppableContainers(): Collection
     {
         return $this->docker->stoppableTakeoutContainers()->mapWithKeys(function ($container) {
-            return [
-                $container['container_id'] => $container['names'],
-            ];
-        }, collect())->toArray();
+            return [$container['container_id'] => str_replace('TO--', '', $container['names'])];
+        });
     }
 
-    public function stopByServiceNameOrContainerId(string $serviceNameOrContainerId): void
+    private function stopByServiceNameOrContainerId(string $service, Collection $stoppableContainers): void
     {
-        $containersByServiceName = $this->docker->stoppableTakeoutContainers()
-            ->map(function ($container) {
-                return [
-                    'container' => $container,
-                    'label' => str_replace('TO--', '', $container['names']),
-                ];
-            })
-            ->filter(function ($item) use ($serviceNameOrContainerId) {
-                return Str::startsWith($item['label'], $serviceNameOrContainerId);
+        $containersByServiceName = $stoppableContainers
+            ->filter(function ($containerName) use ($service) {
+                return Str::startsWith($containerName, $service);
             });
 
         if ($containersByServiceName->isEmpty()) {
-            $this->info('No containers found for ' . $serviceNameOrContainerId);
+            $this->info('No containers found for ' . $service);
 
             return;
         }
 
         if ($containersByServiceName->count() === 1) {
-            $this->stop($containersByServiceName->first()['container']['container_id']);
+            $this->stop($containersByServiceName->keys()->first());
+
             return;
         }
 
-        $containerId = $this->loadMenu($containersByServiceName->mapWithKeys(function ($item) {
-            return [
-                $item['container']['container_id'] => $item['label']
-            ];
-        })->all());
-
-        $this->stop($containerId);
+        $this->stop($this->selectOptions($containersByServiceName));
     }
 
     public function stop(string $container): void
@@ -108,7 +93,7 @@ class StopCommand extends Command
         $this->docker->stopContainer($container);
     }
 
-    private function loadMenu($stoppableContainers)
+    private function selectOptions($stoppableContainers)
     {
         return select(
             label: self::MENU_TITLE,

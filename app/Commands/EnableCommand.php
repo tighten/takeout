@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\InitializesCommands;
 use App\Services;
 use App\Shell\Environment;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use LaravelZero\Framework\Commands\Command;
 use function Laravel\Prompts\search;
@@ -45,12 +46,11 @@ class EnableCommand extends Command
             return;
         }
 
-        $option = $this->selectService();
-        if (! $option) {
+        $service = $this->selectService($this->availableServices());
+        if (! $service) {
             return;
         }
-
-        $this->enable($option, $useDefaults, $passthroughOptions);
+        $this->enable($service, $useDefaults, $passthroughOptions);
     }
 
     /**
@@ -58,7 +58,7 @@ class EnableCommand extends Command
      * $this->argument, we have to do our own manual overriding for testing scenarios,
      * because pulling $_SERVER['argv'] won't give the right results in testing.
      */
-    public function serverArguments(): array
+    private function serverArguments(): array
     {
         if (App::environment() === 'testing') {
             $string = array_merge(['takeout', 'enable'], $this->argument('serviceNames'));
@@ -117,45 +117,36 @@ class EnableCommand extends Command
         return array_slice($arguments, $start);
     }
 
-    private function selectService(): ?string
+    private function availableServices(): Collection
     {
-        return $this->defaultMenu();
-    }
-
-    private function defaultMenu(): ?string
-    {
-        $servicesList = collect($this->enableableServicesByCategory())->flatMap(function ($services, $category) {
-            return collect($this->menuItemsForServices($services))->mapWithKeys(function ($row, $key) use ($category) {
+        return $this->enableableServicesByCategory()->flatMap(function ($services, $category) {
+            return $this->menuItemsForServices($services)->mapWithKeys(function ($row, $key) use ($category) {
                 return [$key => "{$category}: {$row}"];
             })->toArray();
-        })->toArray();
+        });
+    }
 
+    private function selectService(Collection $servicesList): ?string
+    {
         return search(
             label: self::MENU_TITLE,
             options: fn (string $value) => strlen($value) > 0
-                ?   collect($servicesList)->filter(function ($row) use ($value) {
-                    return str($row)->lower()->contains(str($value)->lower());
+                ? $servicesList->filter(function ($row) use ($value) {
+                        return str($row)->lower()->contains(str($value)->lower());
                 })->toArray()
-                : $servicesList,
+                : $servicesList->toArray(),
             scroll: 10
         );
     }
 
-    private function menuItemsForServices($services): array
+    private function menuItemsForServices($services): Collection
     {
         return collect($services)->mapWithKeys(function ($service) {
             return [$service['shortName'] => $service['name']];
-        })->toArray();
+        });
     }
 
-    public function enableableServices(): array
-    {
-        return collect($this->services->all())->mapWithKeys(function ($fqcn, $shortName) {
-            return [$shortName => $fqcn::name()];
-        })->toArray();
-    }
-
-    public function enableableServicesByCategory(): array
+    private function enableableServicesByCategory(): Collection
     {
         return collect($this->services->all())
             ->mapToGroups(function ($fqcn, $shortName) {
@@ -166,8 +157,7 @@ class EnableCommand extends Command
                     ],
                 ];
             })
-            ->sortKeys()
-            ->toArray();
+            ->sortKeys();
     }
 
     public function enable(

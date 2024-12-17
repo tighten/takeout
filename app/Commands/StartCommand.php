@@ -5,10 +5,9 @@ namespace App\Commands;
 use App\InitializesCommands;
 use App\Shell\Docker;
 use App\Shell\Environment;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
-use PhpSchool\CliMenu\CliMenu;
 
 use function Laravel\Prompts\select;
 
@@ -28,86 +27,63 @@ class StartCommand extends Command
         $this->docker = $docker;
         $this->environment = $environment;
         $this->initializeCommand();
-
-        $containers = $this->argument('containerId');
-
-        if (filled($containers)) {
-            foreach ($containers as $container) {
-                $this->startByServiceNameOrContainerId($container);
-            }
-
-            return;
-        }
+        $startableContainers = $this->startableContainers();
 
         if ($this->option('all')) {
-            foreach ($this->docker->startableTakeoutContainers() as $startableContainer) {
-                $this->start($startableContainer['container_id']);
-            }
+            $startableContainers->keys()->each(function ($containerId) {
+                $this->start($containerId);
+            });
 
             return;
         }
 
-        if (! $startableContainers = $this->startableContainers()) {
+        if ($startableContainers->isEmpty()) {
             $this->info("No Takeout containers available to start.\n");
 
             return;
         }
 
-        $this->loadMenu($startableContainers);
+        if (filled($services = $this->argument('containerId'))) {
+            foreach ($services as $service) {
+                $this->startByServiceNameOrContainerId($service, $startableContainers);
+            }
+
+            return;
+        }
+
+        $this->start($this->selectOptions($startableContainers));
     }
 
-    public function startableContainers(): array
+    public function startableContainers(): Collection
     {
         return $this->docker->startableTakeoutContainers()->mapWithKeys(function ($container) {
-            return [
-                $container['container_id'] => $container['names'],
-            ];
-        }, collect())->toArray();
+            return [$container['container_id'] => str_replace('TO--', '', $container['names'])];
+        });
     }
 
-    public function startByServiceNameOrContainerId(string $serviceNameOrContainerId): void
+    public function startByServiceNameOrContainerId(string $service, Collection $startableContainers): void
     {
-        $containersByServiceName = $this->docker->startableTakeoutContainers()
-            ->map(function ($container) {
-                return [
-                    'container' => $container,
-                    'label' => str_replace('TO--', '', $container['names']),
-                ];
-            })
-            ->filter(function ($item) use ($serviceNameOrContainerId) {
-                return Str::startsWith($item['label'], $serviceNameOrContainerId);
+        $containersByServiceName = $startableContainers
+            ->filter(function ($serviceName) use ($service) {
+                return Str::startsWith($serviceName, $service);
             });
 
         // If we don't get any container by the service name, that probably means
         // the user is trying to start a container using its container ID, so
         // we will just forward that down to the underlying start method.
-
         if ($containersByServiceName->isEmpty()) {
-            $this->start($serviceNameOrContainerId);
+            $this->info('No containers found for ' . $service);
 
             return;
         }
 
         if ($containersByServiceName->count() === 1) {
-            $this->start($containersByServiceName->first()['container']['container_id']);
+            $this->start($containersByServiceName->keys()->first());
 
             return;
         }
 
-        $selectedItem = $this->loadMenu($containersByServiceName->map(function ($item) {
-            $label = $item['container']['container_id'] . ' - ' . $item['label'];
-
-            return [
-                $label,
-                $this->loadMenuItem($item['container'], $label),
-            ];
-        })->all());
-
-        if (! $selectedItem) {
-            return;
-        }
-
-        $this->start($selectedItem);
+        $this->start($this->selectOptions($containersByServiceName));
     }
 
     public function start(string $container): void
@@ -119,87 +95,11 @@ class StartCommand extends Command
         $this->docker->startContainer($container);
     }
 
-    private function loadMenu($startableContainers)
+    private function selectOptions(Collection $startableContainers)
     {
-        $container = select(
+        return select(
             label: self::MENU_TITLE,
             options: $startableContainers
         );
-
-        $this->docker->startContainer($container);
-    }
-
-    private function defaultMenu($startableContainers)
-    {
-        return $this->menu(self::MENU_TITLE)
-            ->addItems($startableContainers)
-            ->addLineBreak('', 1)
-            ->open();
-    }
-
-    private function windowsMenu($startableContainers)
-    {
-        if (! $startableContainers) {
-            return;
-        }
-
-        $choices = Arr::flatten($startableContainers);
-        $choices = Arr::where($choices, function ($value, $key) {
-            return is_string($value);
-        });
-        array_push($choices, '<info>Exit</>');
-
-        $choice = $this->choice(self::MENU_TITLE, array_values($choices));
-
-        if (Str::contains($choice, 'Exit')) {
-            return;
-        }
-
-        $chosenStartableContainer = Arr::where($startableContainers, function ($value, $key) use ($choice) {
-            return $value[0] === $choice;
-        });
-
-        return call_user_func(array_values($chosenStartableContainer)[0][1]);
-    }
-
-    private function loadMenuItem($container, $label): callable
-    {
-        if ($this->environment->isWindowsOs()) {
-            return $this->windowsMenuItem($container, $label);
-        }
-
-        return $this->defaultMenuItem($container, $label);
-    }
-
-    private function windowsMenuItem($container, $label): callable
-    {
-        return function () use ($container, $label) {
-            $this->start($label);
-
-            $startableContainers = $this->startableContainers();
-
-            return $this->windowsMenu($startableContainers);
-        };
-    }
-
-    private function defaultMenuItem($container, $label): callable
-    {
-        return function (CliMenu $menu) use ($container, $label) {
-            $this->start($menu->getSelectedItem()->getText());
-
-            foreach ($menu->getItems() as $item) {
-                if ($item->getText() === $label) {
-                    $menu->removeItem($item);
-                }
-            }
-
-            if (count($menu->getItems()) === 3) {
-                $menu->close();
-
-                return;
-            }
-
-            $menu->redraw();
-        };
     }
 }
