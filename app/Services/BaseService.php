@@ -199,7 +199,7 @@ abstract class BaseService
         $this->promptResponses[$prompt['shortname']] = $prompt['default'] ?? null;
 
         if (! $useDefaults) {
-            $this->promptResponses[$prompt['shortname']] = app('console')->ask(sprintf($prompt['prompt'], $this->imageName), $prompt['default'] ?? null);
+            $this->promptResponses[$prompt['shortname']] = $this->ask(sprintf($prompt['prompt'], $this->imageName), $prompt['default'] ?? null);
         }
     }
 

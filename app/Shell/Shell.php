@@ -19,7 +19,7 @@ class Shell
         $didAnything = false;
 
         $process = $this->buildProcess($command);
-        $process->run(function ($type, $buffer) use ($quiet, $didAnything) {
+        $process->run(function ($type, $buffer) use ($quiet, &$didAnything) {
             if (empty($buffer) || $buffer === PHP_EOL || $quiet) {
                 return;
             }

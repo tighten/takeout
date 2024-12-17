@@ -47,9 +47,7 @@ class EnableCommand extends Command
         }
 
         $service = $this->selectService($this->availableServices());
-        if (! $service) {
-            return;
-        }
+
         $this->enable($service, $useDefaults, $passthroughOptions);
     }
 
@@ -83,7 +81,7 @@ class EnableCommand extends Command
      * @param array $arguments
      * @return array
      */
-    public function extractPassthroughOptions(array $arguments): array
+    private function extractPassthroughOptions(array $arguments): array
     {
         if (! in_array('--', $arguments)) {
             return [];
@@ -99,7 +97,7 @@ class EnableCommand extends Command
      * @param array $arguments
      * @return array
      */
-    public function removeOptions(array $arguments): array
+    private function removeOptions(array $arguments): array
     {
         $arguments = collect($arguments)
             ->reject(fn ($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)
@@ -160,7 +158,7 @@ class EnableCommand extends Command
             ->sortKeys();
     }
 
-    public function enable(
+    private function enable(
         string $service,
         bool $useDefaults = false,
         array $passthroughOptions = [],
