@@ -8,6 +8,7 @@ use App\Shell\Environment;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use LaravelZero\Framework\Commands\Command;
+
 use function Laravel\Prompts\search;
 
 class EnableCommand extends Command
