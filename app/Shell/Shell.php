@@ -17,13 +17,18 @@ class Shell
         $this->output = $output;
     }
 
-    public function exec(string $command, array $parameters = [], bool $quiet = false): Process
+    public function exec(string $command, array $parameters = [], bool $quiet = false, bool $plain = false): Process
     {
         $process = $this->buildProcess($command);
-        $process->run(function ($type, $buffer) use ($quiet) {
+        $process->run(function ($type, $buffer) use ($quiet, $plain) {
             if (empty($buffer) || $buffer === PHP_EOL || $quiet) {
                 return;
-            };
+            }
+
+            if ($plain) {
+                note($buffer);
+                return;
+            }
 
             if ($type === Process::ERR) {
                 error('Something went wrong.');

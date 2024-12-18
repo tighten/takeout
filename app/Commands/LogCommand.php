@@ -27,7 +27,6 @@ class LogCommand extends Command
 
         $loggableContainers = $this->loggableContainers();
 
-
         if ($loggableContainers->isEmpty()) {
             $this->info("No Takeout containers available.\n");
 

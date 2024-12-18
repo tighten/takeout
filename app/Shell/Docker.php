@@ -64,7 +64,7 @@ class Docker
             throw new DockerContainerMissingException($containerId);
         }
 
-        $process = $this->shell->exec('docker logs -f ' . $containerId);
+        $process = $this->shell->exec('docker logs -f ' . $containerId, plain: true);
 
         if (! $process->isSuccessful()) {
             throw new Exception('Failed to log container ' . $containerId);
