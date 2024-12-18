@@ -25,12 +25,12 @@ class EnvironmentTest extends TestCase
         $environment = app(Environment::class);
         $this->assertTrue($environment->portIsAvailable($port));
 
-        $this->withFakeProcess($port, fn() => (
+        $this->bindFakeProcessToPort($port, fn() => (
             $this->assertFalse($environment->portIsAvailable($port), "Expected port {$port} to be in use, but it was available.")
         ));
     }
 
-    private function withFakeProcess(int $port, $callback)
+    private function bindFakeProcessToPort(int $port, $callback)
     {
         $socket = socket_create(domain: AF_INET, type: SOCK_STREAM, protocol: SOL_TCP);
         assert($socket !== false, 'Was not able to create a socket.');
