@@ -2,8 +2,6 @@
 
 namespace App\Shell;
 
-use Illuminate\Support\Str;
-
 class Environment
 {
     protected $shell;

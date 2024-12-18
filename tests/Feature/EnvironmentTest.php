@@ -3,64 +3,31 @@
 namespace Tests\Feature;
 
 use App\Shell\Environment;
-use App\Shell\Shell;
 use LaravelZero\Framework\Commands\Command;
 use Mockery as M;
-use Symfony\Component\Process\Process;
 use Tests\TestCase;
 
 class EnvironmentTest extends TestCase
 {
-    function isLinux()
-    {
-        return PHP_OS_FAMILY === 'Linux';
-    }
-
     /** @test **/
-    function it_detects_a_port_conflict()
+    public function it_detects_a_port_conflict()
     {
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $mock->shouldIgnoreMissing();
         }));
 
-        $this->mock(Shell::class, function ($mock) {
-            $process = M::mock(Process::class);
-            $process->shouldReceive('isSuccessful')->once()->andReturn(true);
-            $process->shouldReceive('getOutput')->andReturn('');
-
-            $times = 1;
-            if ($this->isLinux()) {
-                $times = 2;
-            }
-
-            $mock->shouldReceive('execQuietly')->times($times)->andReturn($process);
-        });
+        $port = rand(20_000, 50_000);
 
         $environment = app(Environment::class);
-        $this->assertFalse($environment->portIsAvailable(1234));
-    }
+        $this->assertTrue($environment->portIsAvailable($port));
 
-    /** @test **/
-    function it_detects_a_port_is_available()
-    {
-        app()->instance('console', M::mock(Command::class, function ($mock) {
-            $mock->shouldIgnoreMissing();
-        }));
+        $socket = socket_create(domain: AF_INET, type: SOCK_STREAM, protocol: SOL_TCP);
+        assert($socket !== false, "Was not able to create a socket.");
+        socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+        assert(socket_bind($socket, 'localhost', $port) !== false, "Was not able to bind socket to port {$port}");
+        assert(socket_listen($socket, backlog: 5));
 
-        $this->mock(Shell::class, function ($mock) {
-            $process = M::mock(Process::class);
-            $process->shouldReceive('isSuccessful')->once()->andReturn(false);
-            $process->shouldReceive('getOutput')->andReturn('');
-
-            $times = 1;
-            if ($this->isLinux()) {
-                $times = 2;
-            }
-
-            $mock->shouldReceive('execQuietly')->times($times)->andReturn($process);
-        });
-
-        $environment = app(Environment::class);
-        $this->assertTrue($environment->portIsAvailable(1234));
+        $this->assertFalse($environment->portIsAvailable($port));
+        socket_close($socket);
     }
 }
