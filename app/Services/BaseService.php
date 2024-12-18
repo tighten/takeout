@@ -166,7 +166,7 @@ abstract class BaseService
             $items[] = match (true) {
                 Str::contains($prompt['shortname'], 'port') => $this->askQuestion($prompt, $this->useDefaults, validate: function (string $port) {
                     if (! is_numeric($port)) {
-                        return "Sorry, the port must be a valid number.";
+                        return 'Sorry, the port must be a valid number.';
                     }
 
                     if (! $this->environment->portIsAvailable($port)) {
