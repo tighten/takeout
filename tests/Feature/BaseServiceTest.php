@@ -29,13 +29,13 @@ class BaseServiceTest extends TestCase
         app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
             $defaultPort = $service->defaultPort();
             $mock->shouldReceive('askPromptQuestion')
-                ->with('Which host port would you like meilisearch to use?', $defaultPort)
+                ->with('Which host port would you like meilisearch to use?', $defaultPort, M::any())
                 ->andReturn(7700);
             $mock->shouldReceive('askPromptQuestion')
-                ->with('What is the Docker volume name?', 'meili_data')
+                ->with('What is the Docker volume name?', 'meili_data', M::any())
                 ->andReturn('meili_data');
             $mock->shouldReceive('askPromptQuestion')
-                ->with('Which tag (version) of meilisearch would you like to use?', 'latest')
+                ->with('Which tag (version) of meilisearch would you like to use?', 'latest', M::any())
                 ->andReturn('v1.1.1');
             $mock->shouldIgnoreMissing();
         }));
@@ -80,13 +80,13 @@ class BaseServiceTest extends TestCase
         app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
             $defaultPort = $service->defaultPort();
             $mock->shouldReceive('askPromptQuestion')
-                ->with('Which host port would you like postgres to use?', $defaultPort)
+                ->with('Which host port would you like postgres to use?', $defaultPort, M::any())
                 ->andReturn(5432);
             $mock->shouldReceive('askPromptQuestion')
-                ->with('Which tag (version) of postgres would you like to use?', 'latest')
+                ->with('Which tag (version) of postgres would you like to use?', 'latest', M::any())
                 ->andReturn('timescale/timescaledb:latest-pg12');
             $mock->shouldReceive('askPromptQuestion')
-                ->with('What is the Docker volume name?', 'postgres_data')
+                ->with('What is the Docker volume name?', 'postgres_data', M::any())
                 ->andReturn('postgres_data');
             $mock->shouldIgnoreMissing();
         }));
@@ -133,10 +133,10 @@ class BaseServiceTest extends TestCase
         app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
             $defaultPort = $service->defaultPort();
             $mock->shouldReceive('askPromptQuestion')
-                ->with('Which host port would you like _test_image to use?', $defaultPort)
+                ->with('Which host port would you like _test_image to use?', $defaultPort, M::any())
                 ->andReturn(12345);
             $mock->shouldReceive('askPromptQuestion')
-                ->with('Which tag (version) of _test_image would you like to use?', 'latest')
+                ->with('Which tag (version) of _test_image would you like to use?', 'latest', M::any())
                 ->andReturn('latest');
             $mock->shouldIgnoreMissing();
         }));
@@ -186,10 +186,10 @@ class BaseServiceTest extends TestCase
         app()->instance('console', M::mock(Command::class, function ($mock) use ($service) {
             $defaultPort = $service->defaultPort();
             $mock->shouldReceive('askPromptQuestion')
-                ->with('Which host port would you like _test_image to use?', $defaultPort)
+                ->with('Which host port would you like _test_image to use?', $defaultPort, M::any())
                 ->andReturn(12345);
             $mock->shouldReceive('askPromptQuestion')
-                ->with('Which tag (version) of _test_image would you like to use?', 'latest')
+                ->with('Which tag (version) of _test_image would you like to use?', 'latest', M::any())
                 ->andReturn('latest');
             $mock->shouldIgnoreMissing();
         }));
