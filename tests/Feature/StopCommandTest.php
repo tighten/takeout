@@ -41,7 +41,7 @@ class StopCommandTest extends TestCase
      *           ["mysql"]
      *
      */
-    function it_can_stop_containers_by_service_name($arg)
+    function it_can_stop_containers_by_service_name_or_id($arg)
     {
         $services = Collection::make([
             [

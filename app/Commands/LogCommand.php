@@ -71,7 +71,7 @@ class LogCommand extends Command
     {
         $containersByServiceName = $loggableContainers
             ->filter(function ($containerName, $key) use ($service) {
-                return Str::startsWith($containerName, $service) || $key === $service;
+                return Str::startsWith($containerName, $service) || "{$key}" === $service;
             });
 
         if ($containersByServiceName->isEmpty()) {
