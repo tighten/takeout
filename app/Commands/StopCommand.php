@@ -66,7 +66,7 @@ class StopCommand extends Command
     {
         $containersByServiceName = $stoppableContainers
             ->filter(function ($containerName, $key) use ($service) {
-                return Str::startsWith($containerName, $service) || $key === $service;
+                return Str::startsWith($containerName, $service) || "{$key}" === $service;
             });
 
         if ($containersByServiceName->isEmpty()) {

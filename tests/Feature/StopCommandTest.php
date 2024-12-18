@@ -34,8 +34,14 @@ class StopCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
-    /** @test */
-    function it_can_stop_containers_by_service_name()
+    /**
+     * @test
+     *
+     * @testWith ["12345"]
+     *           ["mysql"]
+     *
+     */
+    function it_can_stop_containers_by_service_name($arg)
     {
         $services = Collection::make([
             [
@@ -55,7 +61,7 @@ class StopCommandTest extends TestCase
             $mock->shouldReceive('stopContainer')->with($containerId)->once();
         });
 
-        $this->artisan('stop', ['containerId' => ['mysql']])
+        $this->artisan('stop', ['containerId' => [$arg]])
             ->assertExitCode(0);
     }
 

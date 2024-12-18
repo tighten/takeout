@@ -65,7 +65,7 @@ class StartCommand extends Command
     {
         $containersByServiceName = $startableContainers
             ->filter(function ($serviceName, $key) use ($service) {
-                return Str::startsWith($serviceName, $service) || $key === $service;
+                return Str::startsWith($serviceName, $service) || "{$key}" === $service;
             });
 
         // If we don't get any container by the service name, that probably means

@@ -34,8 +34,14 @@ class StartCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
-    /** @test */
-    function it_can_start_containers_by_name()
+    /**
+     * @test
+     *
+     * @testWith ["12345"]
+     *           ["mysql"]
+     *
+     */
+    function it_can_start_containers_by_name_or_id($arg)
     {
         $services = Collection::make([
             [
@@ -55,7 +61,7 @@ class StartCommandTest extends TestCase
             $mock->shouldReceive('startContainer')->once()->with($containerId);
         });
 
-        $this->artisan('start', ['containerId' => ['mysql']])
+        $this->artisan('start', ['containerId' => [$arg]])
             ->assertExitCode(0);
     }
 
