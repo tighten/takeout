@@ -13,12 +13,12 @@ class LogCommandTest extends TestCase
     {
         $services = Collection::make([
             [
-            'container_id' => $containerId = '12345',
-            'names' => 'TO--mysql--8.0.22--3306',
-            'status' => 'Up 27 minutes',
-            'ports' => '0.0.0.0:3306->3306/tcp, 33060/tcp',
-            'base_alias' => 'mysql',
-            'full_alias' => 'mysql8.0',
+                'container_id' => $containerId = '12345',
+                'names' => 'TO--mysql--8.0.22--3306',
+                'status' => 'Up 27 minutes',
+                'ports' => '0.0.0.0:3306->3306/tcp, 33060/tcp',
+                'base_alias' => 'mysql',
+                'full_alias' => 'mysql8.0',
             ],
         ]);
 
@@ -45,12 +45,12 @@ class LogCommandTest extends TestCase
     {
         $services = Collection::make([
             [
-            'container_id' => $containerId = '12345',
-            'names' => 'TO--mysql--8.0.22--3306',
-            'status' => 'Up 27 minutes',
-            'ports' => '0.0.0.0:3306->3306/tcp, 33060/tcp',
-            'base_alias' => 'mysql',
-            'full_alias' => 'mysql8.0',
+                'container_id' => $containerId = '12345',
+                'names' => 'TO--mysql--8.0.22--3306',
+                'status' => 'Up 27 minutes',
+                'ports' => '0.0.0.0:3306->3306/tcp, 33060/tcp',
+                'base_alias' => 'mysql',
+                'full_alias' => 'mysql8.0',
             ],
         ]);
 
