@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Shell\Environment;
-use LaravelZero\Framework\Commands\Command;
-use Mockery as M;
 use Tests\TestCase;
 
 class EnvironmentTest extends TestCase
@@ -16,13 +14,10 @@ class EnvironmentTest extends TestCase
             $this->markTestSkipped('Sockets extension is required (should be included in PHP by default).');
         }
 
-        app()->instance('console', M::mock(Command::class, function ($mock) {
-            $mock->shouldIgnoreMissing();
-        }));
-
         $port = rand(20_000, 50_000);
 
         $environment = app(Environment::class);
+
         $this->assertTrue($environment->portIsAvailable($port));
 
         $this->bindFakeProcessToPort($port, fn() => (
