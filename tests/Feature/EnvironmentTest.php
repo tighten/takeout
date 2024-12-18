@@ -12,6 +12,10 @@ class EnvironmentTest extends TestCase
     /** @test **/
     public function it_detects_a_port_conflict()
     {
+        if (! extension_loaded('sockets')) {
+            $this->markTestSkipped('Sockets extension is required (should be included in PHP by default).');
+        }
+
         app()->instance('console', M::mock(Command::class, function ($mock) {
             $mock->shouldIgnoreMissing();
         }));
