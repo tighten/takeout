@@ -36,5 +36,7 @@ class EnvironmentTest extends TestCase
         } finally {
             socket_close($socket);
         }
+
+        return $port;
     }
 }
