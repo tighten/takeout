@@ -18,8 +18,6 @@
     "require": {
         "php": "^8.2",
         "ext-json": "*",
-        "ext-pcntl": "*",
-        "ext-posix": "*",
         "ext-sockets": "*",
         "composer/semver": "^3.4",
         "guzzlehttp/psr7": "^2.6",
