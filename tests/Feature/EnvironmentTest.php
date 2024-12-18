@@ -26,7 +26,7 @@ class EnvironmentTest extends TestCase
         $this->assertTrue($environment->portIsAvailable($port));
 
         $this->withFakeProcess($port, fn() => (
-            $this->assertFalse($environment->portIsAvailable($port))
+            $this->assertFalse($environment->portIsAvailable($port), "Expected port {$port} to be in use, but it was available.")
         ));
     }
 
