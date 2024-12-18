@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Exceptions\DockerMissingException;
-use App\Exceptions\DockerNotRunningException;
+use App\Exceptions\DockerNotAvailableException;
 use App\Shell\Docker;
 
 trait InitializesCommands
@@ -19,7 +19,7 @@ trait InitializesCommands
         }
 
         if (! app(Docker::class)->isDockerServiceRunning()) {
-            throw new DockerNotRunningException;
+            throw new DockerNotAvailableException;
         }
     }
 }

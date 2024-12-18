@@ -3,7 +3,6 @@
 namespace App\Shell;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class MicrosoftDockerTags extends DockerTags
 {
@@ -15,10 +14,8 @@ class MicrosoftDockerTags extends DockerTags
     public function getTags(): Collection
     {
         return collect(json_decode($this->getTagsResponse(), true)['tags'])
-            ->reverse()
-            ->filter(function ($tag) {
-                return Str::contains($tag, '-GA-');
-            });
+            ->sort(new VersionComparator)
+            ->values();
     }
 
     protected function tagsUrlTemplate(): string

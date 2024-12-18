@@ -13,9 +13,11 @@ class LogCommand extends Command
 
     protected $signature = 'logs {containerId?}';
     protected $description = 'Display container logs.';
+    protected $docker;
 
-    public function handle(): void
+    public function handle(Docker $docker): void
     {
+        $this->docker = $docker;
         $this->initializeCommand();
 
         $container = $this->argument('containerId');
@@ -35,6 +37,6 @@ class LogCommand extends Command
             $container = Str::before($container, ' -');
         }
 
-        app(Docker::class)->logContainer($container);
+        $this->docker->logContainer($container);
     }
 }

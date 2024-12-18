@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Support;
 
 use GuzzleHttp\Psr7\Stream as Psr7Stream;
 

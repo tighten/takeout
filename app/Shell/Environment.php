@@ -13,9 +13,19 @@ class Environment
         $this->shell = $shell;
     }
 
+    public function isMacOs(): bool
+    {
+        return PHP_OS_FAMILY === 'Darwin';
+    }
+
     public function isLinuxOs(): bool
     {
         return PHP_OS_FAMILY === 'Linux';
+    }
+
+    public function isWindowsOs(): bool
+    {
+        return PHP_OS_FAMILY === 'Windows';
     }
 
     public function portIsAvailable($port): bool
@@ -26,7 +36,8 @@ class Environment
         $netstatCmd = $this->netstatCmd();
 
         // Check to see if the system is running a service with the desired port
-        $process = $this->shell->execQuietly("{$netstatCmd} -vanp tcp | grep '{$portText}' | grep -v 'TIME_WAIT' | grep -v 'CLOSE_WAIT' | grep -v 'FIN_WAIT'");
+        $process = $this->shell->execQuietly("{$netstatCmd} -vanp tcp \n
+            | grep '{$portText}' | grep -v 'TIME_WAIT' | grep -v 'CLOSE_WAIT' | grep -v 'FIN_WAIT'");
 
         // A successful netstat command means a port in use was found
         return ! $process->isSuccessful();
@@ -46,5 +57,26 @@ class Environment
         }
 
         return $netstatCmd;
+    }
+
+    public function userIsInDockerGroup(): bool
+    {
+        return $this->shell->execQuietly('groups | grep docker')->isSuccessful();
+    }
+
+    public function homeDirectory(): string
+    {
+        $home = rtrim(getenv('HOME'), '/');
+
+        if (! empty($home)) {
+            return $home;
+        }
+
+        // Windows
+        if (! empty($_SERVER['HOMEDRIVE']) && ! empty($_SERVER['HOMEPATH'])) {
+            return rtrim($_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'], '\\/');
+        }
+
+        return '~';
     }
 }

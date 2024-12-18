@@ -7,6 +7,7 @@ use App\Shell\DockerTags;
 use App\Shell\Environment;
 use App\Shell\Shell;
 use App\WritesToConsole;
+use Exception;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -67,7 +68,7 @@ abstract class BaseService
         return static::$displayName ?? Str::afterLast(static::class, '\\');
     }
 
-    public function enable(bool $useDefaults = false): void
+    public function enable(bool $useDefaults = false, array $passthroughOptions = [], string $runOptions = null): void
     {
         $this->useDefaults = $useDefaults;
 
@@ -79,14 +80,40 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                $this->dockerRunTemplate,
-                $this->buildParameters()
+                join(' ', array_filter([
+                    $runOptions,
+                    $this->sanitizeDockerRunTemplate($this->dockerRunTemplate),
+                    $this->buildPassthroughOptionsString($passthroughOptions),
+                ])),
+                $this->buildParameters(),
             );
 
             $this->info("\nService enabled!");
         } catch (Throwable $e) {
             $this->error("\n" . $e->getMessage());
         }
+    }
+
+    public function forwardShell(): void
+    {
+        if (! $this->docker->isDockerServiceRunning()) {
+            throw new Exception('Docker is not running.');
+        }
+
+        $service = $this->docker->takeoutContainers()->first(function ($container) {
+            return str_starts_with($container['names'], "TO--{$this->shortName()}--");
+        });
+
+        if (! $service) {
+            throw new Exception(sprintf('Service %s is not enabled.', $this->shortName()));
+        }
+
+        $this->docker->forwardShell($service['container_id'], $this->shellCommand());
+    }
+
+    protected function shellCommand(): string
+    {
+        return 'bash';
     }
 
     public function organization(): string
@@ -158,6 +185,12 @@ abstract class BaseService
             $items[] = $prompt;
         }
 
+        // Allow users to pass custom docker images (e.g. "postgis/postgis:latest") when we ask for the tag
+        if (Str::is('*:*', $this->promptResponses['tag'])) {
+            [$image, $this->promptResponses['tag']] = explode(':', $this->promptResponses['tag']);
+            [$this->promptResponses['organization'], $this->promptResponses['image_name']] = Str::is('*/*', $image) ? explode('/', $image) : [$this->organization, $image];
+        }
+
         $this->tag = $this->resolveTag($this->promptResponses['tag']);
     }
 
@@ -209,5 +242,23 @@ abstract class BaseService
         }
 
         return 'TO--' . $this->shortName() . '--' . $this->tag . $portTag;
+    }
+
+    public function sanitizeDockerRunTemplate($dockerRunTemplate): string
+    {
+        if ($this->environment->isWindowsOs()) {
+            return stripslashes($dockerRunTemplate);
+        }
+
+        return $dockerRunTemplate;
+    }
+
+    public function buildPassthroughOptionsString(array $passthroughOptions): string
+    {
+        if (empty($passthroughOptions)) {
+            return '';
+        }
+
+        return join(' ', $passthroughOptions);
     }
 }
