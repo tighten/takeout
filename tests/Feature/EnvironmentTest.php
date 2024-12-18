@@ -14,27 +14,25 @@ class EnvironmentTest extends TestCase
             $this->markTestSkipped('Sockets extension is required (should be included in PHP by default).');
         }
 
-        $port = rand(20_000, 50_000);
-
         $environment = app(Environment::class);
 
-        $this->assertTrue($environment->portIsAvailable($port));
+        $port = $this->withFakeProcessRunning(
+            fn($port) => $this->assertFalse($environment->portIsAvailable($port), "Expected port {$port} to be taken, but it was available."),
+        );
 
-        $this->bindFakeProcessToPort($port, fn() => (
-            $this->assertFalse($environment->portIsAvailable($port), "Expected port {$port} to be in use, but it was available.")
-        ));
+        $this->assertTrue($environment->portIsAvailable($port), "Expected port {$port} to be avaialble, but it was taken.");
     }
 
-    private function bindFakeProcessToPort(int $port, $callback)
+    private function withFakeProcessRunning($closure)
     {
-        $socket = socket_create(domain: AF_INET, type: SOCK_STREAM, protocol: SOL_TCP);
+        // Passing zero to it will make PHP select a free port...
+        $socket = socket_create_listen(0);
 
-        assert($socket !== false, 'Was not able to create a socket.');
-        assert(socket_bind($socket, '127.0.0.1', $port) !== false, "Was not able to bind socket to port {$port}");
-        assert(socket_listen($socket));
+        // Extract the host and port (we only care about the port) so we can use it...
+        socket_getsockname($socket, $host, $port);
 
         try {
-            $callback();
+            $closure($port);
         } finally {
             socket_close($socket);
         }
