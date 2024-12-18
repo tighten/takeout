@@ -32,7 +32,7 @@ class Environment
         // If we cannot open the socket, it means there's nothing running on it, so the
         // port is available. If we are successful, that means it is already in use.
 
-        $socket = @fsockopen('localhost', $port, $errorCode, $errorMessage, timeout: 5);
+        $socket = @fsockopen($this->localhost(), $port, $errorCode, $errorMessage, timeout: 5);
 
         if (! $socket) {
             return true;
@@ -41,6 +41,11 @@ class Environment
         fclose($socket);
 
         return false;
+    }
+
+    public function isTakeoutRunningOnDocker(): bool
+    {
+        return boolval($_SERVER['TAKEOUT_CONTAINER'] ?? false);
     }
 
     public function userIsInDockerGroup(): bool
@@ -62,5 +67,10 @@ class Environment
         }
 
         return '~';
+    }
+
+    private function localhost(): string
+    {
+        return $this->isTakeoutRunningOnDocker() ? 'host.docker.internal' : 'localhost';
     }
 }
