@@ -57,7 +57,7 @@ class StopCommand extends Command
 
     private function stoppableContainers(): Collection
     {
-        return $this->docker->stoppableTakeoutContainers()->mapWithKeys(function ($container) {
+        return $this->docker->activeTakeoutContainers()->mapWithKeys(function ($container) {
             return [$container['container_id'] => str_replace('TO--', '', $container['names'])];
         });
     }

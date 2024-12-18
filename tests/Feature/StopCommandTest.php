@@ -25,7 +25,7 @@ class StopCommandTest extends TestCase
         $this->mock(Docker::class, function ($mock) use ($services, $containerId) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
-            $mock->shouldReceive('stoppableTakeoutContainers')->andReturn($services, new Collection);
+            $mock->shouldReceive('activeTakeoutContainers')->andReturn($services, new Collection);
             $mock->shouldReceive('stopContainer')->with($containerId);
         });
 
@@ -51,7 +51,7 @@ class StopCommandTest extends TestCase
         $this->mock(Docker::class, function ($mock) use ($services, $containerId) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
-            $mock->shouldReceive('stoppableTakeoutContainers')->andReturn($services, new Collection);
+            $mock->shouldReceive('activeTakeoutContainers')->andReturn($services, new Collection);
             $mock->shouldReceive('stopContainer')->with($containerId)->once();
         });
 
@@ -84,7 +84,7 @@ class StopCommandTest extends TestCase
         $this->mock(Docker::class, function ($mock) use ($services, $secondContainerId) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
-            $mock->shouldReceive('stoppableTakeoutContainers')->andReturn($services, new Collection);
+            $mock->shouldReceive('activeTakeoutContainers')->andReturn($services, new Collection);
             $mock->shouldReceive('stopContainer')->with($secondContainerId)->once();
         });
 
