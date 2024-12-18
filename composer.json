@@ -20,6 +20,7 @@
         "ext-json": "*",
         "ext-pcntl": "*",
         "ext-posix": "*",
+        "ext-sockets": "*",
         "composer/semver": "^3.4",
         "guzzlehttp/psr7": "^2.6",
         "laravel/prompts": "^0.3.2"
