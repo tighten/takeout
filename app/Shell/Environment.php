@@ -26,7 +26,7 @@ class Environment
         return PHP_OS_FAMILY === 'Windows';
     }
 
-    public function portIsAvailable($port): bool
+    public function portIsAvailable(int $port): bool
     {
         // To check if the socket is available, we'll attempt to open a socket on the port.
         // If we cannot open the socket, it means there's nothing running on it, so the

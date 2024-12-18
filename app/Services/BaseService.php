@@ -165,6 +165,10 @@ abstract class BaseService
         foreach ($questions as $prompt) {
             $items[] = match (true) {
                 Str::contains($prompt['shortname'], 'port') => $this->askQuestion($prompt, $this->useDefaults, validate: function (string $port) {
+                    if (! is_numeric($port)) {
+                        return "Sorry, the port must be a valid number.";
+                    }
+
                     if (! $this->environment->portIsAvailable($port)) {
                         return "Port {$port} is already in use. Please select a different port.";
                     }
