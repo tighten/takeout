@@ -28,9 +28,10 @@ class EnvironmentTest extends TestCase
     private function bindFakeProcessToPort(int $port, $callback)
     {
         $socket = socket_create(domain: AF_INET, type: SOCK_STREAM, protocol: SOL_TCP);
+
         assert($socket !== false, 'Was not able to create a socket.');
         assert(socket_bind($socket, '127.0.0.1', $port) !== false, "Was not able to bind socket to port {$port}");
-        assert(socket_listen($socket, backlog: 5));
+        assert(socket_listen($socket));
 
         try {
             $callback();
