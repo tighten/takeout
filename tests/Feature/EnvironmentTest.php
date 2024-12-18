@@ -29,8 +29,7 @@ class EnvironmentTest extends TestCase
     {
         $socket = socket_create(domain: AF_INET, type: SOCK_STREAM, protocol: SOL_TCP);
         assert($socket !== false, 'Was not able to create a socket.');
-        socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
-        assert(socket_bind($socket, 'localhost', $port) !== false, "Was not able to bind socket to port {$port}");
+        assert(socket_bind($socket, '127.0.0.1', $port) !== false, "Was not able to bind socket to port {$port}");
         assert(socket_listen($socket, backlog: 5));
 
         try {
