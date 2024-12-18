@@ -27,9 +27,10 @@ class Shell
 
             if ($type === Process::ERR) {
                 error('Something went wrong.');
+                note(' <bg=red;fg=white> ERR </> ' . $this->formatMessage($buffer));
+            } else {
+                note(' <bg=green;fg=white> OUT </> ' . $this->formatMessage($buffer));
             }
-
-            note($this->formatMessage($buffer));
         }, $parameters);
 
         return $process;
