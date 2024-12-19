@@ -69,10 +69,9 @@ class DisableCommand extends Command
 
     private function disableByServiceName(string $service, Collection $disableableServices): void
     {
-        $serviceMatches = collect($disableableServices)
-            ->filter(function ($containerName) use ($service) {
-                return Str::startsWith($containerName, $service);
-            });
+        $serviceMatches = $disableableServices->filter(function ($containerName) use ($service) {
+            return Str::startsWith($containerName, $service);
+        });
 
         if ($serviceMatches->isEmpty()) {
             $this->error("\nCannot find a Takeout-managed instance of {$service}.");
