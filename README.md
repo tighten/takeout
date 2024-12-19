@@ -32,19 +32,19 @@ The recommended way to install Takeout is the dockerized version via an alias (a
 On Linux or macOS, use:
 
 ```bash
-alias takeout="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
+alias takeout="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --add-host=host.docker.internal:host-gateway -it tighten/takeout:latest"
 ```
 
-On Windows 10, if you're using Bash, use:
+On Windows 10|11, if you're using Bash, use:
 
 ```bash
-alias takeout="docker run --rm -v //var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest"
+alias takeout="docker run --rm -v //var/run/docker.sock:/var/run/docker.sock --add-host=host.docker.internal:host-gateway -it tighten/takeout:latest"
 ```
 
-On Windows 10, if you're using PowerShell, use:
+On Windows 10|11, if you're using PowerShell, use:
 
 ```bash
-function takeout { docker run --rm -v //var/run/docker.sock:/var/run/docker.sock -it tighten/takeout:latest $args }
+function takeout { docker run --rm -v //var/run/docker.sock:/var/run/docker.sock --add-host=host.docker.internal:host-gateway -it tighten/takeout:latest $args }
 ```
 
 That's it. You may now use Takeout on your terminal. The first time you use this alias, it will pull the Takeout image from Docker Hub.

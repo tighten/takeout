@@ -5,10 +5,11 @@ namespace App\Commands;
 use App\InitializesCommands;
 use App\Services;
 use App\Shell\Environment;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
+
+use function Laravel\Prompts\search;
 
 class EnableCommand extends Command
 {
@@ -46,13 +47,9 @@ class EnableCommand extends Command
             return;
         }
 
-        $option = $this->selectService();
+        $service = $this->selectService($this->availableServices());
 
-        if (! $option) {
-            return;
-        }
-
-        $this->enable($option, $useDefaults, $passthroughOptions);
+        $this->enable($service, $useDefaults, $passthroughOptions);
     }
 
     /**
@@ -60,7 +57,7 @@ class EnableCommand extends Command
      * $this->argument, we have to do our own manual overriding for testing scenarios,
      * because pulling $_SERVER['argv'] won't give the right results in testing.
      */
-    public function serverArguments(): array
+    private function serverArguments(): array
     {
         if (App::environment() === 'testing') {
             $string = array_merge(['takeout', 'enable'], $this->argument('serviceNames'));
@@ -104,7 +101,7 @@ class EnableCommand extends Command
     public function removeOptions(array $arguments): array
     {
         $arguments = collect($arguments)
-            ->reject(fn ($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)
+            ->reject(fn($argument) => str_starts_with($argument, '--') && strlen($argument) > 2)
             ->values()
             ->toArray();
 
@@ -119,91 +116,36 @@ class EnableCommand extends Command
         return array_slice($arguments, $start);
     }
 
-    private function selectService(): ?string
+    private function availableServices(): Collection
     {
-        if ($this->environment->isWindowsOs()) {
-            return $this->windowsMenu();
-        }
-
-        return $this->defaultMenu();
+        return $this->enableableServicesByCategory()->flatMap(function ($services, $category) {
+            return $this->menuItemsForServices($services)->mapWithKeys(function ($row, $key) use ($category) {
+                return [$key => "{$category}: {$row}"];
+            })->toArray();
+        });
     }
 
-    private function defaultMenu(): ?string
+    private function selectService(Collection $servicesList): ?string
     {
-        $option = $this->menu(self::MENU_TITLE)->setTitleSeparator('=');
-
-        foreach ($this->enableableServicesByCategory() as $category => $services) {
-            $separator = str_repeat('-', 1 + Str::length($category));
-
-            $option->addStaticItem("{$category}:")
-                ->addStaticItem($separator)
-                ->addOptions($this->menuItemsForServices($services))
-                ->addLineBreak('', 1);
-        }
-
-        return $option->open();
+        return search(
+            label: self::MENU_TITLE,
+            options: fn(string $value) => strlen($value) > 0
+                ? $servicesList->filter(function ($row) use ($value) {
+                    return str($row)->lower()->contains(str($value)->lower());
+                })->toArray()
+                : $servicesList->toArray(),
+            scroll: 10
+        );
     }
 
-    private function windowsMenu($category = null): ?string
-    {
-        $choices = [];
-        $groupedServices = $this->enableableServicesByCategory();
-
-        if ($category) {
-            $groupedServices = Arr::where($groupedServices, function ($value, $key) use ($category) {
-                return Str::contains($category, strtoupper($key));
-            });
-        }
-
-        foreach ($groupedServices as $serviceCategory => $services) {
-            $serviceCategoryMenuItem = '<fg=white;bg=blue;options=bold> ' . (Str::upper($serviceCategory)) . ' </>';
-            array_push($choices, $serviceCategoryMenuItem);
-
-            foreach ($this->menuItemsForServices($services) as $menuItemKey => $menuItemName) {
-                array_push($choices, $menuItemName);
-            }
-        }
-
-        if ($category) {
-            array_push($choices, '<info>Back</>');
-        }
-
-        array_push($choices, '<info>Exit</>');
-
-        $choice = $this->choice(self::MENU_TITLE, $choices);
-
-        if (Str::contains($choice, 'Back')) {
-            return $this->windowsMenu();
-        }
-
-        if (Str::contains($choice, 'Exit')) {
-            return null;
-        }
-
-        foreach ($this->enableableServices() as $shortName => $fqcn) {
-            if ($choice === $fqcn) {
-                return $shortName;
-            }
-        }
-
-        return $this->windowsMenu($choice);
-    }
-
-    private function menuItemsForServices($services): array
+    private function menuItemsForServices($services): Collection
     {
         return collect($services)->mapWithKeys(function ($service) {
             return [$service['shortName'] => $service['name']];
-        })->toArray();
+        });
     }
 
-    public function enableableServices(): array
-    {
-        return collect($this->services->all())->mapWithKeys(function ($fqcn, $shortName) {
-            return [$shortName => $fqcn::name()];
-        })->toArray();
-    }
-
-    public function enableableServicesByCategory(): array
+    private function enableableServicesByCategory(): Collection
     {
         return collect($this->services->all())
             ->mapToGroups(function ($fqcn, $shortName) {
@@ -214,11 +156,10 @@ class EnableCommand extends Command
                     ],
                 ];
             })
-            ->sortKeys()
-            ->toArray();
+            ->sortKeys();
     }
 
-    public function enable(
+    private function enable(
         string $service,
         bool $useDefaults = false,
         array $passthroughOptions = [],

@@ -2,8 +2,9 @@
 
 namespace App\Exceptions;
 
-use App\Shell\Shell;
 use Exception;
+
+use function Laravel\Prompts\error;
 
 class DockerContainerMissingException extends Exception
 {
@@ -14,10 +15,6 @@ class DockerContainerMissingException extends Exception
 
     public function render($request = null): void
     {
-        $console = app('console');
-        $shell = app(Shell::class);
-
-        $console->line('');
-        $console->line($shell->formatErrorMessage($this->getMessage()));
+        error($this->getMessage());
     }
 }

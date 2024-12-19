@@ -5,10 +5,11 @@ namespace App\Commands;
 use App\InitializesCommands;
 use App\Shell\Docker;
 use App\Shell\Environment;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
-use PhpSchool\CliMenu\CliMenu;
+
+use function Laravel\Prompts\select;
 
 class StopCommand extends Command
 {
@@ -23,87 +24,64 @@ class StopCommand extends Command
 
     public function handle(Docker $docker, Environment $environment): void
     {
+
         $this->docker = $docker;
         $this->environment = $environment;
         $this->initializeCommand();
-
-        $containers = $this->argument('containerId');
-
-        if (filled($containers)) {
-            foreach ($containers as $container) {
-                $this->stopByServiceNameOrContainerId($container);
-            }
-
-            return;
-        }
+        $stoppableContainers = $this->stoppableContainers();
 
         if ($this->option('all')) {
-            foreach ($this->docker->stoppableTakeoutContainers() as $stoppableContainer) {
-                $this->stop($stoppableContainer['container_id']);
-            }
+            $stoppableContainers->keys()->each(function ($containerId) {
+                $this->stop($containerId);
+            });
 
             return;
         }
 
-        if (! $stoppableContainers = $this->stoppableContainers()) {
+        if ($stoppableContainers->isEmpty()) {
             $this->info("No Takeout containers available to stop.\n");
 
             return;
         }
 
-        $this->loadMenu($stoppableContainers);
+        if (filled($services = $this->argument('containerId'))) {
+            foreach ($services as $service) {
+                $this->stopByServiceNameOrContainerId($service, $stoppableContainers);
+            }
+
+            return;
+        }
+
+        $this->stop($this->selectOptions($stoppableContainers));
     }
 
-    public function stoppableContainers(): array
+    private function stoppableContainers(): Collection
     {
-        return $this->docker->stoppableTakeoutContainers()->map(function ($container) {
-            $label = sprintf('%s - %s', $container['container_id'], $container['names']);
-
-            return [
-                $label,
-                $this->loadMenuItem($container, $label),
-            ];
-        }, collect())->toArray();
+        return $this->docker->activeTakeoutContainers()->mapWithKeys(function ($container) {
+            return [$container['container_id'] => str_replace('TO--', '', $container['names'])];
+        });
     }
 
-    public function stopByServiceNameOrContainerId(string $serviceNameOrContainerId): void
+    private function stopByServiceNameOrContainerId(string $service, Collection $stoppableContainers): void
     {
-        $containersByServiceName = $this->docker->stoppableTakeoutContainers()
-            ->map(function ($container) {
-                return [
-                    'container' => $container,
-                    'label' => str_replace('TO--', '', $container['names']),
-                ];
-            })
-            ->filter(function ($item) use ($serviceNameOrContainerId) {
-                return Str::startsWith($item['label'], $serviceNameOrContainerId);
+        $containersByServiceName = $stoppableContainers
+            ->filter(function ($containerName, $key) use ($service) {
+                return Str::startsWith($containerName, $service) || "{$key}" === $service;
             });
 
         if ($containersByServiceName->isEmpty()) {
-            $this->start($serviceNameOrContainerId);
+            $this->info('No containers found for ' . $service);
 
             return;
         }
 
         if ($containersByServiceName->count() === 1) {
-            $this->stop($containersByServiceName->first()['container']['container_id']);
+            $this->stop($containersByServiceName->keys()->first());
+
             return;
         }
 
-        $selectedContainer = $this->loadMenu($containersByServiceName->map(function ($item) {
-            $label = $item['container']['container_id'] . ' - ' . $item['label'];
-
-            return [
-                $label,
-                $this->loadMenuItem($item['container'], $label),
-            ];
-        })->all());
-
-        if (! $selectedContainer) {
-            return;
-        }
-
-        $this->stop($selectedContainer);
+        $this->stop($this->selectOptions($containersByServiceName));
     }
 
     public function stop(string $container): void
@@ -115,86 +93,11 @@ class StopCommand extends Command
         $this->docker->stopContainer($container);
     }
 
-    private function loadMenu($stoppableContainers)
+    private function selectOptions($stoppableContainers)
     {
-        if ($this->environment->isWindowsOs()) {
-            return $this->windowsMenu($stoppableContainers);
-        }
-
-        return $this->defaultMenu($stoppableContainers);
-    }
-
-    private function defaultMenu($stoppableContainers)
-    {
-        return $this->menu(self::MENU_TITLE)
-            ->addItems($stoppableContainers)
-            ->addLineBreak('', 1)
-            ->open();
-    }
-
-    private function windowsMenu($stoppableContainers)
-    {
-        if (! $stoppableContainers) {
-            return;
-        }
-
-        $choices = Arr::flatten($stoppableContainers);
-        $choices = Arr::where($choices, function ($value, $key) {
-            return is_string($value);
-        });
-        array_push($choices, '<info>Exit</>');
-
-        $choice = $this->choice(self::MENU_TITLE, array_values($choices));
-
-        if (Str::contains($choice, 'Exit')) {
-            return;
-        }
-
-        $chosenStoppableContainer = Arr::where($stoppableContainers, function ($value, $key) use ($choice) {
-            return $value[0] === $choice;
-        });
-
-        return call_user_func(array_values($chosenStoppableContainer)[0][1]);
-    }
-
-    private function loadMenuItem($container, $label): callable
-    {
-        if ($this->environment->isWindowsOs()) {
-            return $this->windowsMenuItem($container, $label);
-        }
-
-        return $this->defaultMenuItem($container, $label);
-    }
-
-    private function windowsMenuItem($container, $label): callable
-    {
-        return function () use ($container, $label) {
-            $this->stop($label);
-
-            $stoppableContainers = $this->stoppableContainers();
-
-            return $this->windowsMenu($stoppableContainers);
-        };
-    }
-
-    private function defaultMenuItem($container, $label): callable
-    {
-        return function (CliMenu $menu) use ($container, $label) {
-            $this->stop($menu->getSelectedItem()->getText());
-
-            foreach ($menu->getItems() as $item) {
-                if ($item->getText() === $label) {
-                    $menu->removeItem($item);
-                }
-            }
-
-            if (count($menu->getItems()) === 3) {
-                $menu->close();
-
-                return;
-            }
-
-            $menu->redraw();
-        };
+        return select(
+            label: self::MENU_TITLE,
+            options: $stoppableContainers
+        );
     }
 }

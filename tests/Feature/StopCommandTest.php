@@ -3,31 +3,18 @@
 namespace Tests\Feature;
 
 use App\Shell\Docker;
-use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use NunoMaduro\LaravelConsoleMenu\Menu;
-use PHPUnit\Framework\Assert;
 use Tests\TestCase;
 
 class StopCommandTest extends TestCase
 {
-    function isWindows()
-    {
-        return PHP_OS_FAMILY === 'Windows';
-    }
-
-    function isLinux()
-    {
-        return PHP_OS_FAMILY === 'Linux';
-    }
-
     /** @test */
     function it_can_stop_a_service_from_menu()
     {
         $services = Collection::make([
             [
             'container_id' => $containerId = '12345',
-            'names' => $containerName = 'TO--mysql--8.0.22--3306',
+            'names' => 'TO--mysql--8.0.22--3306',
             'status' => 'Up 27 minutes',
             'ports' => '0.0.0.0:3306->3306/tcp, 33060/tcp',
             'base_alias' => 'mysql',
@@ -35,45 +22,26 @@ class StopCommandTest extends TestCase
             ],
         ]);
 
-        $menuItems = [
-            $mysql = $containerId . ' - ' . $containerName,
-            '<info>Exit</>',
-        ];
-
         $this->mock(Docker::class, function ($mock) use ($services, $containerId) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
-            $mock->shouldReceive('stoppableTakeoutContainers')->andReturn($services, new Collection);
+            $mock->shouldReceive('activeTakeoutContainers')->andReturn($services, new Collection);
             $mock->shouldReceive('stopContainer')->with($containerId);
         });
 
-        if ($this->isWindows()) {
-            $this->artisan('stop')
-                ->expectsChoice('Takeout containers to stop', $mysql, $menuItems)
-                ->assertExitCode(0);
-        } else {
-            $menuMock = $this->mock(Menu::class, function ($mock) use ($mysql) {
-                $mock->shouldReceive('setTitleSeparator')->andReturnSelf();
-                $mock->shouldReceive('addItems')->andReturnSelf();
-                $mock->shouldReceive('addLineBreak')->andReturnSelf();
-                $mock->shouldReceive('open')->andReturn($mysql)->once();
-            });
-
-            Command::macro(
-                'menu',
-                function (string $title) use ($menuMock, $services) {
-                    Assert::assertEquals('Takeout containers to stop', $title);
-
-                    return $menuMock;
-                }
-            );
-
-            $this->artisan('stop');
-        }
+        $this->artisan('stop')
+            ->expectsQuestion('Takeout containers to stop', $containerId)
+            ->assertExitCode(0);
     }
 
-    /** @test */
-    function it_can_stop_containers_by_service_name()
+    /**
+     * @test
+     *
+     * @testWith ["12345"]
+     *           ["mysql"]
+     *
+     */
+    function it_can_stop_containers_by_service_name_or_id($arg)
     {
         $services = Collection::make([
             [
@@ -89,11 +57,11 @@ class StopCommandTest extends TestCase
         $this->mock(Docker::class, function ($mock) use ($services, $containerId) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
-            $mock->shouldReceive('stoppableTakeoutContainers')->andReturn($services, new Collection);
+            $mock->shouldReceive('activeTakeoutContainers')->andReturn($services, new Collection);
             $mock->shouldReceive('stopContainer')->with($containerId)->once();
         });
 
-        $this->artisan('stop', ['containerId' => ['mysql']])
+        $this->artisan('stop', ['containerId' => [$arg]])
             ->assertExitCode(0);
     }
 
@@ -102,8 +70,8 @@ class StopCommandTest extends TestCase
     {
         $services = Collection::make([
             [
-                'container_id' => $firstContainerId = '12345',
-                'names' => $firstContainerName = 'TO--mysql--8.0.22--3306',
+                'container_id' => '12345',
+                'names' => 'TO--mysql--8.0.22--3306',
                 'status' => 'Up 27 minutes',
                 'ports' => '0.0.0.0:3306->3306/tcp, 33060/tcp',
                 'base_alias' => 'mysql',
@@ -111,7 +79,7 @@ class StopCommandTest extends TestCase
             ],
             [
                 'container_id' => $secondContainerId = '67890',
-                'names' => $secondContainerName = 'TO--mysql--8.0.20--3306',
+                'names' => 'TO--mysql--8.0.20--3306',
                 'status' => 'Up 27 minutes',
                 'ports' => '0.0.0.0:3306->3306/tcp, 33060/tcp',
                 'base_alias' => 'mysql',
@@ -119,41 +87,15 @@ class StopCommandTest extends TestCase
             ],
         ]);
 
-        $menuItems = [
-            $firstContainerId . ' - ' . $firstContainerName,
-            $mysql = $secondContainerId . ' - ' . $secondContainerName,
-            '<info>Exit</>',
-        ];
-
         $this->mock(Docker::class, function ($mock) use ($services, $secondContainerId) {
             $mock->shouldReceive('isInstalled')->andReturn(true);
             $mock->shouldReceive('isDockerServiceRunning')->andReturn(true);
-            $mock->shouldReceive('stoppableTakeoutContainers')->andReturn($services, new Collection);
+            $mock->shouldReceive('activeTakeoutContainers')->andReturn($services, new Collection);
             $mock->shouldReceive('stopContainer')->with($secondContainerId)->once();
         });
 
-        if ($this->isWindows()) {
-            $this->artisan('stop')
-                ->expectsChoice('Takeout containers to stop', $mysql, $menuItems)
-                ->assertExitCode(0);
-        } else {
-            $menuMock = $this->mock(Menu::class, function ($mock) use ($mysql) {
-                $mock->shouldReceive('setTitleSeparator')->andReturnSelf();
-                $mock->shouldReceive('addItems')->andReturnSelf();
-                $mock->shouldReceive('addLineBreak')->andReturnSelf();
-                $mock->shouldReceive('open')->andReturn($mysql)->once();
-            });
-
-            Command::macro(
-                'menu',
-                function (string $title) use ($menuMock, $services) {
-                    Assert::assertEquals('Takeout containers to stop', $title);
-
-                    return $menuMock;
-                }
-            );
-
-            $this->artisan('stop', ['containerId' => ['mysql']]);
-        }
+        $this->artisan('stop')
+            ->expectsQuestion('Takeout containers to stop', $secondContainerId)
+            ->assertExitCode(0);
     }
 }

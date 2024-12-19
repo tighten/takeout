@@ -2,20 +2,16 @@
 
 namespace App\Exceptions;
 
-use App\Shell\Shell;
 use Exception;
+
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\note;
 
 class DockerMissingException extends Exception
 {
     public function render($request = null): void
     {
-        $console = app('console');
-        $shell = app(Shell::class);
-
-        $console->line('');
-        $console->line($shell->formatErrorMessage('Docker is not installed.'));
-        $console->line('');
-        $console->line($shell->formatErrorMessage('Please visit https://docs.docker.com/get-docker/'));
-        $console->line($shell->formatErrorMessage('for information on how to install Docker for your machine.'));
+        error('Docker is not installed.');
+        note('Please visit https://docs.docker.com/get-docker/' . PHP_EOL . 'for information on how to install Docker for your machine.');
     }
 }

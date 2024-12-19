@@ -7,6 +7,9 @@ use App\Services\Category;
 use App\Shell\Docker;
 use LaravelZero\Framework\Commands\Command;
 
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\table;
+
 class ListCommand extends Command
 {
     use InitializesCommands;
@@ -31,7 +34,7 @@ class ListCommand extends Command
         }
 
         if ($containersCollection->isEmpty()) {
-            $this->info("No Takeout containers are enabled.\n");
+            info('No Takeout containers are enabled.');
 
             return;
         }
@@ -39,7 +42,6 @@ class ListCommand extends Command
         $containers = $containersCollection->toArray();
         $columns = array_map('App\title_from_slug', array_keys(reset($containers)));
 
-        $this->line("\n");
-        $this->table($columns, $containers);
+        table($columns, $containers);
     }
 }

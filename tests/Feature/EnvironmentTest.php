@@ -3,64 +3,40 @@
 namespace Tests\Feature;
 
 use App\Shell\Environment;
-use App\Shell\Shell;
-use LaravelZero\Framework\Commands\Command;
-use Mockery as M;
-use Symfony\Component\Process\Process;
 use Tests\TestCase;
 
 class EnvironmentTest extends TestCase
 {
-    function isLinux()
-    {
-        return PHP_OS_FAMILY === 'Linux';
-    }
-
     /** @test **/
-    function it_detects_a_port_conflict()
+    public function it_detects_a_port_conflict()
     {
-        app()->instance('console', M::mock(Command::class, function ($mock) {
-            $mock->shouldIgnoreMissing();
-        }));
-
-        $this->mock(Shell::class, function ($mock) {
-            $process = M::mock(Process::class);
-            $process->shouldReceive('isSuccessful')->once()->andReturn(true);
-            $process->shouldReceive('getOutput')->andReturn('');
-
-            $times = 1;
-            if ($this->isLinux()) {
-                $times = 2;
-            }
-
-            $mock->shouldReceive('execQuietly')->times($times)->andReturn($process);
-        });
+        if (! extension_loaded('sockets')) {
+            $this->markTestSkipped('Sockets extension is required (should be included in PHP by default).');
+        }
 
         $environment = app(Environment::class);
-        $this->assertFalse($environment->portIsAvailable(1234));
+
+        $port = $this->withFakeProcessRunning(
+            fn($port) => $this->assertFalse($environment->portIsAvailable($port), "Expected port {$port} to be taken, but it was available."),
+        );
+
+        $this->assertTrue($environment->portIsAvailable($port), "Expected port {$port} to be avaialble, but it was taken.");
     }
 
-    /** @test **/
-    function it_detects_a_port_is_available()
+    private function withFakeProcessRunning($closure)
     {
-        app()->instance('console', M::mock(Command::class, function ($mock) {
-            $mock->shouldIgnoreMissing();
-        }));
+        // Passing zero to it will make PHP select a free port...
+        $socket = socket_create_listen(0);
 
-        $this->mock(Shell::class, function ($mock) {
-            $process = M::mock(Process::class);
-            $process->shouldReceive('isSuccessful')->once()->andReturn(false);
-            $process->shouldReceive('getOutput')->andReturn('');
+        // Extract the host and port (we only care about the port) so we can use it...
+        socket_getsockname($socket, $host, $port);
 
-            $times = 1;
-            if ($this->isLinux()) {
-                $times = 2;
-            }
+        try {
+            $closure($port);
+        } finally {
+            socket_close($socket);
+        }
 
-            $mock->shouldReceive('execQuietly')->times($times)->andReturn($process);
-        });
-
-        $environment = app(Environment::class);
-        $this->assertTrue($environment->portIsAvailable(1234));
+        return $port;
     }
 }

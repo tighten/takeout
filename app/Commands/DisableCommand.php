@@ -5,8 +5,13 @@ namespace App\Commands;
 use App\InitializesCommands;
 use App\Shell\Docker;
 use App\Shell\Environment;
+use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
 use Throwable;
+use Illuminate\Support\Str;
+
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\select;
 
 class DisableCommand extends Command
 {
@@ -25,17 +30,18 @@ class DisableCommand extends Command
         $this->docker = $docker;
         $this->environment = $environment;
         $this->initializeCommand();
-        $this->disableableServices = $this->disableableServices();
+
+        $disableableServices = $this->disableableServices();
 
         if ($this->option('all')) {
-            foreach ($this->disableableServices as $containerId => $name) {
+            $disableableServices->keys()->each(function ($containerId) {
                 $this->disableByContainerId($containerId);
-            }
+            });
 
             return;
         }
 
-        if (empty($this->disableableServices)) {
+        if ($disableableServices->isEmpty()) {
             $this->info("There are no containers to disable.\n");
 
             return;
@@ -43,82 +49,56 @@ class DisableCommand extends Command
 
         if (filled($services = $this->argument('serviceNames'))) {
             foreach ($services as $service) {
-                $this->disableByServiceName($service);
+                $this->disableByServiceName($service, $disableableServices);
             }
 
             return;
         }
 
-        $this->showDisableServiceMenu();
+        $this->disableByContainerId(
+            $this->selectOptions($disableableServices),
+        );
     }
 
-    public function disableableServices(): array
+    private function disableableServices(): Collection
     {
         return $this->docker->takeoutContainers()->mapWithKeys(function ($container) {
             return [$container['container_id'] => str_replace('TO--', '', $container['names'])];
-        })->toArray();
+        });
     }
 
-    public function disableByServiceName(string $service): void
+    private function disableByServiceName(string $service, Collection $disableableServices): void
     {
-        $serviceMatches = collect($this->disableableServices)
-            ->filter(function ($containerName) use ($service) {
-                return substr($containerName, 0, strlen($service)) === $service;
-            });
+        $serviceMatches = $disableableServices->filter(function ($containerName) use ($service) {
+            return Str::startsWith($containerName, $service);
+        });
 
-        switch ($serviceMatches->count()) {
-            case 0:
-                $this->error("\nCannot find a Takeout-managed instance of {$service}.");
+        if ($serviceMatches->isEmpty()) {
+            $this->error("\nCannot find a Takeout-managed instance of {$service}.");
 
-                return;
-            case 1:
-                $serviceContainerId = $serviceMatches->flip()->first();
-                break;
-            default: // > 1
-                $serviceContainerId = $this->selectMenu($this->disableableServices);
-
-                if (! $serviceContainerId) {
-                    return;
-                }
+            return;
         }
 
-        $this->disableByContainerId($serviceContainerId);
-    }
+        if ($serviceMatches->count() === 1) {
+            $this->disableByContainerId($serviceMatches->flip()->first());
 
-    public function showDisableServiceMenu($disableableServices = null): void
-    {
-        if ($serviceContainerId = $this->selectMenu($disableableServices ?? $this->disableableServices)) {
-            $this->disableByContainerId($serviceContainerId);
-        }
-    }
-
-    private function selectMenu($disableableServices): ?string
-    {
-        if ($this->environment->isWindowsOs()) {
-            return $this->windowsMenu($disableableServices);
+            return;
         }
 
-        return $this->defaultMenu($disableableServices);
+        $this->disableByContainerId(
+            $this->selectOptions($disableableServices),
+        );
     }
 
-    private function defaultMenu($disableableServices): ?string
+    private function selectOptions(Collection $disableableServices)
     {
-        return $this->menu(self::MENU_TITLE, $disableableServices)
-            ->addLineBreak('', 1)
-            ->setPadding(2, 5)
-            ->open();
+        return select(
+            label: self::MENU_TITLE,
+            options: $disableableServices
+        );
     }
 
-    private function windowsMenu($disableableServices): ?string
-    {
-        array_push($disableableServices, '<info>Exit</>');
-
-        $choice = $this->choice(self::MENU_TITLE, array_values($disableableServices));
-
-        return array_search($choice, $disableableServices);
-    }
-
-    public function disableByContainerId(string $containerId): void
+    private function disableByContainerId(string $containerId): void
     {
         try {
             $volumeName = $this->docker->attachedVolumeName($containerId);
@@ -134,16 +114,7 @@ class DisableCommand extends Command
             if (count($this->docker->allContainers()) === 0) {
                 $question = 'No containers are running. Turn off Docker?';
 
-                if ($this->environment->isWindowsOs()) {
-                    $option = $this->confirm($question);
-                } else {
-                    $option = $this->menu($question, [
-                        'Yes',
-                        'No',
-                    ])->disableDefaultItems()->open();
-                }
-
-                if ($option === 0 || $option === true) {
+                if (confirm($question)) {
                     $this->task('Stopping Docker service ', $this->docker->stopDockerService());
                 }
             }
