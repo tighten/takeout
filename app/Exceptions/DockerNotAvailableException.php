@@ -12,7 +12,7 @@ class DockerNotAvailableException extends Exception
 {
     public function render($request = null): void
     {
-        error('Docker is not available');
+        error('Docker is not available.');
 
         if (PHP_OS_FAMILY === 'Darwin') {
             note(implode(PHP_EOL, [
