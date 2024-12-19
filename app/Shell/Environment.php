@@ -42,7 +42,7 @@ class Environment
         return false;
     }
 
-    public function isTakeoutRunningOnDocker(): bool
+    public function isTakeoutRunningInsideDocker(): bool
     {
         return boolval($_SERVER['TAKEOUT_CONTAINER'] ?? false);
     }
@@ -70,6 +70,6 @@ class Environment
 
     private function localhost(): string
     {
-        return $this->isTakeoutRunningOnDocker() ? 'host.docker.internal' : 'localhost';
+        return $this->isTakeoutRunningInsideDocker() ? 'host.docker.internal' : 'localhost';
     }
 }
