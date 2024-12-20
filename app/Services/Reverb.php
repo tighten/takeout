@@ -38,6 +38,8 @@ class Reverb extends BaseService
         -e REVERB_APP_KEY="${:app_key}" \
         -e REVERB_APP_SECRET="${:app_secret}" \
         -e REVERB_APP_ID="${:app_id}" \
+        -e REVERB_SERVER_HOST="0.0.0.0" \
+        -e REVERB_SERVER_PORT="${:port}" \
         "${:organization}"/"${:image_name}":"${:tag}"';
 
     protected function shellCommand(): string
