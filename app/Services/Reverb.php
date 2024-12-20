@@ -40,6 +40,9 @@ class Reverb extends BaseService
         -e REVERB_APP_ID="${:app_id}" \
         -e REVERB_SERVER_HOST="0.0.0.0" \
         -e REVERB_SERVER_PORT="${:port}" \
+        -e REVERB_HOST="0.0.0.0" \
+        -e REVERB_PORT="${:port}" \
+        -e REVERB_SCHEME="http" \
         "${:organization}"/"${:image_name}":"${:tag}"';
 
     protected function shellCommand(): string
