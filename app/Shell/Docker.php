@@ -28,7 +28,7 @@ class Docker
 
     public function removeContainer(string $containerId): void
     {
-        if ($this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
+        if ($this->activeTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] === $containerId;
         })) {
             $this->stopContainer($containerId);
@@ -43,7 +43,7 @@ class Docker
 
     public function stopContainer(string $containerId): void
     {
-        if (! $this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
+        if (! $this->activeTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] === $containerId;
         })) {
             throw new DockerContainerMissingException($containerId);
@@ -58,13 +58,13 @@ class Docker
 
     public function logContainer(string $containerId): void
     {
-        if (! $this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
+        if (! $this->activeTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] === $containerId;
         })) {
             throw new DockerContainerMissingException($containerId);
         }
 
-        $process = $this->shell->exec('docker logs -f ' . $containerId);
+        $process = $this->shell->exec('docker logs -f ' . $containerId, plain: true);
 
         if (! $process->isSuccessful()) {
             throw new Exception('Failed to log container ' . $containerId);
@@ -113,7 +113,7 @@ class Docker
         });
     }
 
-    public function stoppableTakeoutContainers(): Collection
+    public function activeTakeoutContainers(): Collection
     {
         return $this->takeoutContainers()->filter(function ($container) {
             return Str::contains($container['status'], 'Up');

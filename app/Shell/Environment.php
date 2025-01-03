@@ -2,8 +2,6 @@
 
 namespace App\Shell;
 
-use Illuminate\Support\Str;
-
 class Environment
 {
     protected $shell;
@@ -28,35 +26,25 @@ class Environment
         return PHP_OS_FAMILY === 'Windows';
     }
 
-    public function portIsAvailable($port): bool
+    public function portIsAvailable(int $port): bool
     {
-        // E.g. Win/Linux: 127.0.0.1:3306 , macOS: 127.0.0.1.3306
-        $portText = $this->isLinuxOs() ? "\:{$port}\s" : "\.{$port}\s";
+        // To check if the port is available, we'll attempt to open a socket connection to it.
+        // Note that the logic here is flipped: successfully opening the socket connection
+        // means something is using it. If it fails to open, that port is likely unused.
+        $socket = @fsockopen($this->localhost(), $port, $errorCode, $errorMessage, timeout: 5);
 
-        $netstatCmd = $this->netstatCmd();
-
-        // Check to see if the system is running a service with the desired port
-        $process = $this->shell->execQuietly("{$netstatCmd} -vanp tcp \n
-            | grep '{$portText}' | grep -v 'TIME_WAIT' | grep -v 'CLOSE_WAIT' | grep -v 'FIN_WAIT'");
-
-        // A successful netstat command means a port in use was found
-        return ! $process->isSuccessful();
-    }
-
-    public function netstatCmd(): string
-    {
-        $netstatCmd = 'netstat';
-
-        if ($this->isLinuxOs()) {
-            $linuxVersion = $this->shell->execQuietly('cat /proc/version');
-            $isWSL = Str::contains($linuxVersion->getOutput(), 'microsoft');
-
-            if ($isWSL) {
-                $netstatCmd = 'netstat.exe';
-            }
+        if (! $socket) {
+            return true;
         }
 
-        return $netstatCmd;
+        fclose($socket);
+
+        return false;
+    }
+
+    public function isTakeoutRunningInsideDocker(): bool
+    {
+        return boolval($_SERVER['TAKEOUT_CONTAINER'] ?? false);
     }
 
     public function userIsInDockerGroup(): bool
@@ -78,5 +66,10 @@ class Environment
         }
 
         return '~';
+    }
+
+    private function localhost(): string
+    {
+        return $this->isTakeoutRunningInsideDocker() ? 'host.docker.internal' : 'localhost';
     }
 }

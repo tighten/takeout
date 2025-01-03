@@ -8,37 +8,16 @@ use App\Services;
 use App\Services\MeiliSearch;
 use App\Services\PostgreSql;
 use App\Shell\Docker;
-use Illuminate\Console\Command;
-use NunoMaduro\LaravelConsoleMenu\Menu;
-use PHPUnit\Framework\Assert;
 use Tests\TestCase;
 
 class EnableCommandTest extends TestCase
 {
-    function isWindows()
-    {
-        return PHP_OS_FAMILY === 'Windows';
-    }
-
-    function isLinux()
-    {
-        return PHP_OS_FAMILY === 'Linux';
-    }
-
     /** @test */
-    function it_can_enable_a_service_from_menu()
+    function it_can_filter_options_based_on_search_term()
     {
         $services = [
             'meilisearch' => 'App\Services\MeiliSearch',
             $postgres = 'postgresql' => $fqcn = 'App\Services\PostgreSql',
-        ];
-
-        $menuItems = [
-            '<fg=white;bg=blue;options=bold> DATABASE </>',
-            'PostgreSQL',
-            '<fg=white;bg=blue;options=bold> SEARCH </>',
-            'MeiliSearch',
-            '<info>Exit</>',
         ];
 
         $this->mock(Docker::class, function ($mock) {
@@ -55,68 +34,13 @@ class EnableCommandTest extends TestCase
             $mock->shouldReceive('enable')->once();
         });
 
-        if ($this->isWindows()) {
-            $this->artisan('enable')
-                ->expectsChoice('Takeout containers to enable', 'PostgreSQL', $menuItems)
-                ->assertExitCode(0);
-        } else {
-            $menuMock = $this->mock(Menu::class, function ($mock) use ($postgres) {
-                $mock->shouldReceive('setTitleSeparator')->andReturnSelf();
-                $mock->shouldReceive('addStaticItem')->andReturnSelf()->times(4);
-                $mock->shouldReceive('addOptions')->andReturnSelf();
-                $mock->shouldReceive('addLineBreak')->andReturnSelf();
-                $mock->shouldReceive('open')->andReturn($postgres)->once();
-            });
+        $menuItems = [
+            $postgres => 'Database: PostgreSQL',
+        ];
 
-            Command::macro(
-                'menu',
-                function (string $title) use ($menuMock) {
-                    Assert::assertEquals('Takeout containers to enable', $title);
-
-                    return $menuMock;
-                }
-            );
-
-            $this->artisan('enable');
-        }
-    }
-
-    /** @test */
-    function it_can_navigate_a_submenu_in_windows()
-    {
-        if ($this->isWindows()) {
-            $services = [
-                'meilisearch' => 'App\Services\MeiliSearch',
-                'postgresql' => 'App\Services\PostgreSql',
-            ];
-
-            $menuItems = [
-                $category = '<fg=white;bg=blue;options=bold> DATABASE </>',
-                'PostgreSQL',
-                '<fg=white;bg=blue;options=bold> SEARCH </>',
-                'MeiliSearch',
-                $exit = '<info>Exit</>',
-            ];
-
-            $submenuItems = [
-                '<fg=white;bg=blue;options=bold> DATABASE </>',
-                'PostgreSQL',
-                $back = '<info>Back</>',
-                '<info>Exit</>',
-            ];
-
-            $this->mock(Services::class, function ($mock) use ($services) {
-                $mock->shouldReceive('all')->andReturn($services);
-            });
-
-            $this->artisan('enable')
-                    ->expectsChoice('Takeout containers to enable', $category, $menuItems)
-                    ->expectsChoice('Takeout containers to enable', $back, $submenuItems)
-                    ->expectsChoice('Takeout containers to enable', $exit, $menuItems)
-                    ->assertExitCode(0);
-        } else {
-            $this->assertTrue(true);
-        }
+        $this->artisan('enable')
+            ->expectsSearch('Takeout containers to enable', $postgres, 'postgres', $menuItems)
+            ->assertExitCode(0);
     }
 
     /** @test */
