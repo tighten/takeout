@@ -98,15 +98,12 @@ class Docker
         );
     }
 
-    public function takeoutContainers(): Collection
+    public function takeoutContainers(bool $withNetworking = false): Collection
     {
-        $process = sprintf(
-            'docker ps -a --filter "name=TO-" --format "table %s|%s"',
-            '{{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}',
-            '{{.Label \"com.tighten.takeout.Base_Alias\"}}|{{.Label \"com.tighten.takeout.Full_Alias\"}}'
-        );
-
-        return $this->runAndParseTable($process);
+        return $this->runAndParseTable(sprintf(
+            'docker ps -a --filter \'name=TO-\' --format \'table {{.ID}}|{{.Names}}|{{.Status}}|{{.Ports}}%s\'',
+            $withNetworking ? '|{{.Label "com.tighten.takeout.Base_Alias"}}|{{.Label "com.tighten.takeout.Full_Alias"}}' : '',
+        ));
     }
 
     public function startableTakeoutContainers(): Collection
