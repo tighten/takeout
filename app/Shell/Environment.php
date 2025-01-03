@@ -29,7 +29,7 @@ class Environment
     public function portIsAvailable(int $port): bool
     {
         // To check if the port is available, we'll attempt to open a socket connection to it.
-        // Note that the logic here is flipped: successfully openning the socket connection
+        // Note that the logic here is flipped: successfully opening the socket connection
         // means something is using it. If it fails to open, that port is likely unused.
         $socket = @fsockopen($this->localhost(), $port, $errorCode, $errorMessage, timeout: 5);
 
