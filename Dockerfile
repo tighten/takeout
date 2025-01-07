@@ -6,8 +6,8 @@ COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-bui
 
 # Install the PHP extensions & Docker
 RUN apk add --no-cache --update docker openrc ncurses \
-    && docker-php-ext-configure pcntl --enable-pcntl \
-    && docker-php-ext-install -j$(nproc) pcntl \
+    && apk add --no-cache linux-headers \
+    && docker-php-ext-install -j$(nproc) sockets \
     && rc-update add docker boot
 
 WORKDIR /takeout
