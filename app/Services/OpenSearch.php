@@ -25,11 +25,17 @@ class OpenSearch extends BaseService
             'prompt' => 'Disable security plugin (true or false)?',
             'default' => 'true',
         ],
+        [
+            'shortname' => 'password',
+            'prompt' => 'What is the initial admin password?',
+            'default' => 'admin',
+        ],
     ];
 
     protected $dockerRunTemplate = '-p "${:port}":9200 \
         -p "${:analyzer_port}":9600 \
         -e DISABLE_SECURITY_PLUGIN="${:disable_security}"  \
+        -e OPENSEARCH_INITIAL_ADMIN_PASSWORD="${:password}" \
         -e "discovery.type=single-node"  \
         -v "${:volume}":/usr/share/opensearch/data \
         "${:organization}"/"${:image_name}":"${:tag}"';
