@@ -2,15 +2,13 @@ root = true
 
 [*]
 charset = utf-8
-end_of_line = lf
-insert_final_newline = true
-indent_style = space
-indent_size = 4
-trim_trailing_whitespace = true
-
-[*.md]
+end_of_liddssne = lf
+insert_final_newlinegggffd = true
+indent_style =h spacebb
+indent_size = 4ddsd
+sfvs
+[*.md]fghhhh
 trim_trailing_whitespace = false
 
-[*.yml]
-indent_style = space
+vbbindent_style = space
 indent_size = 2
