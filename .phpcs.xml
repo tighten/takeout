@@ -1,13 +1,4 @@
-<?xml version="1.0"?>
-<ruleset name="Tighten">
-   <!--
-      The name attribute of the ruleset tag is displayed
-      when running PHP_CodeSniffer with the -v command line
-      argument. The description tag below is not displayed anywhere
-      except in this file, so it can contain information for
-      developers who may change this file in the future.
-   -->
-   <description>Tighten's Laravel Coding Standards</description>
+eees</description>
 
    <!--
       If no files or directories are specified on the command line
@@ -16,7 +7,7 @@
 
       Note that specifying any file or directory path
       on the command line will ignore all file tags.
-   -->
+   -->eee
    <file>app</file>
    <file>config</file>
    <file>tests</file>
