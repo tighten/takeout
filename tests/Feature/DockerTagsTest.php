@@ -15,14 +15,6 @@ use Tests\TestCase;
 
 class DockerTagsTest extends TestCase
 {
-    public static function armPlatforms(): array
-    {
-        return [
-            ['arm64'], // Apple silicon
-            ['aarch64'], // Linux ARM
-        ];
-    }
-
     /** @test */
     public function it_gets_the_latest_tag_not_named_latest()
     {
@@ -55,7 +47,8 @@ class DockerTagsTest extends TestCase
     /**
      * @test
      *
-     * @dataProvider armPlatforms
+     * @testWith ["arm64"]
+     *           ["aarch64"]
      */
     public function it_detects_arm_based_images_when_running_on_arm64_based_host($platform)
     {

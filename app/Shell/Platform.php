@@ -8,7 +8,8 @@ class Platform
 
     public function __construct(
         private ?string $platform = null,
-    ) {}
+    ) {
+    }
 
     public static function make(): static
     {
