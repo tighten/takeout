@@ -8,8 +8,10 @@ class MsSql extends BaseService
 {
     protected static $category = Category::DATABASE;
 
+    protected static $displayName = 'MS SQL Server';
+
     protected $organization = 'mcr.microsoft.com';
-    protected $imageName = 'azure-sql-edge';
+    protected $imageName = 'mssql/server';
     protected $dockerTagsClass = MicrosoftDockerTags::class;
     protected $defaultPort = 1433;
     protected $prompts = [
@@ -27,9 +29,8 @@ class MsSql extends BaseService
 
     protected $dockerRunTemplate = '-p "${:port}":1433 \
         -e ACCEPT_EULA=Y \
+        -e MSSQL_PID=Express \
         -e SA_PASSWORD="${:sa_password}" \
         -v "${:volume}":/var/opt/mssql \
         "${:organization}"/"${:image_name}":"${:tag}"';
-
-    protected static $displayName = 'MS SQL Server';
 }
