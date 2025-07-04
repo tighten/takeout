@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Shell\MicrosoftDockerTags;
+use App\Shell\Platform;
 
 class MsSql extends BaseService
 {
@@ -33,4 +34,16 @@ class MsSql extends BaseService
         -e SA_PASSWORD="${:sa_password}" \
         -v "${:volume}":/var/opt/mssql \
         "${:organization}"/"${:image_name}":"${:tag}"';
+
+    public function dockerRunTemplate(): string
+    {
+        // The Microsoft image doesn't provide a proper ARM64 build,
+        // so we need to rely on Rosetta for Mac users. We can do
+        // that by specifying a platform such as `linux/amd64`.
+
+        return match (Platform::isArm()) {
+            true => '--platform linux/amd64 \\' . PHP_EOL . $this->dockerRunTemplate,
+            default => $this->dockerRunTemplate,
+        };
+    }
 }

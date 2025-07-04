@@ -68,7 +68,12 @@ abstract class BaseService
         return static::$displayName ?? Str::afterLast(static::class, '\\');
     }
 
-    public function enable(bool $useDefaults = false, array $passthroughOptions = [], string $runOptions = null): void
+    public static function category(): string
+    {
+        return static::$category ?? 'Other';
+    }
+
+    public function enable(bool $useDefaults = false, array $passthroughOptions = [], ?string $runOptions = null): void
     {
         $this->useDefaults = $useDefaults;
 
@@ -80,9 +85,9 @@ abstract class BaseService
 
         try {
             $this->docker->bootContainer(
-                join(' ', array_filter([
+                implode(' ', array_filter([
                     $runOptions,
-                    $this->sanitizeDockerRunTemplate($this->dockerRunTemplate),
+                    $this->sanitizeDockerRunTemplate($this->dockerRunTemplate()),
                     $this->buildPassthroughOptionsString($passthroughOptions),
                 ])),
                 $this->buildParameters(),
@@ -111,11 +116,6 @@ abstract class BaseService
         $this->docker->forwardShell($service['container_id'], $this->shellCommand());
     }
 
-    protected function shellCommand(): string
-    {
-        return 'bash';
-    }
-
     public function organization(): string
     {
         return $this->organization;
@@ -124,11 +124,6 @@ abstract class BaseService
     public function imageName(): string
     {
         return $this->imageName;
-    }
-
-    public static function category(): string
-    {
-        return static::$category ?? 'Other';
     }
 
     public function shortName(): string
@@ -144,6 +139,29 @@ abstract class BaseService
     public function defaultPort(): int
     {
         return $this->defaultPort;
+    }
+
+    public function sanitizeDockerRunTemplate($dockerRunTemplate): string
+    {
+        if ($this->environment->isWindowsOs()) {
+            return stripslashes($dockerRunTemplate);
+        }
+
+        return $dockerRunTemplate;
+    }
+
+    public function buildPassthroughOptionsString(array $passthroughOptions): string
+    {
+        if (empty($passthroughOptions)) {
+            return '';
+        }
+
+        return implode(' ', $passthroughOptions);
+    }
+
+    protected function shellCommand(): string
+    {
+        return 'bash';
     }
 
     protected function ensureImageIsDownloaded(): void
@@ -243,23 +261,5 @@ abstract class BaseService
         }
 
         return 'TO--' . $this->shortName() . '--' . $this->tag . $portTag;
-    }
-
-    public function sanitizeDockerRunTemplate($dockerRunTemplate): string
-    {
-        if ($this->environment->isWindowsOs()) {
-            return stripslashes($dockerRunTemplate);
-        }
-
-        return $dockerRunTemplate;
-    }
-
-    public function buildPassthroughOptionsString(array $passthroughOptions): string
-    {
-        if (empty($passthroughOptions)) {
-            return '';
-        }
-
-        return join(' ', $passthroughOptions);
     }
 }
