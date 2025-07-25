@@ -45,11 +45,9 @@ class DockerTags
     {
         $response = json_decode($this->getTagsResponse()->getContents(), true);
 
-        $platform = $this->platform();
-
         return collect($response['results'])
-            ->when(in_array($platform, $this->armArchitectures, true), $this->onlyArmImagesFilter())
-            ->when(! in_array($platform, $this->armArchitectures, true), $this->onlyNonArmImagesFilter())
+            ->when(Platform::isArm(), $this->onlyArmImagesFilter())
+            ->when(! Platform::isArm(), $this->onlyNonArmImagesFilter())
             ->pluck('name')
             ->sort(new VersionComparator)
             ->values();
@@ -61,7 +59,7 @@ class DockerTags
             return $tags->filter(function ($tag) {
                 $supportedArchs = collect($tag['images'])->pluck('architecture');
 
-                foreach ($this->armArchitectures as $arch) {
+                foreach (Platform::$armArchitectures as $arch) {
                     if ($supportedArchs->contains($arch)) {
                         return true;
                     }
@@ -85,14 +83,9 @@ class DockerTags
                 // still be other options in the supported architectures
                 // so we can consider that the tag is not arm-only.
 
-                return $supportedArchitectures->diff($this->armArchitectures)->count() > 0;
+                return $supportedArchitectures->diff(Platform::$armArchitectures)->count() > 0;
             });
         };
-    }
-
-    protected function platform(): string
-    {
-        return php_uname('m');
     }
 
     protected function getTagsResponse(): StreamInterface
