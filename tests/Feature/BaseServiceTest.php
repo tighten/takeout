@@ -116,6 +116,7 @@ class BaseServiceTest extends TestCase
                     'root_password' => null,
                     'container_name' => 'TO--postgresql--latest-pg12--5432',
                     'alias' => 'postgresql-latest-pg12',
+                    'data_path' => '/var/lib/postgresql/data',
                 ]
             )->once();
         });
