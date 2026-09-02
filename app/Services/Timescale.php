@@ -6,14 +6,13 @@ use App\Shell\Docker;
 use App\Shell\Environment;
 use App\Shell\Shell;
 
-class Timescale extends BaseService
+class Timescale extends PostgreSql
 {
-    protected static $category = Category::DATABASE;
+    protected static $displayName = 'Timescale';
 
     protected $organization = 'timescale';
     protected $imageName = 'timescaledb';
     protected $tag = 'latest-pg16';
-    protected $defaultPort = 5432;
     protected $prompts = [
         [
             'shortname' => 'volume',
@@ -26,13 +25,6 @@ class Timescale extends BaseService
             'default' => 'password',
         ],
     ];
-
-    protected $dockerRunTemplate = '-p "${:port}":5432 \
-        -e POSTGRES_PASSWORD="${:root_password}" \
-        -v "${:volume}":/var/lib/postgresql/data \
-            "${:organization}"/"${:image_name}":"${:tag}"';
-
-    protected static $displayName = 'Timescale';
 
     public function __construct(Shell $shell, Environment $environment, Docker $docker)
     {

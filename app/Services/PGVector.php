@@ -2,14 +2,12 @@
 
 namespace App\Services;
 
-class PGVector extends BaseService
+class PGVector extends PostgreSql
 {
     protected static $displayName = 'PGVector';
-    protected static $category = Category::DATABASE;
 
     protected $organization = 'pgvector';
     protected $imageName = 'pgvector';
-    protected $defaultPort = 5432;
     protected $prompts = [
         [
             'shortname' => 'volume',
@@ -22,9 +20,4 @@ class PGVector extends BaseService
             'default' => 'password',
         ],
     ];
-
-    protected $dockerRunTemplate = '-p "${:port}":5432 \
-        -e POSTGRES_PASSWORD="${:root_password}" \
-        -v "${:volume}":/var/lib/postgresql \
-            "${:organization}"/"${:image_name}":"${:tag}"';
 }

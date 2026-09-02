@@ -2,14 +2,12 @@
 
 namespace App\Services;
 
-class PostGIS extends BaseService
+class PostGIS extends PostgreSql
 {
     protected static $displayName = 'PostGIS';
-    protected static $category = Category::DATABASE;
 
     protected $organization = 'postgis';
     protected $imageName = 'postgis';
-    protected $defaultPort = 5432;
     protected $prompts = [
         [
             'shortname' => 'volume',
@@ -22,9 +20,4 @@ class PostGIS extends BaseService
             'default' => 'password',
         ],
     ];
-
-    protected $dockerRunTemplate = '-p "${:port}":5432 \
-        -e POSTGRES_PASSWORD="${:root_password}" \
-        -v "${:volume}":/var/lib/postgis/data \
-            "${:organization}"/"${:image_name}":"${:tag}"';
 }
